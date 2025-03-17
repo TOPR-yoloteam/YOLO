@@ -2,3 +2,6 @@
 
 [tool.isort]
 profile = "black"
+
+[flake8]
+max-line-length = 88
