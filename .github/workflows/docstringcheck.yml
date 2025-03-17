@@ -1,0 +1,24 @@
+name: Docstring Check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-docstrings:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install pydocstyle
+        run: pip install pydocstyle
+
+      - name: Run pydocstyle
+        run: pydocstyle .
