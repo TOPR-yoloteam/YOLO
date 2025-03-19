@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 3
+names: ['JeremiasDiaz', 'Sero', 'face']
+
+roboflow:
+  workspace: testyolo-h0qmn
+  project: human-faces-lkwkp
+  version: 3
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/testyolo-h0qmn/human-faces-lkwkp/dataset/3
