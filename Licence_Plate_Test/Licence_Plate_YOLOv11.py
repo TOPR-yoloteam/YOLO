@@ -6,7 +6,7 @@ rf = Roboflow(api_key="SfCy9OBY1wxLLy9FcGAq")
 project = rf.workspace().project("yolo-plate")
 model = project.version(3).model
 
-model =YOLO("best.pt")
+#model =YOLO("best.pt")
 
 result = model.predict("your_image.jpg", confidence=40, overlap=30).json()
 
