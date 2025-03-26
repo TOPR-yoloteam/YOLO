@@ -8,7 +8,7 @@ os.chdir("/home/jan/Downloads/YOLO-ValentinTestUmgebung/")
 print(os.getcwd())
 
 # Load MNN model - first convert your PT model to MNN format using MNN converter tools
-interpreter = MNN.Interpreter("src/onnx_model/license_plate_detector.onnx")
+interpreter = MNN.Interpreter("src/mnn_model/license_plate_detector.mnn")
 session = interpreter.createSession()
 input_tensor = interpreter.getSessionInput(session)
 
@@ -19,37 +19,63 @@ reader = easyocr.Reader(['en'])
 
 
 # Function to process YOLO output
-def process_output(output, conf_threshold=0.4):
-    # Parse MNN output based on your YOLO model structure
-    # This is a simplified example - you'll need to adjust based on your specific model output format
+def process_output(output_data, conf_threshold=0.4, frame=None):
+    # Get output shape
+    output_shape = output_data.shape
+    print(f"Output shape: {output_shape}")
+
     boxes = []
     confidences = []
     class_ids = []
 
-    # Process output tensors (this part depends on your specific YOLO model structure)
-    # You'll need to extract boxes, confidences, and class IDs from the output
+    # Reshape output based on your model's actual output format
+    # YOLO models typically output in format [batch, num_detections, attributes]
+    # where attributes are usually [x, y, w, h, confidence, class_prob1, class_prob2, ...]
 
-    # For example:
-    for detection in output[0]:
-        scores = detection[5:]
-        class_id = np.argmax(scores)
-        confidence = scores[class_id]
+    # This is a generic approach - adjust based on your actual output format:
+    if len(output_shape) == 1:
+        # Try reshaping based on common YOLO output formats
+        try:
+            num_detections = int(output_shape[0] / 85)  # For YOLOv5/v8 (85 = 4 box + 1 obj + 80 classes)
+            detections = output_data.reshape(num_detections, 85)
+        except:
+            print("Cannot reshape output data. Check your model's output format.")
+            return [], [], []
+    else:
+        # For models that directly output [num_detections, attributes]
+        detections = output_data
 
-        if confidence > conf_threshold:
-            center_x = detection[0] * frame.shape[1]
-            center_y = detection[1] * frame.shape[0]
-            width = detection[2] * frame.shape[1]
-            height = detection[3] * frame.shape[0]
+    # Process detections
+    for i in range(len(detections)):
+        detection = detections[i]
 
-            # Calculate top-left corner
-            x1 = int(center_x - width / 2)
-            y1 = int(center_y - height / 2)
-            x2 = int(x1 + width)
-            y2 = int(y1 + height)
+        # Extract box coordinates and confidence
+        # Adjust indices based on your model's output format
+        try:
+            x, y, w, h = detection[0:4]
+            confidence = detection[4]
 
-            boxes.append([x1, y1, x2, y2])
-            confidences.append(float(confidence))
-            class_ids.append(class_id)
+            # Class probabilities start from index 5
+            class_scores = detection[5:]
+            class_id = np.argmax(class_scores)
+            class_score = class_scores[class_id]
+
+            # Only process if object confidence is above threshold
+            if confidence > conf_threshold:
+                if frame is not None:
+                    # Convert from normalized coordinates to pixel coordinates
+                    img_h, img_w = frame.shape[:2]
+                    x1 = max(0, int((x - w / 2) * img_w))
+                    y1 = max(0, int((y - h / 2) * img_h))
+                    x2 = min(img_w, int((x + w / 2) * img_w))
+                    y2 = min(img_h, int((y + h / 2) * img_h))
+
+                    boxes.append([x1, y1, x2, y2])
+                    confidences.append(float(confidence * class_score))
+                    class_ids.append(class_id)
+        except IndexError:
+            print(f"Detection format unexpected: {detection}")
+            continue
 
     return boxes, confidences, class_ids
 
