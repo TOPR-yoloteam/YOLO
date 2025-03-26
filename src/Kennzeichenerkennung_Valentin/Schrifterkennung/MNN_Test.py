@@ -100,23 +100,35 @@ while cap.isOpened():
             if confidences[i] > 0.4:
                 x1, y1, x2, y2 = box
 
+                # Make sure coordinates are valid
+                if x1 >= x2 or y1 >= y2 or x1 < 0 or y1 < 0 or x2 > frame.shape[1] or y2 > frame.shape[0]:
+                    continue
+
                 # Extract license plate region
                 license_plate = frame[y1:y2, x1:x2]
 
+                # Check if license plate region is empty
+                if license_plate.size == 0 or license_plate.shape[0] <= 0 or license_plate.shape[1] <= 0:
+                    continue
+
                 # Preprocessing
-                gray = cv2.cvtColor(license_plate, cv2.COLOR_BGR2GRAY)
-                gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+                try:
+                    gray = cv2.cvtColor(license_plate, cv2.COLOR_BGR2GRAY)
+                    gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
-                # OCR with EasyOCR
-                result = reader.readtext(gray)
+                    # OCR with EasyOCR
+                    result = reader.readtext(gray)
 
-                for (bbox, text, prob) in result:
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    if prob > 0.9:
-                        text_gesamt = " ".join([text for (_, text, _) in result])
-                        print(f'Text: {text_gesamt}, Probability: {prob}')
-                        prob_text = text_gesamt
-                        cv2.putText(frame, prob_text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                    for (bbox, text, prob) in result:
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        if prob > 0.9:
+                            text_gesamt = " ".join([text for (_, text, _) in result])
+                            print(f'Text: {text_gesamt}, Probability: {prob}')
+                            prob_text = text_gesamt
+                            cv2.putText(frame, prob_text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                except Exception as e:
+                    print(f"Error processing license plate: {e}")
+                    continue
 
     # Show video with detected license plates
     cv2.imshow("License Plate Recognition", frame)
