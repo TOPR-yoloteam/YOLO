@@ -22,48 +22,38 @@ reader = easyocr.Reader(['en'])
 def process_output(output_data, conf_threshold=0.4, frame=None):
     # Get output shape
     output_shape = output_data.shape
-    print(f"Output shape: {output_shape}")
+    print(f"Output shape: {output_data.shape}")
 
     boxes = []
     confidences = []
     class_ids = []
 
-    # Reshape output based on your model's actual output format
-    # YOLO models typically output in format [batch, num_detections, attributes]
-    # where attributes are usually [x, y, w, h, confidence, class_prob1, class_prob2, ...]
+    # For YOLOv5/v8 output with shape (42000,)
+    # This is likely 8400 detections with 5 values each (85 = x,y,w,h,conf + 80 classes)
+    try:
+        # Try common YOLOv8 output formats (depends on your specific model)
+        num_classes = 1  # Adjust based on your model
+        num_values = 5 + num_classes  # x,y,w,h,conf + classes
+        num_detections = int(output_shape[0] / num_values)
 
-    # This is a generic approach - adjust based on your actual output format:
-    if len(output_shape) == 1:
-        # Try reshaping based on common YOLO output formats
-        try:
-            num_detections = int(output_shape[0] / 85)  # For YOLOv5/v8 (85 = 4 box + 1 obj + 80 classes)
-            detections = output_data.reshape(num_detections, 85)
-        except:
-            print("Cannot reshape output data. Check your model's output format.")
-            return [], [], []
-    else:
-        # For models that directly output [num_detections, attributes]
-        detections = output_data
+        print(f"Attempting to reshape to {num_detections} detections with {num_values} values each")
+        detections = output_data.reshape(num_detections, num_values)
 
-    # Process detections
-    for i in range(len(detections)):
-        detection = detections[i]
+        # Process detections
+        for detection in detections:
+            if len(detection) >= 5:  # Ensure we have at least x,y,w,h,conf
+                x, y, w, h = detection[0:4]
+                confidence = detection[4]
 
-        # Extract box coordinates and confidence
-        # Adjust indices based on your model's output format
-        try:
-            x, y, w, h = detection[0:4]
-            confidence = detection[4]
+                # If we have class probabilities
+                if len(detection) > 5:
+                    class_scores = detection[5:]
+                    class_id = np.argmax(class_scores)
+                else:
+                    class_id = 0  # Default to class 0 if no class info
 
-            # Class probabilities start from index 5
-            class_scores = detection[5:]
-            class_id = np.argmax(class_scores)
-            class_score = class_scores[class_id]
-
-            # Only process if object confidence is above threshold
-            if confidence > conf_threshold:
-                if frame is not None:
-                    # Convert from normalized coordinates to pixel coordinates
+                # Only process if confidence is above threshold
+                if confidence > conf_threshold and frame is not None:
                     img_h, img_w = frame.shape[:2]
                     x1 = max(0, int((x - w / 2) * img_w))
                     y1 = max(0, int((y - h / 2) * img_h))
@@ -71,11 +61,21 @@ def process_output(output_data, conf_threshold=0.4, frame=None):
                     y2 = min(img_h, int((y + h / 2) * img_h))
 
                     boxes.append([x1, y1, x2, y2])
-                    confidences.append(float(confidence * class_score))
+                    confidences.append(float(confidence))
                     class_ids.append(class_id)
-        except IndexError:
-            print(f"Detection format unexpected: {detection}")
-            continue
+
+    except Exception as e:
+        print(f"Error processing output: {e}")
+        # Try different common formats
+        print("Trying alternative formats...")
+        # Try with 6 values per detection (x,y,w,h,conf,class)
+        try:
+            detections = output_data.reshape(-1, 6)
+            print(f"Reshaped to {detections.shape}")
+            # Similar processing as above
+        except:
+            print("Cannot reshape output data. Check your model's output format.")
+            return [], [], []
 
     return boxes, confidences, class_ids
 
