@@ -9,6 +9,7 @@ print(os.getcwd())
 model = YOLO("src/Kennzeichenerkennung_Sero/test/license_plate_detector.pt")
 
 cap = cv2.VideoCapture(0)  # 0 für die Standard-Webcam
+cap.set(cv2.CAP_PROP_FPS, 5)
 
 reader = easyocr.Reader(['en'])
 
