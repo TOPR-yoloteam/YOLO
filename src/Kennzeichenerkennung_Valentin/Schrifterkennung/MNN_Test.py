@@ -19,65 +19,72 @@ reader = easyocr.Reader(['en'])
 
 
 # Function to process YOLO output
+# Add this after creating the session
+print("Model input shape:", input_tensor.getShape())
+for name in interpreter.getSessionOutputAll(session).keys():
+    out = interpreter.getSessionOutput(session, name)
+    print(f"Output '{name}' shape:", out.getShape())
+
+
+# Modify your process_output function to analyze the output data
 def process_output(output_data, conf_threshold=0.4, frame=None):
-    # Get output shape
     output_shape = output_data.shape
     print(f"Output shape: {output_data.shape}")
 
-    boxes = []
-    confidences = []
-    class_ids = []
+    # Print sample values to understand the format
+    print(f"Sample values (first 10):", output_data[:10])
+    print(f"Sample values (last 10):", output_data[-10:])
 
-    # For YOLOv5/v8 output with shape (42000,)
-    # This is likely 8400 detections with 5 values each (85 = x,y,w,h,conf + 80 classes)
+    # For YOLOv8 format, try 8400 detections with 5 values each
     try:
-        # Try common YOLOv8 output formats (depends on your specific model)
-        num_classes = 1  # Adjust based on your model
-        num_values = 5 + num_classes  # x,y,w,h,conf + classes
-        num_detections = int(output_shape[0] / num_values)
+        # Common YOLOv8 output formats
+        detections_per_shape = [
+            (8400, 5),  # 8400 boxes with 5 values (x, y, w, h, conf)
+            (7000, 6),  # 7000 boxes with 6 values
+            (84, 500),  # 84 classes with 500 values per class
+            (42000, 1)  # Flat tensor
+        ]
 
-        print(f"Attempting to reshape to {num_detections} detections with {num_values} values each")
-        detections = output_data.reshape(num_detections, num_values)
+        for num_det, values_per_det in detections_per_shape:
+            if output_shape[0] == num_det * values_per_det:
+                print(f"Trying reshape to {num_det} detections with {values_per_det} values each")
+                detections = output_data.reshape(num_det, values_per_det)
 
-        # Process detections
-        for detection in detections:
-            if len(detection) >= 5:  # Ensure we have at least x,y,w,h,conf
-                x, y, w, h = detection[0:4]
-                confidence = detection[4]
+                # Check if this format makes sense (non-zero values)
+                non_zero = np.count_nonzero(detections[:, 4])  # Check confidence values
+                print(f"Found {non_zero} detections with non-zero confidence")
 
-                # If we have class probabilities
-                if len(detection) > 5:
-                    class_scores = detection[5:]
-                    class_id = np.argmax(class_scores)
-                else:
-                    class_id = 0  # Default to class 0 if no class info
+                if non_zero > 0:
+                    print("This format seems correct!")
+                    # Process using this format
+                    boxes = []
+                    confidences = []
+                    class_ids = []
 
-                # Only process if confidence is above threshold
-                if confidence > conf_threshold and frame is not None:
-                    img_h, img_w = frame.shape[:2]
-                    x1 = max(0, int((x - w / 2) * img_w))
-                    y1 = max(0, int((y - h / 2) * img_h))
-                    x2 = min(img_w, int((x + w / 2) * img_w))
-                    y2 = min(img_h, int((y + h / 2) * img_h))
+                    for detection in detections:
+                        confidence = detection[4]
+                        if confidence > conf_threshold and frame is not None:
+                            x, y, w, h = detection[0:4]
+                            class_id = 0
+                            if values_per_det > 5:
+                                class_id = int(detection[5])
 
-                    boxes.append([x1, y1, x2, y2])
-                    confidences.append(float(confidence))
-                    class_ids.append(class_id)
+                            img_h, img_w = frame.shape[:2]
+                            x1 = max(0, int((x - w / 2) * img_w))
+                            y1 = max(0, int((y - h / 2) * img_h))
+                            x2 = min(img_w, int((x + w / 2) * img_w))
+                            y2 = min(img_h, int((y + h / 2) * img_h))
 
+                            boxes.append([x1, y1, x2, y2])
+                            confidences.append(float(confidence))
+                            class_ids.append(class_id)
+
+                    return boxes, confidences, class_ids
     except Exception as e:
         print(f"Error processing output: {e}")
-        # Try different common formats
-        print("Trying alternative formats...")
-        # Try with 6 values per detection (x,y,w,h,conf,class)
-        try:
-            detections = output_data.reshape(-1, 6)
-            print(f"Reshaped to {detections.shape}")
-            # Similar processing as above
-        except:
-            print("Cannot reshape output data. Check your model's output format.")
-            return [], [], []
 
-    return boxes, confidences, class_ids
+    print("Could not determine correct output format")
+    return [], [], []
 
 
 while cap.isOpened():
@@ -106,7 +113,7 @@ while cap.isOpened():
     output_data = np.array(tmp_output.getData())
 
     # Process output to get boxes, confidences, and class IDs
-    boxes, confidences, class_ids = process_output(output_data)
+    boxes, confidences, class_ids = process_output(output_data, conf_threshold=0.4, frame=frame)
 
     # Process detections
     for i, box in enumerate(boxes):
