@@ -28,62 +28,39 @@ for name in interpreter.getSessionOutputAll(session).keys():
 
 # Modify your process_output function to analyze the output data
 def process_output(output_data, conf_threshold=0.4, frame=None):
-    output_shape = output_data.shape
-    print(f"Output shape: {output_data.shape}")
+    # Reshape to 8400 detections with 5 values each (x, y, w, h, conf)
+    detections = output_data.reshape(8400, 5)
 
-    # Print sample values to understand the format
-    print(f"Sample values (first 10):", output_data[:10])
-    print(f"Sample values (last 10):", output_data[-10:])
+    boxes = []
+    confidences = []
+    class_ids = []
 
-    # For YOLOv8 format, try 8400 detections with 5 values each
-    try:
-        # Common YOLOv8 output formats
-        detections_per_shape = [
-            (8400, 5),  # 8400 boxes with 5 values (x, y, w, h, conf)
-            (7000, 6),  # 7000 boxes with 6 values
-            (84, 500),  # 84 classes with 500 values per class
-            (42000, 1)  # Flat tensor
-        ]
+    for detection in detections:
+        confidence = detection[4]
+        if confidence > conf_threshold and frame is not None:
+            x, y, w, h = detection[0:4]
+            # Default to class 0 (license plate)
+            class_id = 0
 
-        for num_det, values_per_det in detections_per_shape:
-            if output_shape[0] == num_det * values_per_det:
-                print(f"Trying reshape to {num_det} detections with {values_per_det} values each")
-                detections = output_data.reshape(num_det, values_per_det)
+            img_h, img_w = frame.shape[:2]
+            x1 = max(0, int((x - w / 2) * img_w))
+            y1 = max(0, int((y - h / 2) * img_h))
+            x2 = min(img_w, int((x + w / 2) * img_w))
+            y2 = min(img_h, int((y + h / 2) * img_h))
 
-                # Check if this format makes sense (non-zero values)
-                non_zero = np.count_nonzero(detections[:, 4])  # Check confidence values
-                print(f"Found {non_zero} detections with non-zero confidence")
+            boxes.append([x1, y1, x2, y2])
+            confidences.append(float(confidence))
+            class_ids.append(class_id)
 
-                if non_zero > 0:
-                    print("This format seems correct!")
-                    # Process using this format
-                    boxes = []
-                    confidences = []
-                    class_ids = []
+    return boxes, confidences, class_ids
 
-                    for detection in detections:
-                        confidence = detection[4]
-                        if confidence > conf_threshold and frame is not None:
-                            x, y, w, h = detection[0:4]
-                            class_id = 0
-                            if values_per_det > 5:
-                                class_id = int(detection[5])
 
-                            img_h, img_w = frame.shape[:2]
-                            x1 = max(0, int((x - w / 2) * img_w))
-                            y1 = max(0, int((y - h / 2) * img_h))
-                            x2 = min(img_w, int((x + w / 2) * img_w))
-                            y2 = min(img_h, int((y + h / 2) * img_h))
+def apply_nms(boxes, confidences, class_ids, iou_threshold=0.5):
+    # Apply Non-Maximum Suppression
+    indices = cv2.dnn.NMSBoxes(boxes, confidences, 0.4, iou_threshold)
 
-                            boxes.append([x1, y1, x2, y2])
-                            confidences.append(float(confidence))
-                            class_ids.append(class_id)
-
-                    return boxes, confidences, class_ids
-    except Exception as e:
-        print(f"Error processing output: {e}")
-
-    print("Could not determine correct output format")
+    if len(indices) > 0:
+        return [boxes[i] for i in indices], [confidences[i] for i in indices], [class_ids[i] for i in indices]
     return [], [], []
 
 
@@ -113,7 +90,9 @@ while cap.isOpened():
     output_data = np.array(tmp_output.getData())
 
     # Process output to get boxes, confidences, and class IDs
+    # After process_output call:
     boxes, confidences, class_ids = process_output(output_data, conf_threshold=0.4, frame=frame)
+    boxes, confidences, class_ids = apply_nms(boxes, confidences, class_ids)
 
     # Process detections
     for i, box in enumerate(boxes):
