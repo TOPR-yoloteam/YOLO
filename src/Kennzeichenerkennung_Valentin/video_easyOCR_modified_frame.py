@@ -59,7 +59,7 @@ cv2.destroyAllWindows()
 
 
 ##load image via openCV
-#image = cv2.imread('C:/Users/Valentin.Talmon/PycharmProjects/YOLO/src/Kennzeichenerkennung_Valentin/Schrifterkennung/img/korean_licence_plate.png')
+#image = cv2.imread('C:/Users/Valentin.Talmon/PychrmProjects/YOLO/src/Kennzeichenerkennung_Valentin/Schrifterkennung/img/img3.png')
 ##grayfilter on image
 #gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 #cv2.imwrite('gray.png', gray)
