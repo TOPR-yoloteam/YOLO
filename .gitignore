@@ -6,7 +6,7 @@ __pycache__/
 # C extensions
 *.so
 
-
+.idea/
 LicenseTests/test.mp4
 
 # Distribution / packaging
