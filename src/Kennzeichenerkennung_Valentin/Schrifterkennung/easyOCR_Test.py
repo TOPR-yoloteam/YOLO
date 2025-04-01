@@ -3,7 +3,7 @@ import cv2
 from ultralytics import YOLO
 import os
 
-os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
+os.chdir("C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO")
 print(os.getcwd())
 
 model = YOLO("src/Kennzeichenerkennung_Sero/test/license_plate_detector.pt")
