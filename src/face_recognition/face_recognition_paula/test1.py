@@ -15,7 +15,7 @@ import face_recognition
 import numpy as np
 import os
 
-model = YOLO("yolov8n.pt")
+model = YOLO("yoylov8n.pt")
 
 known_faces_dir = "YOLO/src/face_recognition/data/img/"
 known_faces_encodings = []
