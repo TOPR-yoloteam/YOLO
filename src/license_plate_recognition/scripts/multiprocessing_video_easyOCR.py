@@ -3,7 +3,8 @@ from ultralytics import YOLO
 import os
 
 # Set the working directory
-os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO")
+#os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO")
+os.chdir("/home/talmva/workspace/YOLO/")
 
 # Initialize the YOLO model
 model = YOLO("src/license_plate_recognition/models/license_plate_detector_ncnn_model")
