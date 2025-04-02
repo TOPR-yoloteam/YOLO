@@ -6,7 +6,7 @@ import os
 import time
 
 # Verzeichniswechsel
-os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO")
+os.chdir("")
 
 # YOLO- und EasyOCR-Modelle laden
 model = YOLO("src/license_plate_recognition/models/license_plate_detector.pt")
