@@ -1,73 +1,46 @@
-import multiprocessing
 import cv2
-from ultralytics import YOLO  # YOLO-Modell importieren (stellen Sie sicher, dass ultralytics installiert ist)
+from ultralytics import YOLO
 import os
 
-def read_video(frame_queue):
-    """Liest Frames von der Kamera und fügt sie in die Queue ein."""
-    cap = cv2.VideoCapture(0)
+# Set the working directory
+os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO")
 
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        # Fügt jedes gelesene Frame in die Queue ein
-        if not frame_queue.full():
-            frame_queue.put(frame)
+# Initialize the YOLO model
+model = YOLO("src/license_plate_recognition/models/license_plate_detector_ncnn_model")
 
-        cv2.imshow("Original Video", frame)
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+# Open the webcam (0 is typically the default webcam)
+cap = cv2.VideoCapture(0)
 
-    cap.release()
-    cv2.destroyAllWindows()
+# Check if the capture device is opened successfully
+if not cap.isOpened():
+    print("Error: Unable to open the video source.")
+    exit()
 
+while True:
+    # Read a frame from the webcam
+    ret, frame = cap.read()
 
-def process_with_yolo(frame_queue):
-    """Liest Frames aus der Queue, verarbeitet sie mit YOLO und zeigt die Ergebnisse."""
-    model = YOLO("src/license_plate_recognition/models/license_plate_detector.pt")  # YOLOv8-Modell laden (geben Sie den korrekten Pfad zur PT-Datei ein)
+    # Ensure the frame is valid before processing
+    if not ret or frame is None:
+        print("Error: Failed to capture a valid frame.")
+        break
 
-    while True:
-        if not frame_queue.empty():
-            frame = frame_queue.get()
+    # Run inference with the YOLO model
+    results = model(frame)
 
-            # Verarbeite das Frame mit YOLO
-            results = model(frame)
+    # Draw bounding boxes on the frame
+    for result in results:
+        for box in result.boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-            # Darstellen der Ergebnisse von YOLO auf dem Frame
-            for result in results:
-                for box in result.boxes:
-                    x1, y1, x2, y2 = map(int, box.xyxy[0])
-                    conf = box.conf[0].item()
-                    cls = int(box.cls[0].item())
+    # Display the frame with annotations
+    cv2.imshow("Kennzeichen-Erkennung", frame)
 
-                    # Nur Ergebnisse mit höherer Konfidenz zeichnen
-                    if conf > 0.4:
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                        label = f"Class {cls} ({conf:.2f})"
-                        cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+    # Exit with 'q'
+    if cv2.waitKey(1) & 0xFF == ord("q"):
+        break
 
-            # Zeige die Ergebnisse im Fenster an
-            cv2.imshow("YOLO Detection", frame)
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
-
-
-if __name__ == "__main__":
-    print(os.getcwd())
-    #os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
-    os.chdir("/home/talmva/workspace/YOLO")
-    # Queue erstellen, damit Prozesse Daten austauschen können
-    frame_queue = multiprocessing.Queue(maxsize=10)
-
-    # Prozesse definieren
-    video_process = multiprocessing.Process(target=read_video, args=(frame_queue,))
-    yolo_process = multiprocessing.Process(target=process_with_yolo, args=(frame_queue,))
-
-    # Prozesse starten
-    video_process.start()
-    yolo_process.start()
-
-    # Auf Beendigung der Prozesse warten
-    video_process.join()
-    yolo_process.join()
+# Release the video capture and close display windows
+cap.release()
+cv2.destroyAllWindows()
