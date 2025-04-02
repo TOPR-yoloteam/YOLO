@@ -3,7 +3,7 @@ import cv2
 import pytesseract
 
 # YOLOv8-Modell laden
-model = YOLO("test/license_plate_detector.pt")
+model = YOLO("../models/license_plate_detector.pt")
 
 cap = cv2.VideoCapture(0)  # 0 für die Standard-Webcam
 
