@@ -9,7 +9,8 @@ def filter_uppercase_and_numbers(input_string):
     result = re.sub(r"[^A-Z0-9\s]", "", input_string)
     return result
 
-os.chdir("C:/Users/serha/PycharmProjects/YOLO/")
+#os.chdir("C:/Users/serha/PycharmProjects/YOLO/")
+os.chdir("/home/talmva/workspace/YOLO/")
 
 #lade Model
 model = YOLO("src/license_plate_recognition/models/license_plate_detector_ncnn_model")
