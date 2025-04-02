@@ -3,6 +3,10 @@
 #https://github.com/carolinedunn/facial_recognition/tree/main
 #https://github.com/akanametov/yolo-face/tree/dev
 
+#Information Sources:
+#https://basilchackomathew.medium.com/face-recognition-in-python-a-comprehensive-guide-960a48436d0f#:~:text=Dlib%3A%20Dlib%20is%20a%20C%2B%2B,API%20for%20face%20recognition%20tasks.
+
+
 #Data Set Sources:
 #https://www.kaggle.com/datasets/ashwingupta3012/human-faces
 #https://www.kaggle.com/datasets/andrewmvd/animal-faces
@@ -25,27 +29,35 @@ import face_recognition
 import numpy as np
 import os
 
+#Load the YOLO model for object detection
 model = YOLO("yolov8n.pt")
 
+#List of known imgs&videos:
 known_faces_dir = [
     'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img',
     'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img/humanFaces',
-    'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img/animalFaces'
+    'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img/animalFaces',
+    'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/video'
 ]
 known_faces_encodings = []
 known_faces_names = []
 
-for filename in os.listdir(known_faces_dir):
-    if filename.endswith((".jpg",".png",".jpeg",".webp")):
-        image_path = os.path.join(known_faces_dir, filename)
-        image = face_recognition.load_image_file(image_path)
+#Iterate through all known paths:
+for directory in known_faces_dir:
+    if os.path.exists(directory):
+        for filename in os.listdir(directory):
+            if filename.endswith((".jpg",".png",".jpeg",".webp")):
+                image_path = os.path.join(directory, filename)
+                image = face_recognition.load_image_file(image_path)
 
-        face_encodings = face_recognition.face_encodings(image)
-        if face_encodings:
-            known_faces_encodings.append(face_encodings[0])
+                face_encodings = face_recognition.face_encodings(image)
+                if face_encodings:
+                    known_faces_encodings.append(face_encodings[0])
 
-            name = os.path.splitext(filename)[0]
-            known_faces_names.append(name)
+                    name = os.path.splitext(filename)[0]
+                    known_faces_names.append(name)
+    else:
+        print(f"Verzeichnis nicht gefunden: {directory}")
 
 cap = cv2.VideoCapture(0)
 

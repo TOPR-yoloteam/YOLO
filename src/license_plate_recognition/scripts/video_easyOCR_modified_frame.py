@@ -15,7 +15,7 @@ print(os.getcwd())
 model = YOLO("src/Kennzeichenerkennung_Sero/test/license_plate_detector.pt")
 #Kamera init
 cap = cv2.VideoCapture(0)
-#easyOCR reader mit englischer sprache/Buchstaben
+#easyOCR reader mit englischer Sprache/Buchstaben
 reader = easyocr.Reader(['en'])
 
 while cap.isOpened():
