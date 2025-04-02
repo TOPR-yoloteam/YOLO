@@ -3,21 +3,17 @@ import cv2
 from ultralytics import YOLO
 import os
 
-os.chdir("C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO")
-print(os.getcwd())
+os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO")
 
-model = YOLO("src/Kennzeichenerkennung_Sero/test/license_plate_detector.pt")
+model = YOLO("src/license_plate_recognition/models/license_plate_detector.pt")
 
 cap = cv2.VideoCapture(0)  # 0 für die Standard-Webcam
-cap.set(cv2.CAP_PROP_FPS, 5)
-
 reader = easyocr.Reader(['en'])
 
 while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
         break  # Ende des Videos
-
 
     results = model(frame)
 
@@ -36,8 +32,7 @@ while cap.isOpened():
                     gray = cv2.cvtColor(license_plate, cv2.COLOR_BGR2GRAY)
                     gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
-                # OCR mit Tesseract
-                    # OCR mit Tesseract verbessern
+                    # OCR mit Easyocr
                     result = reader.readtext(gray)
 
                     for (bbox, text, prob) in result:
@@ -57,19 +52,4 @@ while cap.isOpened():
 
 cap.release()
 cv2.destroyAllWindows()
-
-
-##load image via openCV
-#image = cv2.imread('C:/Users/Valentin.Talmon/PycharmProjects/YOLO/src/Kennzeichenerkennung_Valentin/Schrifterkennung/img/korean_licence_plate.png')
-##grayfilter on image
-#gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#cv2.imwrite('gray.png', gray)
-#
-#
-##gray tones with openCV
-#thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-#cv2.imwrite('thresh.png', thresh)
-#
-##OCR reader
-# # specify the language
 
