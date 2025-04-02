@@ -22,7 +22,7 @@ import os
 
 model = YOLO("yolov8n.pt")
 
-known_faces_dir = 'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img'
+known_faces_dir = '/Users/jangaschler/PycharmProjects/YOLO/src/face_recognition/data/img'
 known_faces_encodings = []
 known_faces_names = []
 
