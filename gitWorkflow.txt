@@ -1,0 +1,11 @@
+Sero abi 
+
+1. git pull
+
+dann ist dein repository auf dem aktuellsten Stand
+
+Wenn du was deine Änderungen auf das Repository speichern willst
+
+1. git add .   //dieser Punkt sagt dass er alle änderungen ändern soll
+2. git commit -m "Commit Text, kann beliebig aussehen"
+3. git push 
