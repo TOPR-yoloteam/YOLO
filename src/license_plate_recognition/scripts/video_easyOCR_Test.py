@@ -3,7 +3,7 @@ import cv2
 from ultralytics import YOLO
 import os
 
-os.chdir("")
+os.chdir("spadsspokdlkufdsafslj")
 
 model = YOLO("src/license_plate_recognition/models/license_plate_detector.pt")
 
