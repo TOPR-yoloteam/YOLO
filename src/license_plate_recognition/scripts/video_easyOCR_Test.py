@@ -3,9 +3,7 @@ import cv2
 from ultralytics import YOLO
 import os
 
-os.chdir("spadsspokdlkufdsafslj")
-
-model = YOLO("src/license_plate_recognition/models/license_plate_detector.pt")
+os.chdir("Talmon")
 
 cap = cv2.VideoCapture(0)  # 0 für die Standard-Webcam
 reader = easyocr.Reader(['en'])
