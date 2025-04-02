@@ -54,8 +54,9 @@ def process_with_yolo(frame_queue):
 
 
 if __name__ == "__main__":
-
-    os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
+    print(os.getcwd())
+    #os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
+    os.chdir("/home/talmva/workspace/YOLO")
     # Queue erstellen, damit Prozesse Daten austauschen können
     frame_queue = multiprocessing.Queue(maxsize=10)
 
