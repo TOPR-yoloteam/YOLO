@@ -10,10 +10,9 @@ def filter_uppercase_and_numbers(input_string):
     return result
 
 os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
-print(os.getcwd())
 
 #lade Model
-model = YOLO("src/Kennzeichenerkennung_Sero/test/license_plate_detector.pt")
+model = YOLO("src/license_plate_recognition/models/license_plate_detector.pt")
 cap = cv2.VideoCapture(0)  # 0 für die Standard-Webcam
 reader = easyocr.Reader(['en'])
 
@@ -59,4 +58,3 @@ while cap.isOpened():
 
 cap.release()
 cv2.destroyAllWindows()
-
