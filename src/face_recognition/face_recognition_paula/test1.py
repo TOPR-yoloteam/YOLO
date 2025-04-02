@@ -7,25 +7,27 @@
 import cv2
 from ultralytics import YOLO
 import face_recognition
-
-#OpenCV needs to be installed with
-#conda install -c conda-forge opencv
-#Ultralytics needs to be installed with
-#pip install ultralytics
-
-#face_recognition needs to be installed with
-#conda install dlib -c conda-forge
-#conda install face_recognition -c conda-forge
-
 import numpy as np
 import os
+import time
+import threading
+from queue import Queue
+import torch  # PyTorch-Modul importieren
 
+# Konfigurationsparameter für Performance-Optimierung
+RESIZE_FACTOR = 0.5  # Faktor für Frame-Verkleinerung
+PROCESS_EVERY_N_FRAMES = 5  # Nur jeden N-ten Frame vollständig verarbeiten
+MAX_QUEUE_SIZE = 5  # Maximale Anzahl von Frames in der Queue
+
+# YOLO-Modell mit GPU-Unterstützung laden (falls verfügbar)
 model = YOLO("yolov8n.pt")
+model.to('cuda' if torch.cuda.is_available() else 'cpu')
 
 known_faces_dir = '/Users/jangaschler/PycharmProjects/YOLO/src/face_recognition/data/img'
 known_faces_encodings = []
 known_faces_names = []
 
+# Bekannte Gesichter einmalig laden
 for filename in os.listdir(known_faces_dir):
     if filename.endswith((".jpg",".png",".jpeg",".webp")):
         image_path = os.path.join(known_faces_dir, filename)
@@ -38,57 +40,127 @@ for filename in os.listdir(known_faces_dir):
             name = os.path.splitext(filename)[0]
             known_faces_names.append(name)
 
-cap = cv2.VideoCapture(0)
+# Globale Variablen für Threading
+frame_queue = Queue(maxsize=MAX_QUEUE_SIZE)
+processed_frame = None
+running = True
+frame_count = 0
 
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
+def capture_video():
+    """Thread-Funktion zum Erfassen von Video-Frames"""
+    global running
+    cap = cv2.VideoCapture(0)
 
-    results = model(frame)
+    while running:
+        ret, frame = cap.read()
+        if not ret:
+            running = False
+            break
 
-    for result in results:
-        for box in result.boxes:
-            if int(box.cls[0].item()) == 0:
-                x1, y1, x2, y2 = map(int, box.xyxy[0])
-                person_frame = frame[y1:y2, x1:x2]
+        # Überspringen, wenn Queue voll
+        if not frame_queue.full():
+            frame_queue.put(frame)
+        else:
+            time.sleep(0.01)  # Kurze Pause, um CPU zu entlasten
 
-                rgb_small_frame = np.ascontiguousarray(frame[:, :, ::-1])
+    cap.release()
 
-                face_locations = face_recognition.face_locations(rgb_small_frame)
+def process_frames():
+    """Thread-Funktion zum Verarbeiten von Frames"""
+    global processed_frame, running, frame_count
 
-                if face_locations is not None and face_locations:
-                    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-                    face_names = []
-                    for face_encoding in face_encodings:
+    while running:
+        if frame_queue.empty():
+            time.sleep(0.01)  # Warten auf neue Frames
+            continue
 
-                        matches = face_recognition.compare_faces(known_faces_encodings, face_encoding)
-                        name = "Unknown"
+        frame = frame_queue.get()
+        frame_count += 1
 
-                        face_distances = face_recognition.face_distance(known_faces_encodings, face_encoding)
-                        best_match_index = np.argmin(face_distances)
-                        if matches[best_match_index]:
-                            name = known_faces_names[best_match_index]
+        # Frame verkleinern für schnellere Verarbeitung
+        small_frame = cv2.resize(frame, (0, 0), fx=RESIZE_FACTOR, fy=RESIZE_FACTOR)
 
-                        face_names.append(name)
+        # Vollständige Analyse nur bei jedem N-ten Frame
+        full_processing = (frame_count % PROCESS_EVERY_N_FRAMES == 0)
 
-                    for (top, right, bottom, left), name in zip(face_locations, face_names):
+        if full_processing:
+            # YOLO-Erkennung auf verkleinertem Frame durchführen
+            results = model(small_frame)
 
-                        cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
+            # Auf Originalgröße skalieren für Anzeige
+            output_frame = frame.copy()
 
-                        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
-                        font = cv2.FONT_HERSHEY_DUPLEX
-                        cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+            for result in results:
+                for box in result.boxes:
+                    if int(box.cls[0].item()) == 0:  # Person erkannt
+                        # Koordinaten auf Originalframe skalieren
+                        x1, y1, x2, y2 = map(int, box.xyxy[0] / RESIZE_FACTOR)
 
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                label = model.names[int(box.cls)]
-                confidence = box.conf[0]
-                cv2.putText(frame, f'{label} {confidence:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                        # ROI extrahieren (nur Bereich mit erkannter Person)
+                        person_roi = frame[y1:y2, x1:x2]
 
-    cv2.imshow('Object Detection', frame)
+                        if person_roi.size > 0:  # Prüfen, ob ROI nicht leer ist
+                            # Nur im ROI-Bereich nach Gesichtern suchen
+                            rgb_roi = cv2.cvtColor(person_roi, cv2.COLOR_BGR2RGB)
+                            face_locations = face_recognition.face_locations(rgb_roi)
 
+                            if face_locations:
+                                face_encodings = face_recognition.face_encodings(rgb_roi, face_locations)
+
+                                for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+                                    # Koordinaten von ROI ins Hauptbild umrechnen
+                                    face_top = top + y1
+                                    face_right = right + x1
+                                    face_bottom = bottom + y1
+                                    face_left = left + x1
+
+                                    # Gesichtserkennung
+                                    matches = face_recognition.compare_faces(known_faces_encodings, face_encoding)
+                                    name = "Unknown"
+
+                                    if len(known_faces_encodings) > 0:
+                                        face_distances = face_recognition.face_distance(known_faces_encodings, face_encoding)
+                                        best_match_index = np.argmin(face_distances)
+                                        if matches[best_match_index]:
+                                            name = known_faces_names[best_match_index]
+
+                                    # Gesicht markieren
+                                    cv2.rectangle(output_frame, (face_left, face_top), (face_right, face_bottom), (0, 255, 0), 2)
+                                    cv2.rectangle(output_frame, (face_left, face_bottom - 35), (face_right, face_bottom), (0, 255, 0), cv2.FILLED)
+                                    cv2.putText(output_frame, name, (face_left + 6, face_bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 1)
+
+                        # Person-Bounding-Box zeichnen
+                        cv2.rectangle(output_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        label = model.names[int(box.cls)]
+                        confidence = box.conf[0]
+                        cv2.putText(output_frame, f'{label} {confidence:.2f}', (x1, y1 - 10),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
+            processed_frame = output_frame
+        else:
+            # Bei übersprungenen Frames nur das letzte Ergebnis anzeigen
+            # oder ggf. nur einfachere Operationen durchführen
+            if processed_frame is None:
+                processed_frame = frame
+
+# Threads starten
+capture_thread = threading.Thread(target=capture_video)
+process_thread = threading.Thread(target=process_frames)
+
+capture_thread.start()
+process_thread.start()
+
+# Hauptschleife für die Anzeige
+while running:
+    if processed_frame is not None:
+        cv2.imshow('Object Detection', processed_frame)
+
+    # Beenden mit 'q'
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        running = False
 
-cap.release()
+# Aufräumen
+capture_thread.join()
+process_thread.join()
 cv2.destroyAllWindows()
+
