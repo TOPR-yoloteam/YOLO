@@ -1,7 +1,12 @@
-#Sources:
+#Code Sources:
 #https://medium.com/@erdibillkaan/object-detection-and-face-recognition-with-yolov8n-356b22bacc48
 #https://github.com/carolinedunn/facial_recognition/tree/main
 #https://github.com/akanametov/yolo-face/tree/dev
+
+#Data Set Sources:
+#https://www.kaggle.com/datasets/ashwingupta3012/human-faces
+#https://www.kaggle.com/datasets/andrewmvd/animal-faces
+
 
 
 import cv2
@@ -22,7 +27,11 @@ import os
 
 model = YOLO("yolov8n.pt")
 
-known_faces_dir = 'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img'
+known_faces_dir = [
+    'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img',
+    'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img/humanFaces',
+    'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img/animalFaces'
+]
 known_faces_encodings = []
 known_faces_names = []
 
@@ -85,7 +94,8 @@ while True:
                 confidence = box.conf[0]
                 cv2.putText(frame, f'{label} {confidence:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
-    cv2.imshow('Object Detection', frame)
+    cv2.imshow('Face Recognition', frame)
+
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
