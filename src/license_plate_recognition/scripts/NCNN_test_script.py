@@ -17,7 +17,6 @@ model = YOLO("src/license_plate_recognition/models/licence_plate_yolov5_ncnn_mod
 # Open the webcam (0 is typically the default webcam)
 cap = cv2.VideoCapture(0)
 
-cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 224)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 224)
 cap.set(cv2.CAP_PROP_FPS, 36)
