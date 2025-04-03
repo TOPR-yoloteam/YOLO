@@ -12,13 +12,10 @@ RESIZE_FACTOR = 0.5  # Faktor für Frame-Verkleinerung
 PROCESS_EVERY_N_FRAMES = 5  # Nur jeden N-ten Frame vollständig verarbeiten
 MAX_QUEUE_SIZE = 5  # Maximale Anzahl von Frames in der Queue
 
-<<<<<<< HEAD
 # Globale Variablen
 #os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
 os.chdir("/home/talmva/workspace/YOLO/")
-=======
-os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
->>>>>>> 201d4bacf1985eb56ef3de2eaa6832a1c4cc5722
+#os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
 model = YOLO("src/license_plate_recognition/models/license_plate_detector_ncnn_model")
 easyocr_reader = easyocr.Reader(['en'])
 
