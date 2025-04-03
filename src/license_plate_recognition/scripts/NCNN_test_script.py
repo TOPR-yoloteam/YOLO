@@ -42,7 +42,8 @@ while True:
 
     # Draw bounding boxes on the frame
     for result in results:
-        for box in result.boxes:
+        for box in result.boxes: 
+            print(box.conf[0].item())
             x1, y1, x2, y2 = map(int, box.xyxy[0])
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
