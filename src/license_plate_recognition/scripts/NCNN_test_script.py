@@ -3,13 +3,14 @@ from ultralytics import YOLO
 import os
 
 # Set the working directory
-os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO")
-#os.chdir("/home/talmva/workspace/YOLO/")
+#os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO")
+os.chdir("/home/talmva/workspace/YOLO/")
 #os.chdir("C:/Users/serha/PycharmProjects/YOLO")
 
 
 # Initialize the YOLO model
-model = YOLO("src/license_plate_recognition/models/license_plate_detector_ncnn_model")
+#model = YOLO("src/license_plate_recognition/models/license_plate_detector_ncnn_model")
+model = YOLO("src/license_plate_recognition/models/licence_plate_yolov5_ncnn_model")
 
 # Open the webcam (0 is typically the default webcam)
 cap = cv2.VideoCapture(0)
