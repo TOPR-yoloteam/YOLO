@@ -6,12 +6,9 @@
 # Information Sources:
 # https://basilchackomathew.medium.com/face-recognition-in-python-a-comprehensive-guide-960a48436d0f#:~:text=Dlib%3A%20Dlib%20is%20a%20C%2B%2B,API%20for%20face%20recognition%20tasks.
 
-
 # Data Set Sources:
 # https://www.kaggle.com/datasets/ashwingupta3012/human-faces
 # https://www.kaggle.com/datasets/andrewmvd/animal-faces
-
-
 
 import cv2
 from ultralytics import YOLO
@@ -30,7 +27,8 @@ import numpy as np
 import os
 
 # Load the YOLO model for object detection
-model = YOLO("yolov8n.pt")
+#model = YOLO("C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/models/yolov8n.pt")
+model = YOLO("C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/models/yolov11s-face.pt")
 
 # List of known imgs&videos
 known_faces_dir = [
