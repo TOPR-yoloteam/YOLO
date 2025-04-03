@@ -3,8 +3,8 @@ from ultralytics import YOLO
 import os
 
 # Set the working directory
-#os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO")
-os.chdir("/home/talmva/workspace/YOLO/")
+os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO")
+#os.chdir("/home/talmva/workspace/YOLO/")
 #os.chdir("C:/Users/serha/PycharmProjects/YOLO")
 
 
@@ -13,6 +13,7 @@ model = YOLO("src/license_plate_recognition/models/license_plate_detector_ncnn_m
 
 # Open the webcam (0 is typically the default webcam)
 cap = cv2.VideoCapture(0)
+prev_tick = cv2.getTickCount()
 
 # Check if the capture device is opened successfully
 if not cap.isOpened():
@@ -28,8 +29,15 @@ while True:
         print("Error: Failed to capture a valid frame.")
         break
 
+
+
     # Run inference with the YOLO model
     results = model(frame)
+
+    current_tick = cv2.getTickCount()
+    fps = cv2.getTickFrequency() / (current_tick - prev_tick)
+    prev_tick = current_tick
+    cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
 
     # Draw bounding boxes on the frame
     for result in results:
