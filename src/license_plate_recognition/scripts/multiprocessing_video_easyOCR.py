@@ -1,41 +1,42 @@
-import easyocr
 import cv2
 from ultralytics import YOLO
 import os
 import re
 import time
 import threading
+import easyocr
 from queue import Queue
 
-# Konfigurationsparameter
+# Konfigurationsparameter für Performance-Optimierung
 RESIZE_FACTOR = 0.5  # Faktor für Frame-Verkleinerung
 PROCESS_EVERY_N_FRAMES = 5  # Nur jeden N-ten Frame vollständig verarbeiten
-MAX_QUEUE_SIZE = 5  # Maximale Größe der Frame-Queue
+MAX_QUEUE_SIZE = 5  # Maximale Anzahl von Frames in der Queue
 
+<<<<<<< HEAD
 # Globale Variablen
 #os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
 os.chdir("/home/talmva/workspace/YOLO/")
+=======
+os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
+>>>>>>> 201d4bacf1985eb56ef3de2eaa6832a1c4cc5722
 model = YOLO("src/license_plate_recognition/models/license_plate_detector_ncnn_model")
-reader = easyocr.Reader(['en'])
+easyocr_reader = easyocr.Reader(['en'])
 
 frame_queue = Queue(maxsize=MAX_QUEUE_SIZE)
-output_queue = Queue(maxsize=MAX_QUEUE_SIZE)
 processed_frame = None
 running = True
 frame_count = 0
 
 
 def filter_uppercase_and_numbers(input_string):
-    """Filtert nur Großbuchstaben und Zahlen"""
     result = re.sub(r"[^A-Z0-9\s]", "", input_string)
     return result
 
 
 def capture_video():
-    """Thread-Funktion zum Erfassen von Frames von der Kamera"""
+    """Thread-Funktion zum Erfassen von Video-Frames"""
     global running
-
-    cap = cv2.VideoCapture(0)  # 0 für die Standard-Webcam
+    cap = cv2.VideoCapture(0)
 
     while running:
         ret, frame = cap.read()
@@ -43,10 +44,11 @@ def capture_video():
             running = False
             break
 
+        # Überspringen, wenn Queue voll
         if not frame_queue.full():
             frame_queue.put(frame)
         else:
-            time.sleep(0.01)  # CPU-Entlastung bei voller Queue
+            time.sleep(0.01)  # Kurze Pause, um CPU zu entlasten
 
     cap.release()
 
@@ -61,79 +63,58 @@ def process_frames():
             continue
 
         frame = frame_queue.get()
-        frame_count += 1
+        frame_count +=1
 
-        # Frame verkleinern für schnellere Verarbeitung
         small_frame = cv2.resize(frame, (0, 0), fx=RESIZE_FACTOR, fy=RESIZE_FACTOR)
 
-        # Analyse nur bei jedem N-ten Frame
         full_processing = (frame_count % PROCESS_EVERY_N_FRAMES == 0)
 
         if full_processing:
-            # YOLO-Verarbeitung
             results = model(small_frame)
+
             output_frame = frame.copy()
 
             for result in results:
                 for box in result.boxes:
-                    x1, y1, x2, y2 = map(int, box.xyxy[0] / RESIZE_FACTOR)
-                    conf = box.conf[0].item()
-                    cls = int(box.cls[0].item())
-
-                    if cls == 0 and conf > 0.4:  # Kennzeichen
+                    if box.cls[0].item() == 0 and box.conf[0].item() > 0.4:
+                        x1, y1, x2, y2 = map(int, box.xyxy[0] / RESIZE_FACTOR)
                         license_plate = frame[y1:y2, x1:x2]
 
-                        # Preprocessing
                         gray = cv2.cvtColor(license_plate, cv2.COLOR_BGR2GRAY)
                         gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
-                        # OCR mit EasyOCR
-                        result = reader.readtext(gray)
+                        result = easyocr_reader.readtext(gray)
 
-                        for (_, text, prob) in result:
+                        cv2.rectangle(output_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+                        for (bbox, text, prob) in result:
                             if prob > 0.9:
-                                text_gesamt = " ".join([text for (_, text, _) in result])
-                                prob_text = filter_uppercase_and_numbers(text_gesamt)
-
-                                # Zeichnen auf das Frame
-                                cv2.rectangle(output_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                                cv2.putText(output_frame, prob_text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
-                                            (0, 255, 0), 2)
+                                if prob > 0.9:
+                                    text_gesamt = " ".join([text for (_, text, _) in result])
+                                    prob_text = filter_uppercase_and_numbers(text_gesamt)
+                                    cv2.putText(output_frame, prob_text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
             processed_frame = output_frame
+        else:
+            if processed_frame is None:
+                processed_frame = frame
 
-        # Zwischenspeichern des Frames
-        if not output_queue.full():
-            output_queue.put(processed_frame)
-
-
-def display_frames():
-    """Thread-Funktion zur Anzeige der Frames"""
-    global running
-
-    while running:
-        if not output_queue.empty():
-            frame = output_queue.get()
-            cv2.imshow("Kennzeichen-Erkennung", frame)
-
-        # Beenden mit 'q'
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            running = False
-
-    cv2.destroyAllWindows()
-
-
-# Threads initialisieren
 capture_thread = threading.Thread(target=capture_video)
 process_thread = threading.Thread(target=process_frames)
-display_thread = threading.Thread(target=display_frames)
 
-# Threads starten
 capture_thread.start()
 process_thread.start()
-display_thread.start()
 
-# Warten auf Abschluss der Threads
+# Hauptschleife für die Anzeige
+while running:
+    if processed_frame is not None:
+        cv2.imshow('Object Detection', processed_frame)
+
+    # Beenden mit 'q'
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        running = False
+
+# Aufräumen
 capture_thread.join()
 process_thread.join()
-display_thread.join()
+cv2.destroyAllWindows()
