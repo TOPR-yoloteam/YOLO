@@ -12,7 +12,7 @@ os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
 print(os.getcwd())
 
 #lade Model
-model = YOLO("src/Kennzeichenerkennung_Sero/test/license_plate_detector.pt")
+model = YOLO("src/license_plate_recognition/models/licence_plate_yolov5.pt")
 #Kamera init
 cap = cv2.VideoCapture(0)
 #easyOCR reader mit englischer sprache/Buchstaben
