@@ -13,7 +13,8 @@ PROCESS_EVERY_N_FRAMES = 5  # Nur jeden N-ten Frame vollständig verarbeiten
 MAX_QUEUE_SIZE = 5  # Maximale Größe der Frame-Queue
 
 # Globale Variablen
-os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
+#os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
+os.chdir("/home/talmva/workspace/YOLO/")
 model = YOLO("src/license_plate_recognition/models/license_plate_detector_ncnn_model")
 reader = easyocr.Reader(['en'])
 
