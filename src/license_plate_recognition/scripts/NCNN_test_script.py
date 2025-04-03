@@ -1,3 +1,5 @@
+import time
+
 import cv2
 from ultralytics import YOLO
 import os
@@ -14,7 +16,14 @@ model = YOLO("src/license_plate_recognition/models/licence_plate_yolov5_ncnn_mod
 
 # Open the webcam (0 is typically the default webcam)
 cap = cv2.VideoCapture(0)
-prev_tick = cv2.getTickCount()
+
+cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 224)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 224)
+cap.set(cv2.CAP_PROP_FPS, 36)
+
+frame_count = 0
+start_time = time.time()
 
 # Check if the capture device is opened successfully
 if not cap.isOpened():
@@ -35,10 +44,13 @@ while True:
     # Run inference with the YOLO model
     results = model(frame)
 
-    current_tick = cv2.getTickCount()
-    fps = cv2.getTickFrequency() / (current_tick - prev_tick)
-    prev_tick = current_tick
-    cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+    # Calculate FPS
+    frame_count += 1
+    elapsed_time = time.time() - start_time
+    fps = frame_count / elapsed_time if elapsed_time > 0 else 0
+
+    # Display FPS on the frame
+    cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
     # Draw bounding boxes on the frame
     for result in results:
