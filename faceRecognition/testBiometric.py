@@ -17,7 +17,7 @@ mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(refine_landmarks=True)  # refine_landmarks enables iris tracking
 mp_drawing = mp.solutions.drawing_utils
 
-# (based on Mediapipe documentation)
+# based on Mediapipe documentation -> https://storage.googleapis.com/mediapipe-assets/documentation/mediapipe_face_landmark_fullsize.png
 # Landmark indices for left and right eyes
 LEFT_EYE_IDX = [33, 160, 158, 133, 153, 144]
 RIGHT_EYE_IDX = [362, 385, 387, 263, 373, 380]
@@ -27,6 +27,13 @@ OUTER_LEFT_EYEBROW_IDX = [70, 63, 105, 66, 107]       # Outer left eyebrow arch
 OUTER_RIGHT_EYEBROW_IDX = [336, 296, 334, 293, 300]   # Outer right eyebrow arch
 INNER_LEFT_EYEBROW_IDX = [46, 53, 52, 65, 55]         # Inner left eyebrow arch
 INNER_RIGHT_EYEBROW_IDX = [285, 295, 282, 283, 276]   # Inner right eyebrow arch
+
+# Landmark indices for lips
+UPPER_OUTER_LIP_IDX = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291]
+UPPER_INNER_LIP_IDX = [78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308]
+LOWER_OUTER_LIP_IDX = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291]
+LOWER_INNER_LIP_IDX = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308]
+
 
 def draw_feature(frame, landmark_list, indices, width, height, color):
     points = []
@@ -54,11 +61,15 @@ while cap.isOpened():
         for face_landmarks in result.multi_face_landmarks:
             # Draw features
             draw_feature(frame, face_landmarks, LEFT_EYE_IDX, width, height, (0, 255, 0))       # Green
-            draw_feature(frame, face_landmarks, RIGHT_EYE_IDX, width, height, (255, 0, 0))      # Blue
+            draw_feature(frame, face_landmarks, RIGHT_EYE_IDX, width, height, (0, 255, 0))      # Green
             draw_feature(frame, face_landmarks, OUTER_LEFT_EYEBROW_IDX, width, height, (0, 255, 255)) # Yellow
-            draw_feature(frame, face_landmarks, OUTER_RIGHT_EYEBROW_IDX, width, height, (255, 0, 255))# Magenta
+            draw_feature(frame, face_landmarks, OUTER_RIGHT_EYEBROW_IDX, width, height, (0, 255, 255))# Yellow
             draw_feature(frame, face_landmarks, INNER_LEFT_EYEBROW_IDX, width, height, (0, 255, 255)) # Yellow
-            draw_feature(frame, face_landmarks, INNER_RIGHT_EYEBROW_IDX, width, height, (255, 0, 255)) # Magenta
+            draw_feature(frame, face_landmarks, INNER_RIGHT_EYEBROW_IDX, width, height, (0, 255, 255)) # Yellow
+            draw_feature(frame, face_landmarks, UPPER_OUTER_LIP_IDX, width, height, (128, 0, 255))  # Violett
+            draw_feature(frame, face_landmarks, UPPER_INNER_LIP_IDX, width, height, (128, 0, 255))  # Violett
+            draw_feature(frame, face_landmarks, LOWER_OUTER_LIP_IDX, width, height, (128, 0, 255))  # Violett
+            draw_feature(frame, face_landmarks, LOWER_INNER_LIP_IDX, width, height, (128, 0, 255))  # Violett
 
     cv2.imshow("Biometric Face Recognition", frame)
     if cv2.waitKey(5) & 0xFF == 27:  # ESC
