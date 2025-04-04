@@ -6,6 +6,10 @@
 
 import cv2
 import mediapipe as mp
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
+from mediapipe.tasks.python import text
+from mediapipe.tasks.python import audio
 import numpy as np
 
 # Initialize Mediapipe Face Mesh
@@ -17,6 +21,19 @@ mp_drawing = mp.solutions.drawing_utils
 LEFT_EYE_IDX = [33, 160, 158, 133, 153, 144]
 RIGHT_EYE_IDX = [362, 385, 387, 263, 373, 380]
 
+# Landmark indices for left and right eyebrows
+LEFT_EYEBROW_IDX = [70, 63, 105, 66, 107]       # Outer left eyebrow arch
+RIGHT_EYEBROW_IDX = [336, 296, 334, 293, 300]   # Outer right eyebrow arch
+
+def draw_feature(frame, landmark_list, indices, width, height, color):
+    points = []
+    for idx in indices:
+        point = landmark_list.landmark[idx]
+        x, y = int(point.x * width), int(point.y * height)
+        points.append((x, y))
+        cv2.circle(frame, (x, y), 2, color, -1)
+    if len(points) > 1:
+        cv2.polylines(frame, [np.array(points, dtype=np.int32)], isClosed=False, color=color, thickness=1)
 
 # Open webcam
 cap = cv2.VideoCapture(0)
@@ -32,34 +49,15 @@ while cap.isOpened():
 
     if result.multi_face_landmarks:
         for face_landmarks in result.multi_face_landmarks:
+            # Draw features
+            draw_feature(frame, face_landmarks, LEFT_EYE_IDX, width, height, (0, 255, 0))       # Green
+            draw_feature(frame, face_landmarks, RIGHT_EYE_IDX, width, height, (255, 0, 0))      # Blue
+            draw_feature(frame, face_landmarks, LEFT_EYEBROW_IDX, width, height, (0, 255, 255)) # Yellow
+            draw_feature(frame, face_landmarks, RIGHT_EYEBROW_IDX, width, height, (255, 0, 255))# Magenta
 
-            # Collect and draw left eye landmarks
-            left_eye_points = []
-            for idx in LEFT_EYE_IDX:
-                point = face_landmarks.landmark[idx]
-                x, y = int(point.x * width), int(point.y * height)
-                left_eye_points.append((x, y))
-                cv2.circle(frame, (x, y), 2, (0, 255, 0), -1)
-
-            # Draw lines between left eye landmarks (closed polygon)
-            cv2.polylines(frame, [np.array(left_eye_points, dtype=np.int32)], isClosed=True, color=(0, 255, 0), thickness=1)
-
-            # Collect and draw right eye landmarks
-            right_eye_points = []
-            for idx in RIGHT_EYE_IDX:
-                point = face_landmarks.landmark[idx]
-                x, y = int(point.x * width), int(point.y * height)
-                right_eye_points.append((x, y))
-                cv2.circle(frame, (x, y), 2, (255, 0, 0), -1)
-
-            # Draw lines between right eye landmarks (closed polygon)
-            cv2.polylines(frame, [np.array(right_eye_points, dtype=np.int32)], isClosed=True, color=(255, 0, 0), thickness=1)
-
-    # Show the result
-    cv2.imshow("Eye Detection with Landmarks", frame)
-    if cv2.waitKey(5) & 0xFF == 27:  # Press ESC to exit
+    cv2.imshow("Biometric Face Recognition", frame)
+    if cv2.waitKey(5) & 0xFF == 27:  # ESC
         break
 
-# Release resources
 cap.release()
 cv2.destroyAllWindows()
