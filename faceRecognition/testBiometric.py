@@ -17,13 +17,16 @@ mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(refine_landmarks=True)  # refine_landmarks enables iris tracking
 mp_drawing = mp.solutions.drawing_utils
 
-# Landmark indices for left and right eyes (based on Mediapipe documentation)
+# (based on Mediapipe documentation)
+# Landmark indices for left and right eyes
 LEFT_EYE_IDX = [33, 160, 158, 133, 153, 144]
 RIGHT_EYE_IDX = [362, 385, 387, 263, 373, 380]
 
 # Landmark indices for left and right eyebrows
-LEFT_EYEBROW_IDX = [70, 63, 105, 66, 107]       # Outer left eyebrow arch
-RIGHT_EYEBROW_IDX = [336, 296, 334, 293, 300]   # Outer right eyebrow arch
+OUTER_LEFT_EYEBROW_IDX = [70, 63, 105, 66, 107]       # Outer left eyebrow arch
+OUTER_RIGHT_EYEBROW_IDX = [336, 296, 334, 293, 300]   # Outer right eyebrow arch
+INNER_LEFT_EYEBROW_IDX = [46, 53, 52, 65, 55]         # Inner left eyebrow arch
+INNER_RIGHT_EYEBROW_IDX = [285, 295, 282, 283, 276]   # Inner right eyebrow arch
 
 def draw_feature(frame, landmark_list, indices, width, height, color):
     points = []
@@ -52,8 +55,10 @@ while cap.isOpened():
             # Draw features
             draw_feature(frame, face_landmarks, LEFT_EYE_IDX, width, height, (0, 255, 0))       # Green
             draw_feature(frame, face_landmarks, RIGHT_EYE_IDX, width, height, (255, 0, 0))      # Blue
-            draw_feature(frame, face_landmarks, LEFT_EYEBROW_IDX, width, height, (0, 255, 255)) # Yellow
-            draw_feature(frame, face_landmarks, RIGHT_EYEBROW_IDX, width, height, (255, 0, 255))# Magenta
+            draw_feature(frame, face_landmarks, OUTER_LEFT_EYEBROW_IDX, width, height, (0, 255, 255)) # Yellow
+            draw_feature(frame, face_landmarks, OUTER_RIGHT_EYEBROW_IDX, width, height, (255, 0, 255))# Magenta
+            draw_feature(frame, face_landmarks, INNER_LEFT_EYEBROW_IDX, width, height, (0, 255, 255)) # Yellow
+            draw_feature(frame, face_landmarks, INNER_RIGHT_EYEBROW_IDX, width, height, (255, 0, 255)) # Magenta
 
     cv2.imshow("Biometric Face Recognition", frame)
     if cv2.waitKey(5) & 0xFF == 27:  # ESC
