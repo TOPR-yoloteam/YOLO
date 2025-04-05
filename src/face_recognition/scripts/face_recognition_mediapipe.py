@@ -17,7 +17,7 @@ while cap.isOpened():
     if not success:
         break
 
-    # convert picture in RGB (MediaPipe needs it)
+    # convert picture in RGB (MediaPipe needs that)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     # analyse faces
