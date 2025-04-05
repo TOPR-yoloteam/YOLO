@@ -33,8 +33,6 @@ model = YOLO("/YOLO/src/face_recognition/models/yolov11s-face.pt")
 # List of known imgs&videos
 known_faces_dir = [
     'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img',
-    'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img/humanFaces',
-    'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/img/animalFaces',
     'C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/video'
 ]
 known_faces_encodings = []
