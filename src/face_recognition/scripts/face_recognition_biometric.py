@@ -6,10 +6,6 @@
 
 import cv2
 import mediapipe as mp
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
-from mediapipe.tasks.python import text
-from mediapipe.tasks.python import audio
 import numpy as np
 
 #Newest version of numpy is incompatible
