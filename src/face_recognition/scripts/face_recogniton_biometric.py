@@ -12,6 +12,13 @@ from mediapipe.tasks.python import text
 from mediapipe.tasks.python import audio
 import numpy as np
 
+#Newest version of numpy is incompatible
+#mediapipe 0.10.21 requires numpy<2, but you have numpy 2.2.4 which is incompatible.
+#ultralytics 8.3.100 requires numpy<=2.1.1,>=1.23.0, but you have numpy 2.2.4 which is incompatible.
+#numpy==1.26.4
+#python==3.12.9
+
+
 # Initialize Mediapipe Face Mesh
 mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(refine_landmarks=True)  # refine_landmarks enables iris tracking
