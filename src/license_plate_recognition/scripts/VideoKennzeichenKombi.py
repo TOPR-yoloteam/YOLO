@@ -13,7 +13,6 @@ while cap.isOpened():
     if not ret:
         break  # Ende des Videos
 
-
     results = model(frame)
 
     for result in results:
