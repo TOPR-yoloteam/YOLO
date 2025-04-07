@@ -1,5 +1,6 @@
 import cv2
 import time
+import os
 
 # Dauer der Aufnahme in Sekunden
 recording_duration = 10
@@ -82,6 +83,7 @@ while True:
     if current_time - start_time >= frame_counter * frame_interval:
         # Original-Frame ohne Text speichern
         filename = f"frame_{frame_counter}.jpg"
+        os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/src/license_plate_recognition/scripts/output_video_to_images")
         cv2.imwrite(filename, frame)
         print(f"{filename} gespeichert.")
         frame_counter += 1
