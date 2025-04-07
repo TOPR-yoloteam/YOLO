@@ -77,6 +77,9 @@ class RaspberryPiOCRPipeline:
 
         # 2. Schwellenwert anwenden
         _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+        #_, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        #_, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
 
         # Bild speichern (optional)
         if self.save_images:
