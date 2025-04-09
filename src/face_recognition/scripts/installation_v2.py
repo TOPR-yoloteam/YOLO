@@ -1,105 +1,100 @@
 import os
-import sys
 import subprocess
+import sys
 
 
-# === CHECK IF CONDA IS INSTALLED ==================================================
-
-def install_miniconda():
-    print("Miniconda is not installed. Installing Miniconda...")
-
-    # Miniconda download and installation
-    if os.name == "posix":  # Linux/macOS
-        print("Downloading Miniconda for Linux/macOS...")
-        subprocess.run(
-            ["wget", "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh", "-O", "miniconda.sh"])
-        subprocess.run(["bash", "miniconda.sh", "-b", "-p", "/home/user/miniconda"])  # Change path if needed
-        subprocess.run(["rm", "miniconda.sh"])
-        print("Miniconda installed successfully.")
-        subprocess.run(
-            ["source", "/home/user/miniconda/bin/activate"])  # Activate miniconda (you may need to adjust the path)
-    elif os.name == "nt":  # Windows
-        print("Miniconda is not available for installation on Windows in this script.")
-        sys.exit(1)
+# === CHECK IF CONDA IS INSTALLED ===================================================
+def check_conda_installed():
+    try:
+        subprocess.run(["conda", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        print("Conda is already installed.")
+        return True
+    except FileNotFoundError:
+        print("Conda is not installed.")
+        return False
 
 
-# === CHECK IF CONDA IS INSTALLED ==================================================
+# === INSTALL CONDA IF NECESSARY ===================================================
+def install_conda():
+    print("Installing Miniconda...")
+    # Download Miniconda installation script
+    subprocess.run(
+        ["wget", "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh", "-O", "miniconda.sh"])
 
-try:
-    # Try running `conda --version` to check if Conda is installed
-    subprocess.run(["conda", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-    print("Conda is already installed.")
-except subprocess.CalledProcessError:
-    install_miniconda()
+    # Install Miniconda
+    subprocess.run(["bash", "miniconda.sh", "-b", "-p", "$HOME/miniconda"])
 
-# === GENERAL SETUP ==========================================================
-# Create and activate a Miniconda environment for safe package installation
+    # Add Conda to PATH
+    subprocess.run('echo "export PATH=\"$HOME/miniconda/bin:$PATH\"" >> ~/.bashrc', shell=True)
+    subprocess.run("source ~/.bashrc", shell=True)
 
-env_name = "yolo_env"
-# Check if conda environment exists
-env_check_command = ["conda", "env", "list"]
-try:
-    result = subprocess.run(env_check_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    if env_name in result.stdout:
-        print(f"Environment '{env_name}' already exists.")
-    else:
-        print(f"Creating conda environment '{env_name}'...")
-        subprocess.run(["conda", "create", "--name", env_name, "python=3.8", "-y"])  # Choose Python version as required
-        print(f"Conda environment '{env_name}' created.")
-except Exception as e:
-    print(f"Error checking or creating conda environment: {e}")
+    # Check if Conda is now available
+    subprocess.run(["conda", "--version"])
 
-# Activate the conda environment
-activate_command = f"conda activate {env_name}"
 
-print("\nTo activate the conda environment, run:")
-print(f"    {activate_command}\n")
+# === CREATE AND ACTIVATE CONDA ENVIRONMENT ====================================
+def create_conda_env():
+    env_name = "env_yolo"
+    print(f"Creating conda environment '{env_name}'...")
 
-# === LIBRARY CATEGORIES =====================================================
+    # Create Conda environment
+    subprocess.run([f"conda", "create", "--name", env_name, "-y"])
 
-# General purpose libraries
-general_libraries = [
-    "numpy==1.26.4",  # For mathematical operations
-    "opencv-python",  # For image processing and real-time recognition
-    "matplotlib",  # For visualizing results
-    "pygame",  # For multimedia applications
-]
+    # Activate the environment (this may vary depending on shell)
+    print(f"To activate the conda environment, run:\n    conda activate {env_name}\n")
 
-# License plate recognition libraries
-license_plate_libraries = [
-    "easyocr",  # OCR for license plate text recognition
-    "ultralytics",  # YOLO models for license plate detection
-]
 
-# Face recognition libraries
-face_recognition_libraries = [
-    "mediapipe",  # Face detection and image processing
-    "face_recognition",  # Face recognition using deep learning
-]
+# === INSTALL LIBRARIES USING CONDA ============================================
+def install_libraries(env_name):
+    print("Installing required libraries in the conda environment...")
 
-# Combine all non-built-in libraries into one list
-all_libraries = (
-        [lib for lib in general_libraries] +
-        license_plate_libraries +
-        face_recognition_libraries
-)
+    # Activate the environment
+    subprocess.run([f"conda", "activate", env_name])
 
-# === INSTALLATION ===========================================================
+    # General purpose libraries
+    general_libraries = [
+        "numpy==1.26.4",
+        "opencv-python",
+        "matplotlib",
+        "pygame"
+    ]
 
-print("Installing required libraries into the conda environment...")
+    # License plate recognition libraries
+    license_plate_libraries = [
+        "easyocr",
+        "ultralytics",
+    ]
 
-# Use conda to install dependencies
-try:
+    # Face recognition libraries
+    face_recognition_libraries = [
+        "mediapipe",
+        "face_recognition",
+    ]
+
+    # Combine all libraries into one list
+    all_libraries = general_libraries + license_plate_libraries + face_recognition_libraries
+
+    # Install libraries one by one
     for lib in all_libraries:
-        print(f"Installing {lib} with conda...")
-        subprocess.run(["conda", "install", "-c", "conda-forge", lib, "-y"])
-        print(f"{lib} installed successfully.\n")
+        try:
+            print(f"Installing {lib}...")
+            subprocess.run([f"conda", "install", lib, "-c", "conda-forge", "-y"])
+            print(f"{lib} installed successfully.\n")
+        except Exception as e:
+            print(f"Error installing {lib}: {e}\n")
 
-    # Install dlib and face_recognition with conda (as per requirement)
-    subprocess.run(["conda", "install", "-c", "conda-forge", "dlib", "-y"])
-    subprocess.run(["conda", "install", "-c", "conda-forge", "face_recognition", "-y"])
+    print("All libraries have been installed!")
 
-    print("All installations completed. The system is ready!")
 
-except Exception as e:
-    print(f"Error during installation: {e}")
+# === MAIN SCRIPT ================================================================
+if not check_conda_installed():
+    install_conda()
+
+create_conda_env()
+
+# After creating the environment and activating it, install the libraries
+env_name = "env_yolo"
+install_libraries(env_name)
+
+print("Setup is complete! Now activate your environment using:")
+print(f"    conda activate {env_name}")
