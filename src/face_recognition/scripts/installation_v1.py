@@ -5,7 +5,9 @@ import subprocess
 # === GENERAL SETUP ==========================================================
 # Create and activate a virtual environment for safe package installation
 
-venv_dir = "venv"
+venv_dir = "yolo_env"
+# Activate your environment "yolo_env" with "source .../venv/bin/activate"
+# Your environment is made in your project folder
 
 # Check if venv already exists
 if not os.path.exists(venv_dir):
