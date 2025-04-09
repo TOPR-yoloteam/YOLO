@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 
+
 # === CHECK IF CONDA IS INSTALLED ===================================================
 def check_conda_installed():
     try:
@@ -12,30 +13,26 @@ def check_conda_installed():
         print("Conda is not installed.")
         return False
 
+
 # === INSTALL CONDA IF NECESSARY ===================================================
 def install_conda():
     print("Installing Miniconda...")
+    miniconda_script_url = "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+    miniconda_script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "miniconda.sh")
 
-    # Get the path to the current script directory and build the relative path to miniconda.sh
-    script_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory where the script is located
-    miniconda_script = os.path.join(script_dir, "miniconda.sh")  # Relative path to miniconda.sh
-
-    # Check if the Miniconda installation file exists
-    if not os.path.exists(miniconda_script):
-        print(f"Miniconda installation script not found at {miniconda_script}. Please ensure it is downloaded.")
-        return
+    # Download Miniconda installation script
+    subprocess.run(["wget", miniconda_script_url, "-O", miniconda_script_path])
 
     # Install Miniconda
-    subprocess.run(["bash", miniconda_script, "-b", "-p", "$HOME/miniconda"])
+    subprocess.run(["bash", miniconda_script_path, "-b", "-p", "$HOME/miniconda"])
 
     # Add Conda to PATH
     subprocess.run('echo "export PATH=\"$HOME/miniconda/bin:$PATH\"" >> ~/.bashrc', shell=True)
-
-    # Reload the shell configuration to update PATH
-    subprocess.run("source ~/.bashrc", shell=True, executable="/bin/bash")
+    subprocess.run("source ~/.bashrc", shell=True)
 
     # Check if Conda is now available
     subprocess.run(["conda", "--version"])
+
 
 # === CREATE AND ACTIVATE CONDA ENVIRONMENT ====================================
 def create_conda_env():
@@ -47,6 +44,7 @@ def create_conda_env():
 
     # Activate the environment (this may vary depending on shell)
     print(f"To activate the conda environment, run:\n    conda activate {env_name}\n")
+
 
 # === INSTALL LIBRARIES USING CONDA ============================================
 def install_libraries(env_name):
@@ -88,6 +86,7 @@ def install_libraries(env_name):
             print(f"Error installing {lib}: {e}\n")
 
     print("All libraries have been installed!")
+
 
 # === MAIN SCRIPT ================================================================
 if not check_conda_installed():
