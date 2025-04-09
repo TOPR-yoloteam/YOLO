@@ -3,12 +3,13 @@ import os
 # List of required libraries for face recognition and license plate recognition
 libraries = [
     "face_recognition",  # For face recognition
-    "opencv-python",  # For image processing and real-time recognition
+    "cv2",  # For image processing and real-time recognition
     "numpy",  # Mathematical operations on images/arrays
     "pillow",  # Image processing
     "matplotlib",  # For visualizing results
     "easyocr",  # Optical character recognition (OCR) for license plates
     "mediapipe",  # Image segmentation and processing
+
 ]
 
 # Install each library
