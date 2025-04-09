@@ -31,7 +31,7 @@ general_libraries = [
     #ultralytics 8.3.100 requires numpy<=2.1.1,>=1.23.0, but you have numpy 2.2.4 which is incompatible.
     #numpy==1.26.4
     #python==3.12.9
-    "cv2",              # For image processing and real-time recognition
+    "opencv-python",              # For image processing and real-time recognition
     "matplotlib",     # For visualizing results
     "time",           # Built-in, included for completeness
     "os",             # Built-in, included for completeness
