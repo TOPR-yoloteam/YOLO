@@ -108,7 +108,7 @@ while cap.isOpened():
                 # If both eyes have been closed for more than the fatigue threshold
                 if time.time() - fatigue_time > fatigue_threshold:
                     # Play alarm sound when fatigue is detected
-                    play_sound('C:/Users/Chantal/PycharmProjects/YOLO_Chantal/src/face_recognition/data/audio/alarm_sound.wav')  # Make sure to provide the correct path to the sound file
+                    play_sound('C:/Users/Pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/data/audio/alarm_sound.wav')  # Make sure to provide the correct path to the sound file
 
             else:
                 fatigue_time = 0  # Reset fatigue timer if eyes are open

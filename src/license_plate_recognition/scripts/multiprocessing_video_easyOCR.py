@@ -14,9 +14,9 @@ MAX_QUEUE_SIZE = 5  # Maximale Anzahl von Frames in der Queue
 
 # Globale Variablen
 #os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
-os.chdir("/home/talmva/workspace/YOLO/")
+#os.chdir("/home/talmva/workspace/YOLO/")
 #os.chdir("C:/Users/Valentin.Talmon/PycharmProjects/YOLO/")
-model = YOLO("src/license_plate_recognition/models/license_plate_detector_ncnn_model")
+model = YOLO("C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/license_plate_recognition/models/license_plate_detector_ncnn_model")
 easyocr_reader = easyocr.Reader(['en'])
 
 frame_queue = Queue(maxsize=MAX_QUEUE_SIZE)
