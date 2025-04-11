@@ -100,15 +100,12 @@ def read_text(images):
         counter = 0
         # Iterate through the OCR results and draw bounding boxes on the detected text
         for (bbox, text, prob) in result:
-            if counter > 0:
-                (top_left, top_right, bottom_right, bottom_left) = bbox
-                top_left = tuple(map(int, top_left))
-                bottom_right = tuple(map(int, bottom_right))
-
-                prob_text = filter_uppercase_and_numbers(text)
-                print(f"Text: {prob_text}, Probability: {prob}")
-                cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
-            counter+=1
+            (top_left, top_right, bottom_right, bottom_left) = bbox
+            top_left = tuple(map(int, top_left))
+            bottom_right = tuple(map(int, bottom_right))
+            prob_text = filter_uppercase_and_numbers(text)
+            print(f"Text: {prob_text}, Probability: {prob}")
+            cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
 
 
             """      
