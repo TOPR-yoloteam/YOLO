@@ -99,14 +99,20 @@ def read_text(images):
         # Convert the grayscale image back to BGR for annotation
         image = cv2.cvtColor(processed_image, cv2.COLOR_GRAY2BGR)
 
+
         # Collect detected text and corresponding probabilities
         texts = []
         probs = []
+
+
+        counter = 0
+        # Iterate through the OCR results and draw bounding boxes on the detected text
 
         for (bbox, text, prob) in result:
             (top_left, top_right, bottom_right, bottom_left) = bbox
             top_left = tuple(map(int, top_left))
             bottom_right = tuple(map(int, bottom_right))
+
 
             # Clean text: keep only uppercase letters and numbers
             filtered_text = filter_uppercase_and_numbers(text)
@@ -115,8 +121,23 @@ def read_text(images):
                 texts.append(filtered_text)
                 probs.append(round(prob, 2))  # Round for cleaner output
                 # Draw bounding box around detected text region
-                cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
 
+            prob_text = filter_uppercase_and_numbers(text)
+            print(f"Text: {prob_text}, Probability: {prob}")
+            cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
+
+
+            """      
+            # Only annotate results where the probability exceeds a threshold
+            if prob > 0.3:
+                # Filter the detected text to include only valid characters
+                text = filter_uppercase_and_numbers(text)
+                print(f"Text: {text}, Probability: {prob}")
+
+                # Draw a rectangle around the detected text region
+
+                cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
+            """
         # Display the combined result
         if texts:
             combined_text = ' '.join(texts)  # Use ' '.join(texts) if spaces are preferred
