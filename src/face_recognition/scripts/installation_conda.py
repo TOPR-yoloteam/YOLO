@@ -23,11 +23,15 @@ def install_conda():
     # Download Miniconda installation script
     subprocess.run(["wget", miniconda_script_url, "-O", miniconda_script_path])
 
+    # Resolve the Home directory correctly
+    home_dir = os.path.expanduser("~")
+    miniconda_install_path = f"{home_dir}/miniconda"
+
     # Install Miniconda
-    subprocess.run(["bash", miniconda_script_path, "-b", "-p", "$HOME/miniconda"])
+    subprocess.run(["bash", miniconda_script_path, "-b", "-p", miniconda_install_path])
 
     # Add Conda to PATH
-    subprocess.run('echo "export PATH=\"$HOME/miniconda/bin:$PATH\"" >> ~/.bashrc', shell=True)
+    subprocess.run(f'echo "export PATH=\"{miniconda_install_path}/bin:$PATH\"" >> ~/.bashrc', shell=True)
     subprocess.run("source ~/.bashrc", shell=True)
 
     # Check if Conda is now available
@@ -41,9 +45,6 @@ def create_conda_env():
 
     # Create Conda environment
     subprocess.run([f"conda", "create", "--name", env_name, "-y"])
-
-    # Activate the environment (this may vary depending on shell)
-    print(f"To activate the conda environment, run:\n    conda activate {env_name}\n")
 
 
 # === INSTALL LIBRARIES USING CONDA ============================================
