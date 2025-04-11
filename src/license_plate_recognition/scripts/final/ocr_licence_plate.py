@@ -45,8 +45,8 @@ def read_text(images):
         processed_image = process_image(image)
 
         # Perform OCR using EasyOCR
-        result = reader.readtext(image)
-        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+        result = reader.readtext(processed_image)
+        image = cv2.cvtColor(processed_image, cv2.COLOR_GRAY2BGR)
 
         # Draw bounding boxes and text on the original image
         for (bbox, text, prob) in result:
