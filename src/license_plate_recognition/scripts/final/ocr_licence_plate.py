@@ -1,10 +1,12 @@
+import re
+
 import easyocr
 import cv2
 import os
 
 
 def get_images():
-    image_folder = "data/detected_plates"
+    image_folder = "data/detected_plates/license_plates"
     images = [os.path.join(image_folder, file) for file in os.listdir(image_folder) if file.endswith(".png")]
     return images
 
@@ -13,14 +15,19 @@ def process_image(image):
     # Convert to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # Apply binary thresholding
-    gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-    return gray
+    thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+    return thresh
 
 
 def save_image(image_name, image):
     output_folder = "data/ocr_images"
     output_path = os.path.join(output_folder, image_name)
     cv2.imwrite(output_path, image)
+
+
+def filter_uppercase_and_numbers(input_string):
+    result = re.sub(r"[^A-Z0-9\s]", "", input_string)
+    return result
 
 
 def read_text(images):
@@ -34,7 +41,7 @@ def read_text(images):
             continue
 
         # Process the image for OCR
-        processed_image = process_image(file)
+        processed_image = process_image(image)
 
         # Perform OCR using EasyOCR
         result = reader.readtext(processed_image)
@@ -44,8 +51,11 @@ def read_text(images):
             (top_left, top_right, bottom_right, bottom_left) = bbox
             top_left = tuple(map(int, top_left))
             bottom_right = tuple(map(int, bottom_right))
-            cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
-            cv2.putText(image, text, (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+            text = filter_uppercase_and_numbers(text)
+            print(f"Text: {text}, Probability: {prob}")
+
+            #cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
+            #cv2.putText(image, text, (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
         # Save both the processed image for verification and OCR-ed image if needed
         save_image(os.path.basename(file), processed_image)
