@@ -23,9 +23,9 @@ def install_conda():
     # Download Miniconda installation script
     subprocess.run(["wget", miniconda_script_url, "-O", miniconda_script_path])
 
-    # Resolve the Home directory correctly
-    home_dir = os.path.expanduser("~")
-    miniconda_install_path = f"{home_dir}/miniconda"
+    # Set the installation path to the YOLO project folder
+    yolo_dir = os.path.dirname(os.path.realpath(__file__))  # Use the current folder of the YOLO project
+    miniconda_install_path = os.path.join(yolo_dir, "miniconda")
 
     # Install Miniconda
     subprocess.run(["bash", miniconda_script_path, "-b", "-p", miniconda_install_path])
