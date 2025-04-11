@@ -52,8 +52,9 @@ def read_text(images):
             top_left = tuple(map(int, top_left))
             bottom_right = tuple(map(int, bottom_right))
             if prob > 0.5:
-                text = filter_uppercase_and_numbers(text)
-                print(f"Text: {text}, Probability: {prob}")
+                temp = " ".join([text for (_, text, _) in result])
+                text_gesamt = filter_uppercase_and_numbers(temp)
+                print(f"Text: {text_gesamt}, Probability: {prob}")
 
             #cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
             #cv2.putText(image, text, (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
