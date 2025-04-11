@@ -104,8 +104,8 @@ def read_text(images):
             top_left = tuple(map(int, top_left))
             bottom_right = tuple(map(int, bottom_right))
 
-            text = filter_uppercase_and_numbers(text)
-            print(f"Text: {text}, Probability: {prob}")
+            prob_text = filter_uppercase_and_numbers(text)
+            print(f"Text: {prob_text}, Probability: {prob}")
             cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
 
             """      
