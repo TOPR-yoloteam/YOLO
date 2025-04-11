@@ -16,8 +16,8 @@ def process_image(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # Apply binary thresholding
     #thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-    #thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)[1]
-    thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)[1]
+    #thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
     return thresh
 
 
@@ -47,22 +47,23 @@ def read_text(images):
 
         # Perform OCR using EasyOCR
         result = reader.readtext(processed_image)
+        image = cv2.cvtColor(processed_image, cv2.COLOR_GRAY2BGR)
 
         # Draw bounding boxes and text on the original image
         for (bbox, text, prob) in result:
             (top_left, top_right, bottom_right, bottom_left) = bbox
             top_left = tuple(map(int, top_left))
             bottom_right = tuple(map(int, bottom_right))
-            if prob > 0.5:
-                temp = " ".join([text for (_, text, _) in result])
-                text_gesamt = filter_uppercase_and_numbers(temp)
-                print(f"Text: {text_gesamt}, Probability: {prob}")
+            if prob > 0.3:
+                text = filter_uppercase_and_numbers(text)
+                print(f"Text: {text}, Probability: {prob}")
+                cv2.rectangle(image, top_left, bottom_right, (238,130,238), 2)
+                #cv2.putText(processed_image, text, (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
+                            #0, 255, 0), 2)
 
-            #cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
-            #cv2.putText(image, text, (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
         # Save both the processed image for verification and OCR-ed image if needed
-        save_image(os.path.basename(file), processed_image)
+        save_image(os.path.basename(file), image)
 
 
 if __name__ == "__main__":
