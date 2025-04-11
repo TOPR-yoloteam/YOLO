@@ -117,13 +117,11 @@ def read_text(images):
             # Clean text: keep only uppercase letters and numbers
             filtered_text = filter_uppercase_and_numbers(text)
 
-            if filtered_text:
+            if filtered_text != "":
                 texts.append(filtered_text)
                 probs.append(round(prob, 2))  # Round for cleaner output
                 # Draw bounding box around detected text region
 
-            prob_text = filter_uppercase_and_numbers(text)
-            print(f"Text: {prob_text}, Probability: {prob}")
             cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
 
 
