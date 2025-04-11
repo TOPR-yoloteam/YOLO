@@ -1,4 +1,5 @@
-from ultralytics import YOLO
+hrom ultralytics import YOLO
+
 import os
 
 os.chdir("/YOLO/")
