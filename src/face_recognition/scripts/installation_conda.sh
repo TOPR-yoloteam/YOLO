@@ -50,3 +50,4 @@ echo -e "${GREEN}? Setup abgeschlossen. Conda-Version:${NC}"
 conda --version
 echo -e "${GREEN}Aktuelles Environment:${NC}"
 conda info --envs
+echo -e "${GREEN}Führe Befehl <source ~/.bashr> aus und aktiviere Environment mit <conda activate yolo_env_conda>"
