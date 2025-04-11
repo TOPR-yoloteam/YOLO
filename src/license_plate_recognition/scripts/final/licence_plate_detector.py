@@ -104,7 +104,7 @@ def process_images(model, images):
 # Hauptprogramm: Modell laden und Bilder verarbeiten
 if __name__ == "__main__":
     # YOLO-Modell laden (angepasst für Nummernschilderkennung)
-    model = YOLO("model/license_plate_detector.pt")
+    model = YOLO("model/licence_plate_yolov5_ncnn_model")
 
     # Bilderverzeichnis sicherstellen und Bilder abrufen
     images = get_images()

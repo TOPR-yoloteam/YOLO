@@ -51,8 +51,9 @@ def read_text(images):
             (top_left, top_right, bottom_right, bottom_left) = bbox
             top_left = tuple(map(int, top_left))
             bottom_right = tuple(map(int, bottom_right))
-            text = filter_uppercase_and_numbers(text)
-            print(f"Text: {text}, Probability: {prob}")
+            if prob > 0.5:
+                text = filter_uppercase_and_numbers(text)
+                print(f"Text: {text}, Probability: {prob}")
 
             #cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
             #cv2.putText(image, text, (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
