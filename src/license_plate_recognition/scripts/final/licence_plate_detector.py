@@ -3,17 +3,17 @@ import cv2
 from ultralytics import YOLO
 
 
-# Funktion zum Abrufen der vollständigen Pfade aller Bilder in einem Ordner
+# Function to retrieve full paths of all images in a specified folder
 def get_images(image_folder="data/images", file_extension=".png"):
     """
-    Sammelt alle Bilddateien mit der angegebenen Erweiterung aus einem Ordner.
+    Collects all image files with a specified extension from a folder.
 
     Args:
-        image_folder (str): Pfad zum Ordner mit den Bildern.
-        file_extension (str): Dateierweiterung, nach der gefiltert wird (z. B. ".png").
+        image_folder (str): Path to the folder containing images.
+        file_extension (str): File extension to filter by (e.g., ".png").
 
     Returns:
-        list: Liste der absoluten Pfade aller gültigen Bilddateien.
+        list: A list of absolute paths to all valid image files.
     """
     return [
         os.path.join(image_folder, file)
@@ -22,71 +22,73 @@ def get_images(image_folder="data/images", file_extension=".png"):
     ]
 
 
-# Funktion zum Speichern eines Bildes in einem gewünschten Ordner
+# Function to save an image to a specified folder
 def save_image(image_name, image, subfolder="data/detected_plates"):
     """
-    Speichert ein Bild in einem angegebenen Ordner.
+    Saves an image to the desired folder.
 
     Args:
-        image_name (str): Name der Bilddatei, die gespeichert werden soll.
-        image (np.ndarray): Das Bild (als Numpy-Array), das gespeichert wird.
-        subfolder (str): Zielpfad zum Speichern des Bildes.
+        image_name (str): Name of the image file to save.
+        image (np.ndarray): The image (as a NumPy array) to be saved.
+        subfolder (str): Destination path where the image will be saved.
 
     Returns:
         None
     """
-    # Erstelle den Zielordner, falls er nicht existiert
+    # Ensure the target folder exists, create if necessary
     os.makedirs(subfolder, exist_ok=True)
     output_path = os.path.join(subfolder, image_name)
 
-    # Speichere das Bild
+    # Save the image using OpenCV
     cv2.imwrite(output_path, image)
 
 
-# Hauptfunktion zur Verarbeitung der Bilder und Erkennung der Nummernschilder
+# Main function to process images and detect license plates
 def process_images(model, images):
     """
-    Verarbeitet eine Liste von Bildern: Nummernschilder werden erkannt, extrahiert und gespeichert.
+    Processes a list of images: detects, extracts, and saves license plates found in them.
 
     Args:
-        model (YOLO): Das vortrainierte YOLO-Modell für die Objekterkennung.
-        images (list): Liste von Dateipfaden der Bilder, die bearbeitet werden sollen.
+        model (YOLO): Pre-trained YOLO model for object detection.
+        images (list): List of file paths for the images to process.
 
     Returns:
         None
     """
     for file_path in images:
-        # Lade das Bild mit OpenCV
+        # Load the image using OpenCV
         image = cv2.imread(file_path)
         if image is None:
-            print(f"Fehler: Bild konnte nicht geladen werden: {file_path}. Überspringe...")
-            continue  # Überspringe dieses Bild, falls es nicht geladen werden konnte
+            print(f"Error: Failed to load image: {file_path}. Skipping...")
+            continue
 
-        # Lass das Modell die Erkennung durchführen
+        # Perform detection using the YOLO model
         results = model(file_path)
 
-        plate_counter = 0  # Zähler für mehrere Nummernschilder in einem Bild
+        plate_counter = 0  # Counter for multiple license plates in one image
 
         for result in results:
             for box in result.boxes:
-                # Extrahiere die Bounding-Box-Koordinaten und prüfe das Konfidenzniveau
-                x1, y1, x2, y2 = map(int, box.xyxy[0])  # Koordinaten in Ganzzahlen umwandeln
-                confidence = box.conf[0].item()  # Konfidenzwert des Modells
-                class_id = int(box.cls[0].item())  # Klassen-ID
+                # Extract bounding box coordinates and validate the confidence level
+                x1, y1, x2, y2 = map(int, box.xyxy[0])  # Convert coordinates to integers
+                confidence = box.conf[0].item()  # Confidence score of the prediction
+                class_id = int(box.cls[0].item())  # Class ID of the detection
 
-                if confidence > 0.4 and class_id == 0:  # Überprüfe, ob es sich um ein Nummernschild handelt
-                    # Extrahiere das Nummernschild aus dem Bild
+                if confidence > 0.4 and class_id == 0:  # Check if the object is a license plate
+                    # Extract the license plate region from the image
                     license_plate = image[y1:y2, x1:x2]
 
-                    # Generiere einen eindeutigen Dateinamen für das Nummernschild
+                    # Generate a unique filename for the license plate
                     plate_filename = f"plate_{os.path.splitext(os.path.basename(file_path))[0]}_{plate_counter}.png"
 
-                    # Speichere das extrahierte Nummernschild
-                    save_image(plate_filename, license_plate, subfolder="data/detected_plates/license_plates")
-                    plate_counter += 1  # Zähler inkrementieren
+                    plate_counter += 1  # Increment the counter
 
-                    # Zeichne die Bounding Box und die Beschriftung auf das ursprüngliche Bild
-                    cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)  # Grüne Bounding Box
+                    # Save the extracted license plate
+                    save_image(plate_filename, license_plate, subfolder="data/detected_plates/license_plates")
+
+
+                    # Draw the bounding box and label on the original image
+                    cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)  # Green bounding box
                     cv2.putText(
                         image,
                         f"license_plate {confidence:.2f}",
@@ -96,21 +98,20 @@ def process_images(model, images):
                         (0, 255, 0),
                         2
                     )
-
-        # Speichere das bearbeitete Bild mit Bounding Boxen
+        # Save the annotated image with bounding boxes
         save_image(os.path.basename(file_path), image)
 
 
-# Hauptprogramm: Modell laden und Bilder verarbeiten
+# Main program: Load the model and process the images
 if __name__ == "__main__":
-    # YOLO-Modell laden (angepasst für Nummernschilderkennung)
-    model = YOLO("model/licence_plate_yolov5_ncnn_model")
+    # Load the YOLO model (pre-configured for license plate detection)
+    model = YOLO("model/licence_plate_ncnn_model")
 
-    # Bilderverzeichnis sicherstellen und Bilder abrufen
+    # Ensure the image directory exists and retrieve images
     images = get_images()
 
     if not images:
-        print("Keine Bilder gefunden. Stelle sicher, dass sich Bilder im Verzeichnis 'data/images' befinden.")
+        print("No images were found. Ensure there are images in the 'data/images' directory.")
     else:
-        # Verarbeitung der Bilder
+        # Process the retrieved images
         process_images(model, images)
