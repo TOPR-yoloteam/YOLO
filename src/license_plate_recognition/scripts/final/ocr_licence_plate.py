@@ -79,50 +79,54 @@ def read_text(images):
     The function processes each image, extracts text, and annotates detected text regions.
 
     Args:
-        images (list): A list of file paths representing images to be processed.
+        images (list): A list of image file paths to process.
     """
     # Initialize the EasyOCR reader with English language support
     reader = easyocr.Reader(['en'])
+
     for file in images:
         image = cv2.imread(file)
         if image is None:
             print(f"Error: Unable to read the image {file}. Skipping.")
             continue
 
-        # Preprocess the image for OCR
+        # Preprocess the image: convert to grayscale and apply threshold
         processed_image = process_image(image)
 
-        # Perform OCR using EasyOCR on the processed image
+        # Perform OCR on the processed image
         result = reader.readtext(processed_image)
 
-        # Convert the processed grayscale image back to BGR format for annotation purposes
+        # Convert the grayscale image back to BGR for annotation
         image = cv2.cvtColor(processed_image, cv2.COLOR_GRAY2BGR)
 
-        # Iterate through the OCR results and draw bounding boxes on the detected text
+        # Collect detected text and corresponding probabilities
+        texts = []
+        probs = []
+
         for (bbox, text, prob) in result:
             (top_left, top_right, bottom_right, bottom_left) = bbox
             top_left = tuple(map(int, top_left))
             bottom_right = tuple(map(int, bottom_right))
 
-            text = filter_uppercase_and_numbers(text)
-            print(f"Text: {text}, Probability: {prob}")
-            cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
+            # Clean text: keep only uppercase letters and numbers
+            filtered_text = filter_uppercase_and_numbers(text)
 
-            """      
-            # Only annotate results where the probability exceeds a threshold
-            if prob > 0.3:
-                # Filter the detected text to include only valid characters
-                text = filter_uppercase_and_numbers(text)
-                print(f"Text: {text}, Probability: {prob}")
-
-                # Draw a rectangle around the detected text region
+            if filtered_text:
+                texts.append(filtered_text)
+                probs.append(round(prob, 2))  # Round for cleaner output
+                # Draw bounding box around detected text region
                 cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
-            """
 
+        # Display the combined result
+        if texts:
+            combined_text = ' '.join(texts)  # Use ' '.join(texts) if spaces are preferred
+            print(f"Image: {os.path.basename(file)}")
+            print(f"Text: {combined_text} | Probabilities: {probs}")
+        else:
+            print(f"Image: {os.path.basename(file)} → No valid text detected.")
 
-        # Save the annotated image to the output folder
+        # Save the annotated image
         save_image(os.path.basename(file), image)
-
 
 if __name__ == "__main__":
     """
