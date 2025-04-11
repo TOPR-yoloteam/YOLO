@@ -41,13 +41,13 @@ def read_text(images):
         if image is None:
             print(f"Error: Unable to read the image {file}. Skipping.")
             continue
-
+        image = cv2.imread(file)
         # Process the image for OCR
-        processed_image = process_image(image)
+        #processed_image = process_image(image)
 
         # Perform OCR using EasyOCR
-        result = reader.readtext(processed_image)
-        image = cv2.cvtColor(processed_image, cv2.COLOR_GRAY2BGR)
+        result = reader.readtext(image)
+        #image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
         # Draw bounding boxes and text on the original image
         for (bbox, text, prob) in result:
