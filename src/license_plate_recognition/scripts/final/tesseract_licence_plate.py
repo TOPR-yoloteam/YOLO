@@ -5,8 +5,10 @@ import pytesseract
 import cv2
 import os
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Valentin.Talmon\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
-#pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+
+def configure_tesseract():
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Valentin.Talmon\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
+    #pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 def get_images(image_folder = "data/detected_plates/license_plates", file_extension=".png"):
     """
@@ -43,145 +45,109 @@ def save_image(image_name, image, subfolder="data/ocr_images"):
     cv2.imwrite(output_path, image)
 
 
-def process_image(image):
-    """
-    Process an image by converting it to grayscale and applying a binary threshold.
 
-    Args:
-        image (numpy.ndarray): The input image in BGR (Blue-Green-Red) format.
-
-    Returns:
-        numpy.ndarray: The processed image after applying binary thresholding.
-    """
-    image = cv2.resize(image, (450, 100))
-
-    # Convert the image to grayscale
+def preprocess_image(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    noise = cv2.medianBlur(gray, 13)
-
-    # Apply binary thresholding with a fixed threshold value
-    thresh = cv2.threshold(noise, 150, 255, cv2.THRESH_BINARY)[1]
-
-
-    return thresh
+    gray = cv2.resize(gray, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    gray = cv2.medianBlur(gray, 3)
+    _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
+    return gray, thresh
 
 
+def apply_dilation(thresh):
+    rect_kern = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    return cv2.dilate(thresh, rect_kern, iterations=1)
+
+
+def find_and_sort_contours(dilation):
+    try:
+        contours, _ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    except:
+        _, contours, _ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    return sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0])
+
+
+def extract_text_from_contours(contours, gray, thresh):
+    plate_num = ""
+    total_confidence = 0
+    num_chars = 0
+
+    im2 = gray.copy()
+    height, width = gray.shape
+
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+
+        if height / float(h) > 6:
+            continue
+        ratio = h / float(w)
+        if ratio < 1.5:
+            continue
+        area = h * w
+        if width / float(w) > 15:
+            continue
+        if area < 100:
+            continue
+
+        rect = cv2.rectangle(im2, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        roi = thresh[y - 5:y + h + 5, x - 5:x + w + 5]
+        roi = cv2.bitwise_not(roi)
+        roi = cv2.medianBlur(roi, 5)
+
+        ocr_data = pytesseract.image_to_data(
+            roi,
+            config='-c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 8 --oem 3',
+            output_type=pytesseract.Output.DICT
+        )
+
+        for i, text in enumerate(ocr_data["text"]):
+            if text.strip():
+                plate_num += text.strip()
+                conf = int(ocr_data["conf"][i])
+                if conf > 0:
+                    total_confidence += conf
+                    num_chars += 1
+
+    avg_confidence = total_confidence / num_chars if num_chars > 0 else 0
+    return plate_num, avg_confidence, im2
 
 
 
-def filter_uppercase_and_numbers(input_string):
-    """
-    Filter the input string to retain only uppercase letters, numbers, and whitespace characters.
 
-    Args:
-        input_string (str): The input string to be filtered.
+def get_text(image_path):
 
-    Returns:
-        str: The filtered string with only uppercase letters and numbers.
-    """
-    result = re.sub(r"[^A-Z0-9\s]", "", input_string)
-    return result
-
-
-def read_text(images):
-    """
-    Perform Optical Character Recognition (OCR) on the provided list of images.
-    The function processes each image, extracts text, and annotates detected text regions.
-
-    Args:
-        images (list): A list of image file paths to process.
-    """
-    for file in images:
+    for file in image_path:
         image = cv2.imread(file)
         if image is None:
             print(f"Error: Unable to read the image {file}. Skipping.")
             continue
 
-        # Preprocess the image: convert to grayscale and apply threshold
-        processed_image = process_image(image)
 
-        # Perform OCR on the processed image
-        result = pytesseract.image_to_data(processed_image,config ="--oem 3 --psm 7", output_type=pytesseract.Output.DICT)
+        gray, thresh = preprocess_image(image)
 
-        # Convert the grayscale image back to BGR for annotation
-        image = cv2.cvtColor(processed_image, cv2.COLOR_GRAY2BGR)
+        dilation = apply_dilation(thresh)
 
+        contours = find_and_sort_contours(dilation)
 
-        # Collect detected text and corresponding probabilities
-        texts = []
-        probs = []
-        counter = 0
-        # Iterate through the OCR results and draw bounding boxes on the detected text
-
-        for i in range(len(result["text"])):
-            text = result["text"][i]
-            conf = int(result["conf"][i])
-            if conf > 30:
-                filtered = filter_uppercase_and_numbers(text)
-                if filtered:
-                    texts.append(filtered)
-                    probs.append(conf)
-
-                    x,y,w,h = result["left"][i],result["top"][i],result["width"][i],result["height"][i]
-                    cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,0),2)
+        result, avg_confidence, im2 = extract_text_from_contours(contours, gray, thresh)
 
 
-
-        """
-        for (bbox, text, prob) in result:
-            (top_left, top_right, bottom_right, bottom_left) = bbox
-            top_left = tuple(map(int, top_left))
-            bottom_right = tuple(map(int, bottom_right))
-
-
-            # Clean text: keep only uppercase letters and numbers
-            filtered_text = filter_uppercase_and_numbers(text)
-
-            if filtered_text != "":
-                texts.append(filtered_text)
-                probs.append(round(prob, 2))  # Round for cleaner output
-                # Draw bounding box around detected text region
-
-            cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
-            """
-
-
-
-        """
-        # Only annotate results where the probability exceeds a threshold
-        if prob > 0.3:
-            # Filter the detected text to include only valid characters
-            text = filter_uppercase_and_numbers(text)
-            print(f"Text: {text}, Probability: {prob}")
-
-            # Draw a rectangle around the detected text region
-
-            cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
-        """
         # Display the combined result
-        if texts:
-            combined_text = ' '.join(texts)  # Use ' '.join(texts) if spaces are preferred
+        if result:
             print(f"Image: {os.path.basename(file)}")
-            print(f"Text: {combined_text} | Probabilities: {probs}")
+            print(f"Text: {result} | Probabilities: {avg_confidence}")
         else:
             print(f"Image: {os.path.basename(file)} → No valid text detected.")
 
         # Save the annotated image
-        save_image(os.path.basename(file), image)
+        save_image(os.path.basename(file), im2)
+
+
+def main():
+    configure_tesseract()
+    images = get_images()
+    get_text(images)
 
 if __name__ == "__main__":
-    """
-    Main entry point of the script.
-    The script initializes the output folder, retrieves images, and executes the OCR pipeline.
-    """
-
-    # Ensure the output folder exists, creating it if necessary
-    if not os.path.exists("data/ocr_images"):
-        os.makedirs("data/ocr_images")
-
-    # Retrieve the list of images for processing
-    images = get_images()
-
-    # Execute the OCR pipeline on the retrieved images
-    read_text(images)
+    main()
