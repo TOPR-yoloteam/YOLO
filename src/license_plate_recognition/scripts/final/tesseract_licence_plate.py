@@ -1,4 +1,6 @@
 import re
+
+import numpy as np
 import pytesseract
 import cv2
 import os
@@ -51,17 +53,17 @@ def process_image(image):
     Returns:
         numpy.ndarray: The processed image after applying binary thresholding.
     """
+    image = cv2.resize(image, (450, 100))
+
     # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # Apply binary thresholding with a fixed threshold value
-    #thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)[1]
 
-    thresh = cv2.adaptiveThreshold(
-        gray, 255,
-        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        cv2.THRESH_BINARY,
-        11, 2
-    )
+    noise = cv2.medianBlur(gray, 13)
+
+    # Apply binary thresholding with a fixed threshold value
+    thresh = cv2.threshold(noise, 150, 255, cv2.THRESH_BINARY)[1]
+
+
     return thresh
 
 
