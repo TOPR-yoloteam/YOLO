@@ -49,7 +49,7 @@ def save_image(image_name, image, subfolder="data/ocr_images"):
 def preprocess_image(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = cv2.resize(gray, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
-    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    blur = cv2.GaussianBlur(gray, (11, 11), 0)
     gray = cv2.medianBlur(gray, 3)
     _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
     return gray, thresh
@@ -91,7 +91,13 @@ def extract_text_from_contours(contours, gray, thresh):
             continue
 
         rect = cv2.rectangle(im2, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        roi = thresh[y - 5:y + h + 5, x - 5:x + w + 5]
+        x_start = max(0, x - 5)
+        y_start = max(0, y - 5)
+        x_end = min(width, x + w + 5)
+        y_end = min(height, y + h + 5)
+
+        roi = thresh[y_start:y_end, x_start:x_end]
+
         roi = cv2.bitwise_not(roi)
         roi = cv2.medianBlur(roi, 5)
 
@@ -103,6 +109,11 @@ def extract_text_from_contours(contours, gray, thresh):
 
         for i, text in enumerate(ocr_data["text"]):
             if text.strip():
+                # Safeguard: Check only if plate_num has elements
+                if plate_num and plate_num[-1].isdigit() and text.strip() == "G":
+                    plate_num += "0"
+                    continue
+
                 plate_num += text.strip()
                 conf = int(ocr_data["conf"][i])
                 if conf > 0:

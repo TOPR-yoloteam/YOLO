@@ -74,7 +74,7 @@ def process_images(model, images):
                 confidence = box.conf[0].item()  # Confidence score of the prediction
                 class_id = int(box.cls[0].item())  # Class ID of the detection
 
-                if confidence > 0.3 and class_id == 0:  # Check if the object is a license plate
+                if confidence > 0.4 and class_id == 0:  # Check if the object is a license plate
                     # Extract the license plate region from the image
                     license_plate = image[y1:y2, x1:x2]
 
@@ -105,7 +105,7 @@ def process_images(model, images):
 # Main program: Load the model and process the images
 if __name__ == "__main__":
     # Load the YOLO model (pre-configured for license plate detection)
-    model = YOLO("model/licence_plate_ncnn_model")
+    model = YOLO("model/licence_plate_v11_ncnn_model")
 
     # Ensure the image directory exists and retrieve images
     images = get_images()
