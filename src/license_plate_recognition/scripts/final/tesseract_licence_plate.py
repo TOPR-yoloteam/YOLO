@@ -1,8 +1,10 @@
 import re
-import easyocr
+import pytesseract
 import cv2
 import os
 
+pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Valentin.Talmon\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
+#pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 def get_images(image_folder = "data/detected_plates/license_plates", file_extension=".png"):
     """
@@ -88,9 +90,6 @@ def read_text(images):
     Args:
         images (list): A list of image file paths to process.
     """
-    # Initialize the EasyOCR reader with English language support
-    reader = easyocr.Reader(['en'])
-
     for file in images:
         image = cv2.imread(file)
         if image is None:
@@ -101,7 +100,7 @@ def read_text(images):
         processed_image = process_image(image)
 
         # Perform OCR on the processed image
-        result = reader.readtext(processed_image)
+        result = pytesseract.image_to_data(processed_image,config ="--oem 3 --psm 7", output_type=pytesseract.Output.DICT)
 
         # Convert the grayscale image back to BGR for annotation
         image = cv2.cvtColor(processed_image, cv2.COLOR_GRAY2BGR)
@@ -110,11 +109,24 @@ def read_text(images):
         # Collect detected text and corresponding probabilities
         texts = []
         probs = []
-
-
         counter = 0
         # Iterate through the OCR results and draw bounding boxes on the detected text
 
+        for i in range(len(result["text"])):
+            text = result["text"][i]
+            conf = int(result["conf"][i])
+            if conf > 30:
+                filtered = filter_uppercase_and_numbers(text)
+                if filtered:
+                    texts.append(filtered)
+                    probs.append(conf)
+
+                    x,y,w,h = result["left"][i],result["top"][i],result["width"][i],result["height"][i]
+                    cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,0),2)
+
+
+
+        """
         for (bbox, text, prob) in result:
             (top_left, top_right, bottom_right, bottom_left) = bbox
             top_left = tuple(map(int, top_left))
@@ -130,19 +142,21 @@ def read_text(images):
                 # Draw bounding box around detected text region
 
             cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
-
-
-            """      
-            # Only annotate results where the probability exceeds a threshold
-            if prob > 0.3:
-                # Filter the detected text to include only valid characters
-                text = filter_uppercase_and_numbers(text)
-                print(f"Text: {text}, Probability: {prob}")
-
-                # Draw a rectangle around the detected text region
-
-                cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
             """
+
+
+
+        """
+        # Only annotate results where the probability exceeds a threshold
+        if prob > 0.3:
+            # Filter the detected text to include only valid characters
+            text = filter_uppercase_and_numbers(text)
+            print(f"Text: {text}, Probability: {prob}")
+
+            # Draw a rectangle around the detected text region
+
+            cv2.rectangle(image, top_left, bottom_right, (238, 130, 238), 2)
+        """
         # Display the combined result
         if texts:
             combined_text = ' '.join(texts)  # Use ' '.join(texts) if spaces are preferred
@@ -159,6 +173,7 @@ if __name__ == "__main__":
     Main entry point of the script.
     The script initializes the output folder, retrieves images, and executes the OCR pipeline.
     """
+
     # Ensure the output folder exists, creating it if necessary
     if not os.path.exists("data/ocr_images"):
         os.makedirs("data/ocr_images")
