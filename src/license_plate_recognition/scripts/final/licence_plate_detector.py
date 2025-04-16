@@ -100,7 +100,7 @@ if __name__ == "__main__":
            - Annotate images with bounding boxes and save results.
         4. Handle cases where no images are found.
     """
-    model = YOLO("model/licence_plate_v11_ncnn_model")
+    model = YOLO("model/licence_plate_ncnn_model")
 
     images = get_images()
 

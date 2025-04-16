@@ -66,9 +66,12 @@ def preprocess_image(image):
     """
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = cv2.resize(gray, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
-    blur = cv2.GaussianBlur(gray, (11, 11), 0)
+    #äblur = cv2.GaussianBlur(gray, (3, 3), 0)
+    #blur = cv2.medianBlur(gray, 7)
+    _, thresh = cv2.threshold(gray, 135, 255, cv2.THRESH_BINARY_INV) #hier
     gray = cv2.medianBlur(gray, 3)
-    _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
+
+
     return gray, thresh
 
 
@@ -82,7 +85,7 @@ def apply_dilation(thresh):
     Returns:
         np.ndarray: Dilated binary image.
     """
-    rect_kern = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    rect_kern = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)) #hier
     return cv2.dilate(thresh, rect_kern, iterations=1)
 
 
@@ -143,14 +146,21 @@ def extract_text_from_contours(contours, gray, thresh):
         rect = cv2.rectangle(im2, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
         # Expand the region of interest (ROI) for OCR
-        x_start = max(0, x - 5)
-        y_start = max(0, y - 5)
-        x_end = min(width, x + w + 5)
-        y_end = min(height, y + h + 5)
+        #x_start = max(0, x - 5)
+        #y_start = max(0, y - 5)
+        #x_end = min(width, x + w + 5)
+        #y_end = min(height, y + h + 5)
+        #roi = thresh[y_start:y_end, x_start:x_end]
+        #roi = cv2.bitwise_not(roi)
+        #roi = cv2.medianBlur(roi, 5)
 
-        roi = thresh[y_start:y_end, x_start:x_end]
+        roi = thresh[y - 5:y + h + 5, x - 5:x + w + 5]
         roi = cv2.bitwise_not(roi)
-        roi = cv2.medianBlur(roi, 5)
+        roi = cv2.medianBlur(roi, 5)    #hier
+        roi = cv2.threshold(roi, 135, 255, cv2.THRESH_BINARY_INV)[1]#hier
+        roi = apply_dilation(roi)
+        cv2.imshow("ROI", roi)
+        cv2.waitKey(0)
 
         ocr_data = pytesseract.image_to_data(
             roi,
@@ -196,7 +206,10 @@ def get_text(image_path):
             continue
 
         gray, thresh = preprocess_image(image)
+        cv2.imshow("Thresholded Image", thresh)
         dilation = apply_dilation(thresh)
+        cv2.imshow("Dilated Image", dilation)
+        cv2.waitKey(0)
         contours = find_and_sort_contours(dilation)
         result, avg_confidence, im2 = extract_text_from_contours(contours, gray, thresh)
 
@@ -208,7 +221,8 @@ def get_text(image_path):
 
         # Save the annotated image
         save_image(os.path.basename(file), im2)
-
+        cv2.imshow("Annotated Image", im2)
+        cv2.waitKey(0)
 
 def main():
     """
