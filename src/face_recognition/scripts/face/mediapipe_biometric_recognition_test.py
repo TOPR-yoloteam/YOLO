@@ -37,9 +37,14 @@ class FaceRecognitionSystem:
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
         # Bekannte Gesichtslandmarks und Namen
-        self.known_face_landmarks = []
         self.known_face_names = []
+        self.known_face_landmarks_collection = []  # Liste von Listen für mehrere Landmarks pro Person
         self.load_known_landmarks()
+
+        # Schwellenwerte für Gesichtserkennung
+        self.recognition_threshold = 0.15  # Für sichere Erkennung
+        self.learning_threshold = 0.25     # Höherer Schwellenwert für kontinuierliches Lernen
+        self.max_samples_per_person = 10   # Maximale Anzahl der Samples pro Person
 
         # Face-Click Handling
         self.button_area = []
@@ -50,9 +55,6 @@ class FaceRecognitionSystem:
         self.current_text = ""
         self.selected_face_loc = None
         self.text_entry_active = False
-
-        # Schwellenwert für Gesichtserkennung
-        self.recognition_threshold = 0.15  # Angepasster Schwellenwert
 
         print("Initialisierung abgeschlossen. Drücke 'q' zum Beenden.")
 
@@ -114,7 +116,7 @@ class FaceRecognitionSystem:
 
     def load_known_landmarks(self):
         """Gespeicherte Landmarks laden"""
-        self.known_face_landmarks = []
+        self.known_face_landmarks_collection = []
         self.known_face_names = []
 
         landmarks_file = os.path.join(self.landmarks_dir, "face_landmarks.pkl")
@@ -122,9 +124,9 @@ class FaceRecognitionSystem:
             try:
                 with open(landmarks_file, 'rb') as f:
                     data = pickle.load(f)
-                    self.known_face_landmarks = data.get('landmarks', [])
+                    self.known_face_landmarks_collection = data.get('landmarks_collection', [])
                     self.known_face_names = data.get('names', [])
-                print(f"{len(self.known_face_names)} bekannte Gesichter geladen")
+                print(f"{len(self.known_face_names)} bekannte Personen mit insgesamt {sum(len(landmarks) for landmarks in self.known_face_landmarks_collection)} Landmark-Sets geladen")
             except Exception as e:
                 print(f"Fehler beim Laden der Landmarks: {e}")
                 # Korrupte Datei überschreiben
@@ -136,18 +138,19 @@ class FaceRecognitionSystem:
         """Bekannte Landmarks speichern"""
         landmarks_file = os.path.join(self.landmarks_dir, "face_landmarks.pkl")
         data = {
-            'landmarks': self.known_face_landmarks,
+            'landmarks_collection': self.known_face_landmarks_collection,
             'names': self.known_face_names
         }
         try:
             with open(landmarks_file, 'wb') as f:
                 pickle.dump(data, f)
-            print(f"Landmarks gespeichert: {len(self.known_face_names)} Gesichter")
+            total_landmarks = sum(len(landmarks) for landmarks in self.known_face_landmarks_collection)
+            print(f"Landmarks gespeichert: {len(self.known_face_names)} Personen mit insgesamt {total_landmarks} Landmark-Sets")
         except Exception as e:
             print(f"Fehler beim Speichern der Landmarks: {e}")
 
     def save_face(self, name, face_location):
-        """Gesichtslandmarks mit dem angegebenen Namen speichern (verbessert)"""
+        """Gesichtslandmarks mit dem angegebenen Namen speichern"""
         if not name:
             return False
 
@@ -158,13 +161,15 @@ class FaceRecognitionSystem:
         for landmarks, loc in zip(all_landmarks, all_locations):
             if self._locations_are_close(loc, face_location):
                 if name in self.known_face_names:
+                    # Person existiert bereits, füge neues Landmark-Set hinzu
                     index = self.known_face_names.index(name)
-                    self.known_face_landmarks[index] = landmarks
-                    print(f"Landmarks für bestehenden Namen '{name}' aktualisiert")
+                    self.known_face_landmarks_collection[index].append(landmarks)
+                    print(f"Landmarks für bestehenden Namen '{name}' hinzugefügt")
                 else:
-                    self.known_face_landmarks.append(landmarks)
+                    # Neue Person anlegen
+                    self.known_face_landmarks_collection.append([landmarks])  # Liste mit einem Landmark-Set
                     self.known_face_names.append(name)
-                    print(f"Neue Landmarks für '{name}' hinzugefügt")
+                    print(f"Neue Person '{name}' hinzugefügt")
 
                 self.save_landmarks_data()
                 return True
@@ -178,7 +183,7 @@ class FaceRecognitionSystem:
 
     def compare_landmarks(self, landmarks):
         """Landmarks mit bekannten Gesichtern vergleichen"""
-        if not self.known_face_landmarks or len(self.known_face_landmarks) == 0:
+        if not self.known_face_landmarks_collection or len(self.known_face_landmarks_collection) == 0:
             return "Unbekannt", False, 0
 
         if landmarks is None or len(landmarks) == 0:
@@ -187,20 +192,23 @@ class FaceRecognitionSystem:
         # Euklidischer Abstand zwischen Landmarks berechnen
         min_distance = float('inf')
         best_match_index = -1
+        best_match_landmark_index = -1
 
-        # Längenüberprüfung für konsistente Vergleiche
-        for i, known_landmarks in enumerate(self.known_face_landmarks):
-            if len(known_landmarks) != len(landmarks):
-                print(
-                    f"Warnung: Unterschiedliche Landmark-Längen - Bekannt: {len(known_landmarks)}, Aktuell: {len(landmarks)}")
-                continue
+        # Für jede bekannte Person
+        for i, person_landmarks_list in enumerate(self.known_face_landmarks_collection):
+            # Für jedes Landmark-Set dieser Person
+            for j, known_landmarks in enumerate(person_landmarks_list):
+                if len(known_landmarks) != len(landmarks):
+                    print(f"Warnung: Unterschiedliche Landmark-Längen - Bekannt: {len(known_landmarks)}, Aktuell: {len(landmarks)}")
+                    continue
 
-            # Euklidischen Abstand berechnen
-            distance = np.linalg.norm(landmarks - known_landmarks)
+                # Euklidischen Abstand berechnen
+                distance = np.linalg.norm(landmarks - known_landmarks)
 
-            if distance < min_distance:
-                min_distance = distance
-                best_match_index = i
+                if distance < min_distance:
+                    min_distance = distance
+                    best_match_index = i
+                    best_match_landmark_index = j
 
         if best_match_index == -1:
             return "Unbekannt", False, 0
@@ -211,8 +219,37 @@ class FaceRecognitionSystem:
         # Vergleich mit Schwellenwert
         if min_distance < self.recognition_threshold:
             return self.known_face_names[best_match_index], True, confidence
+        elif min_distance < self.learning_threshold:
+            # Gesicht mit geringerer Sicherheit erkannt, aber genug für kontinuierliches Lernen
+            return self.known_face_names[best_match_index], True, confidence
         else:
             return "Unbekannt", False, confidence
+
+    def add_landmark_to_person(self, name, landmarks):
+        """Fügt ein neues Landmark-Set zu einer bereits bekannten Person hinzu"""
+        if name in self.known_face_names:
+            person_index = self.known_face_names.index(name)
+            landmarks_list = self.known_face_landmarks_collection[person_index]
+            
+            # Überprüfen, ob wir nicht zu viele Samples für diese Person haben
+            if len(landmarks_list) < self.max_samples_per_person:
+                # Prüfen, ob das Landmark-Set nicht zu ähnlich zu einem bereits vorhandenen ist
+                is_too_similar = False
+                for existing_landmark in landmarks_list:
+                    if len(existing_landmark) == len(landmarks):
+                        similarity = np.linalg.norm(landmarks - existing_landmark)
+                        if similarity < 0.05:  # Sehr ähnlich zu einem bestehenden Sample
+                            is_too_similar = True
+                            break
+                
+                if not is_too_similar:
+                    # Landmark hinzufügen und Daten speichern
+                    landmarks_list.append(landmarks)
+                    print(f"Neues Landmark-Set für '{name}' automatisch hinzugefügt (jetzt {len(landmarks_list)})")
+                    self.save_landmarks_data()
+                    return True
+        
+        return False
 
     def mouse_callback(self, event, x, y, flags, param):
         """Mausklicks auf den 'Learn Face'-Button behandeln"""
@@ -251,6 +288,11 @@ class FaceRecognitionSystem:
 
             # Gesicht erkennen
             name, is_known_face, confidence = self.compare_landmarks(landmarks)
+
+            # Kontinuierliches Lernen: Wenn Gesicht erkannt wurde und Konfidenz nicht perfekt ist
+            if is_known_face and 0.5 < confidence < 0.95:
+                # Automatisch neues Landmark-Set hinzufügen für dieses Gesicht
+                self.add_landmark_to_person(name, landmarks)
 
             # Rahmen um das Gesicht zeichnen
             color = (0, 255, 0) if is_known_face else (0, 0, 255)  # Grün für erkannt, Rot für unbekannt
