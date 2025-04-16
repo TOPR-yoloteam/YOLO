@@ -1,0 +1,17 @@
+Aktive DHCP-Leases
+Hostname	IPv4 Adresse	MAC-Adresse	Verbleibende Gültigkeit	Statische Reservierung
+
+pipaula (pipaula.lan)	192.168.1.109	DC:A6:32:CB:B7:5E	6d 23h 59m 31s	Statisch setzen
+pi5-face (pi5-face.lan)	192.168.1.200	2C:CF:67:E4:CD:7B	6d 23h 57m 47s	Statisch setzen
+pi5-license (pi5-license.lan)	192.168.1.126	2C:CF:67:E4:CC:F8	6d 23h 30m 11s	Statisch setzen
+raspberrypi (raspberrypi.lan)	192.168.1.189	2C:CF:67:EF:06:87	6d 23h 58m 24s	Statisch setzen
+PI (PI.lan)	192.168.1.100	80:2B:F9:06:C9:6B	6d 23h 40m 45s	Statisch setzen
+
+MBP-von-Jan (MBP-von-Jan.lan)	192.168.1.161	80:A9:97:0C:34:3F	6d 23h 59m 3s	Statisch setzen
+Watch (Watch.lan)	192.168.1.137	FA:51:C5:22:75:6A	6d 23h 57m 15s	Statisch setzen
+iPad (iPad.lan)	192.168.1.122	CA:62:42:61:0A:9F	6d 23h 57m 14s	Statisch setzen
+iPhone (iPhone.lan)	192.168.1.179	4E:63:E8:15:34:81	6d 23h 57m 2s	Statisch setzen
+BWLP24OF1 (BWLP24OF1.lan)	192.168.1.205	E8:C8:29:25:F7:F6	6d 23h 56m 10s	Statisch setzen
+-	192.168.1.139	FA:9F:D0:62:E9:B9	6d 23h 39m 47s	Statisch setzen
+DESKTOP-1P3MO7H (DESKTOP-1P3MO7H.lan)	192.168.1.157	E0:0A:F6:51:7B:49	6d 23h 31m 28s	Statisch setzen
+

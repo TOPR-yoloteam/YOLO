@@ -15,8 +15,7 @@ from ultralytics import YOLO
 import face_recognition
 
 # OpenCV needs to be installed with
-# conda install -c conda-forge opencv
-# Ultralytics needs to be installed with
+# conda install with
 # pip install ultralytics
 
 # face_recognition needs to be installed with
