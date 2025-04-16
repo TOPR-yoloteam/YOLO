@@ -66,11 +66,10 @@ def preprocess_image(image):
     """
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = cv2.resize(gray, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
-    #äblur = cv2.GaussianBlur(gray, (3, 3), 0)
-    #blur = cv2.medianBlur(gray, 7)
-    _, thresh = cv2.threshold(gray, 135, 255, cv2.THRESH_BINARY_INV) #hier
-    gray = cv2.medianBlur(gray, 3)
-
+    blur = cv2.GaussianBlur(gray, (3, 3), 0)
+    _, thresh = cv2.threshold(blur, 130, 255, cv2.THRESH_BINARY_INV)
+    cv2.imshow("thresh", thresh)
+    cv2.waitKey(0)
 
     return gray, thresh
 
@@ -85,7 +84,7 @@ def apply_dilation(thresh):
     Returns:
         np.ndarray: Dilated binary image.
     """
-    rect_kern = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)) #hier
+    rect_kern = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     return cv2.dilate(thresh, rect_kern, iterations=1)
 
 
@@ -106,7 +105,7 @@ def find_and_sort_contours(dilation):
     return sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
 
-def extract_text_from_contours(contours, gray, thresh):
+def extract_text_from_contours(contours, gray, dialtion):
     """
     Extracts text from the detected contours using Tesseract OCR.
 
@@ -129,6 +128,7 @@ def extract_text_from_contours(contours, gray, thresh):
     height, width = gray.shape
 
     for cnt in contours:
+        roi = None
         x, y, w, h = cv2.boundingRect(cnt)
 
         # Filtering out unwanted contours based on heuristics
@@ -144,23 +144,13 @@ def extract_text_from_contours(contours, gray, thresh):
             continue
 
         rect = cv2.rectangle(im2, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        #Expand the region of interest (ROI) for OCR
+        x_start = max(0, x - 5)
+        y_start = max(0, y - 5)
+        x_end = min(width, x + w + 5)
+        y_end = min(height, y + h + 5)
+        roi = dialtion[y_start:y_end, x_start:x_end]
 
-        # Expand the region of interest (ROI) for OCR
-        #x_start = max(0, x - 5)
-        #y_start = max(0, y - 5)
-        #x_end = min(width, x + w + 5)
-        #y_end = min(height, y + h + 5)
-        #roi = thresh[y_start:y_end, x_start:x_end]
-        #roi = cv2.bitwise_not(roi)
-        #roi = cv2.medianBlur(roi, 5)
-
-        roi = thresh[y - 5:y + h + 5, x - 5:x + w + 5]
-        roi = cv2.bitwise_not(roi)
-        roi = cv2.medianBlur(roi, 5)    #hier
-        roi = cv2.threshold(roi, 135, 255, cv2.THRESH_BINARY_INV)[1]#hier
-        roi = apply_dilation(roi)
-        cv2.imshow("ROI", roi)
-        cv2.waitKey(0)
 
         ocr_data = pytesseract.image_to_data(
             roi,
@@ -206,12 +196,9 @@ def get_text(image_path):
             continue
 
         gray, thresh = preprocess_image(image)
-        cv2.imshow("Thresholded Image", thresh)
         dilation = apply_dilation(thresh)
-        cv2.imshow("Dilated Image", dilation)
-        cv2.waitKey(0)
         contours = find_and_sort_contours(dilation)
-        result, avg_confidence, im2 = extract_text_from_contours(contours, gray, thresh)
+        result, avg_confidence, im2 = extract_text_from_contours(contours, gray, dilation)
 
         if result:
             print(f"Image: {os.path.basename(file)}")
@@ -219,10 +206,7 @@ def get_text(image_path):
         else:
             print(f"Image: {os.path.basename(file)} → No valid text detected.")
 
-        # Save the annotated image
         save_image(os.path.basename(file), im2)
-        cv2.imshow("Annotated Image", im2)
-        cv2.waitKey(0)
 
 def main():
     """
