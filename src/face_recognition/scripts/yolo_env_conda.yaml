@@ -1,0 +1,22 @@
+name: yolo_env_conda
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9
+  - numpy=1.26.4
+  - opencv
+  - matplotlib
+  - pygame
+  - easyocr
+  - ultralytics
+  - mediapipe
+  - face_recognition
+  - pytesseract        # Python-Binding für Tesseract
+  - tesseract          # Die Tesseract-OCR Engine selbst
+  - pip
+  - pip:
+      - torch==1.10.0      # pip-only package example
+      - tensorflow==2.8.0  # additional pip-only package
+
+# Create environment with: conda env create -f yolo_env_conda.yml
+# Activate environment with: conda activate yolo_env_conda
