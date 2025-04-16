@@ -1,12 +1,12 @@
 import cv2
 import mediapipe as mp
 
-# Mediapipe Pose Modul initialisieren
+# Initialize Mediapipe Pose module
 mp_pose = mp.solutions.pose
-pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+pose = mp_pose.Pose(min_detection_confidence=0.7, min_tracking_confidence=0.7)
 mp_drawing = mp.solutions.drawing_utils
 
-# Webcam öffnen
+# Open webcam
 cap = cv2.VideoCapture(0)
 
 while cap.isOpened():
@@ -14,23 +14,23 @@ while cap.isOpened():
     if not ret:
         continue
 
-    # Bild spiegeln, da Webcam-Bild gespiegelt ist
+    # Flip the image horizontally (webcam image is mirrored)
     frame = cv2.flip(frame, 1)
 
-    # Umwandlung in RGB, da Mediapipe RGB benötigt
+    # Convert to RGB (Mediapipe requires RGB input)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    # Pose-Erkennung
+    # Perform pose detection
     results = pose.process(rgb_frame)
 
-    # Wenn Körperlandmarks erkannt wurden, zeichne sie auf das Bild
+    # If body landmarks were detected, draw them on the image
     if results.pose_landmarks:
         mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
-    # Anzeigen des Bildes
-    cv2.imshow("Körperhaltungserkennung", frame)
+    # Display the image
+    cv2.imshow("Pose Detection", frame)
 
-    # Mit 'ESC' beenden
+    # Exit with 'ESC' key
     if cv2.waitKey(1) & 0xFF == 27:
         break
 
