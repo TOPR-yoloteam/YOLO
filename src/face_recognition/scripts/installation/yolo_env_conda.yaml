@@ -9,12 +9,13 @@ dependencies:
   - pygame
   - easyocr
   - ultralytics
-  - mediapipe
+  - dlib
   - face_recognition
   - pytesseract        # Python-Binding für Tesseract
   - tesseract          # Die Tesseract-OCR Engine selbst
   - pip
   - pip:
+      - mediapipe
       - torch==1.10.0      # pip-only package example
       - tensorflow==2.8.0  # additional pip-only package
 
