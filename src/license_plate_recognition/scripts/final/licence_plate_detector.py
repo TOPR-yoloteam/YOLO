@@ -3,7 +3,6 @@ import cv2
 from ultralytics import YOLO
 
 
-# Function to retrieve full paths of all images in a specified folder
 def get_images(image_folder="data/images", file_extension=".png"):
     """
     Collects all image files with a specified extension from a folder.
@@ -22,7 +21,6 @@ def get_images(image_folder="data/images", file_extension=".png"):
     ]
 
 
-# Function to save an image to a specified folder
 def save_image(image_name, image, subfolder="data/detected_plates"):
     """
     Saves an image to the desired folder.
@@ -35,15 +33,12 @@ def save_image(image_name, image, subfolder="data/detected_plates"):
     Returns:
         None
     """
-    # Ensure the target folder exists, create if necessary
     os.makedirs(subfolder, exist_ok=True)
     output_path = os.path.join(subfolder, image_name)
 
-    # Save the image using OpenCV
     cv2.imwrite(output_path, image)
 
 
-# Main function to process images and detect license plates
 def process_images(model, images):
     """
     Processes a list of images: detects, extracts, and saves license plates found in them.
@@ -56,38 +51,31 @@ def process_images(model, images):
         None
     """
     for file_path in images:
-        # Load the image using OpenCV
         image = cv2.imread(file_path)
         if image is None:
             print(f"Error: Failed to load image: {file_path}. Skipping...")
             continue
 
-        # Perform detection using the YOLO model
         results = model(file_path)
 
-        plate_counter = 0  # Counter for multiple license plates in one image
+        plate_counter = 0
 
         for result in results:
             for box in result.boxes:
-                # Extract bounding box coordinates and validate the confidence level
-                x1, y1, x2, y2 = map(int, box.xyxy[0])  # Convert coordinates to integers
-                confidence = box.conf[0].item()  # Confidence score of the prediction
-                class_id = int(box.cls[0].item())  # Class ID of the detection
 
-                if confidence > 0.4 and class_id == 0:  # Check if the object is a license plate
-                    # Extract the license plate region from the image
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                confidence = box.conf[0].item()
+                class_id = int(box.cls[0].item())
+
+                if confidence > 0.4 and class_id == 0:
                     license_plate = image[y1:y2, x1:x2]
 
-                    # Generate a unique filename for the license plate
                     plate_filename = f"plate_{os.path.splitext(os.path.basename(file_path))[0]}_{plate_counter}.png"
 
-                    plate_counter += 1  # Increment the counter
+                    plate_counter += 1
 
-                    # Save the extracted license plate
                     save_image(plate_filename, license_plate, subfolder="data/detected_plates/license_plates")
 
-
-                    # Draw the bounding box and label on the original image
                     cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)  # Green bounding box
                     cv2.putText(
                         image,
@@ -98,20 +86,25 @@ def process_images(model, images):
                         (0, 255, 0),
                         2
                     )
-        # Save the annotated image with bounding boxes
         save_image(os.path.basename(file_path), image)
 
 
-# Main program: Load the model and process the images
 if __name__ == "__main__":
-    # Load the YOLO model (pre-configured for license plate detection)
+    """
+    Entry point of the script.
+
+    Steps:
+        1. Load the YOLO model preconfigured for license plate detection.
+        2. Retrieve images from the specified directory.
+        3. Process the images to detect and extract license plates.
+           - Annotate images with bounding boxes and save results.
+        4. Handle cases where no images are found.
+    """
     model = YOLO("model/licence_plate_v11_ncnn_model")
 
-    # Ensure the image directory exists and retrieve images
     images = get_images()
 
     if not images:
         print("No images were found. Ensure there are images in the 'data/images' directory.")
     else:
-        # Process the retrieved images
         process_images(model, images)
