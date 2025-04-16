@@ -44,7 +44,7 @@ class FaceRecognitionSystem:
         # Thresholds for face recognition
         self.recognition_threshold = 0.15  # For confident recognition
         self.learning_threshold = 0.25     # Higher threshold for continuous learning
-        self.max_samples_per_person = 30   # Erhöht von 10 auf 30 für bessere Lernfähigkeit
+        self.max_samples_per_person = 30   # Increased from 10 to 30 for better learning capability
         
         # Feature weights for different facial regions (eyes are more important for recognition)
         self.feature_weights = self.generate_feature_weights()
@@ -64,10 +64,10 @@ class FaceRecognitionSystem:
         self.selected_face_loc = None
         self.text_entry_active = False
 
-        # Neue Parameter für optimiertes Lernen
-        self.learning_cooldown = {}  # Dictionary um den letzten Lernzeitpunkt zu speichern
-        self.min_learning_interval = 2.0  # Mindestens 2 Sekunden zwischen Landmark-Hinzufügungen
-        self.base_diversity_threshold = 0.1  # Basiswert für Diversitätsschwelle
+        # New parameters for optimized learning
+        self.learning_cooldown = {}  # Dictionary to store the last learning timestamp
+        self.min_learning_interval = 2.0  # Minimum 2 seconds between landmark additions
+        self.base_diversity_threshold = 0.1  # Base value for diversity threshold
         
         print("Initialization complete. Press 'q' to exit.")
 
@@ -343,47 +343,47 @@ class FaceRecognitionSystem:
             person_index = self.known_face_names.index(name)
             landmarks_list = self.known_face_landmarks_collection[person_index]
             
-            # Überprüfen, ob die Abklingzeit noch aktiv ist
+            # Check if cooldown period is still active
             current_time = time.time()
             last_add_time = self.learning_cooldown.get(name, 0)
             time_since_last_add = current_time - last_add_time
             
             if time_since_last_add < self.min_learning_interval:
-                return False  # Cooldown noch aktiv, keine neue Landmark hinzufügen
+                return False  # Cooldown still active, don't add new landmark
                 
-            # Berechne Diversitätsschwellenwert basierend auf bestehender Samplegröße
-            # Je mehr Samples, desto höher muss die Diversität für neue Samples sein
+            # Calculate diversity threshold based on existing sample size
+            # The more samples, the higher the diversity must be for new samples
             landmarks_count = len(landmarks_list)
             dynamic_threshold = self.base_diversity_threshold * (1.0 + (landmarks_count / self.max_samples_per_person))
             
-            # Diversitätsbewertung berechnen
+            # Calculate diversity score
             diversity_score = self._calculate_landmark_diversity(landmarks, landmarks_list)
             
-            # Überprüfe maximale Anzahl von Samples
+            # Check maximum number of samples
             if len(landmarks_list) >= self.max_samples_per_person:
-                # Maximum erreicht, ersetze nur wenn besonders divers
-                high_diversity_threshold = dynamic_threshold * 2.0  # Höhere Schwelle für Ersetzungen
+                # Maximum reached, replace only if especially diverse
+                high_diversity_threshold = dynamic_threshold * 2.0  # Higher threshold for replacements
                 
                 if diversity_score > high_diversity_threshold:
                     least_diverse_idx = self._find_least_diverse_landmark(landmarks_list)
                     if least_diverse_idx is not None:
                         landmarks_list[least_diverse_idx] = landmarks
                         print(f"Replaced least diverse landmark for '{name}' (diversity: {diversity_score:.3f})")
-                        self.learning_cooldown[name] = current_time  # Cooldown aktualisieren
+                        self.learning_cooldown[name] = current_time  # Update cooldown
                         self.save_landmarks_data()
                         return True
                 return False
             
-            # Hinzufügen nur wenn divers genug (höherer Wert = diverser)
+            # Add only if diverse enough (higher value = more diverse)
             if diversity_score > dynamic_threshold:
-                # Landmark hinzufügen und Daten speichern
+                # Add landmark and save data
                 landmarks_list.append(landmarks)
                 print(f"New landmark set added for '{name}' (now {len(landmarks_list)}, diversity: {diversity_score:.3f})")
                 
-                # Cooldown aktualisieren
+                # Update cooldown
                 self.learning_cooldown[name] = current_time
                 
-                # Periodisch auf Ausreißer prüfen und bereinigen
+                # Periodically check for outliers and clean
                 if len(landmarks_list) > 5 and len(landmarks_list) % 5 == 0:
                     self._clean_landmark_outliers(person_index)
                     
@@ -393,7 +393,7 @@ class FaceRecognitionSystem:
         return False
 
     def _find_least_diverse_landmark(self, landmarks_list):
-        """Findet den Landmarkensatz, der am wenigsten zur Diversität beiträgt"""
+        """Find the landmark set that contributes the least to diversity"""
         if len(landmarks_list) <= 1:
             return None
             
@@ -409,36 +409,36 @@ class FaceRecognitionSystem:
         return None
 
     def _calculate_landmark_diversity(self, new_landmark, existing_landmarks):
-        """Verbesserte Berechnung der Diversität einer neuen Landmark im Vergleich zu bestehenden"""
+        """Improved calculation of the diversity of a new landmark compared to existing ones"""
         if not existing_landmarks:
-            return 1.0  # Maximale Diversität wenn keine bestehenden Landmarks
+            return 1.0  # Maximum diversity if no existing landmarks
             
-        # Durchschnitt aller bestehenden Landmarks berechnen
+        # Calculate average of all existing landmarks
         avg_landmark = np.mean(existing_landmarks, axis=0)
         
-        # Berechne durchschnittliche Distanz zwischen bestehenden Landmarks und ihrem Durchschnitt
+        # Calculate average distance between existing landmarks and their average
         existing_distances = [np.linalg.norm(lm - avg_landmark) for lm in existing_landmarks]
         avg_existing_distance = np.mean(existing_distances) if existing_distances else 0
         
-        # Berechne Distanz der neuen Landmark zum Durchschnitt
+        # Calculate distance of the new landmark to the average
         new_distance = np.linalg.norm(new_landmark - avg_landmark)
         
-        # Berechne auch Distanzen zu ALLEN bestehenden Landmarks, nicht nur zum Durchschnitt
-        # Dies hilft bei der Erkennung von wirklich unterschiedlichen Posen/Ausdrücken
+        # Also calculate distances to ALL existing landmarks, not just the average
+        # This helps in detecting truly different poses/expressions
         individual_distances = [np.linalg.norm(new_landmark - lm) for lm in existing_landmarks]
         min_individual_distance = min(individual_distances) if individual_distances else 0
         
-        # Kombinierte Diversitätsbewertung: Berücksichtigt sowohl Distanz zum Durchschnitt als auch
-        # zum nächstgelegenen bestehenden Sample
+        # Combined diversity score: Considers both distance to average and
+        # to the nearest existing sample
         if avg_existing_distance > 0 and min_individual_distance > 0:
             avg_dist_factor = new_distance / avg_existing_distance
-            # Wenn das Sample keinem bestehenden Sample sehr ähnlich ist, erhöhe die Diversitätsbewertung
+            # If the sample is not very similar to any existing sample, increase the diversity score
             individual_factor = min_individual_distance / avg_existing_distance
             
-            # Kombinierte Bewertung: Gewichteter Durchschnitt
+            # Combined score: Weighted average
             diversity = 0.7 * avg_dist_factor + 0.3 * individual_factor
             
-            # Begrenzung auf sinnvollen Bereich
+            # Limit to a reasonable range
             return min(max(diversity, 0), 2.0)
         return 1.0
 
@@ -458,11 +458,11 @@ class FaceRecognitionSystem:
         mean_dist = np.mean(distances)
         std_dist = np.std(distances)
         
-        # Identify outliers (more than 2.5 standard deviations from mean - erhöht von 2.0)
+        # Identify outliers (more than 2.5 standard deviations from mean - increased from 2.0)
         if std_dist > 0:
             outlier_indices = [i for i, d in enumerate(distances) if d > mean_dist + 2.5*std_dist]
             
-            # Maximal 2 Ausreißer pro Durchlauf entfernen
+            # Remove maximum 2 outliers per iteration
             outlier_indices = sorted(outlier_indices, reverse=True)[:2]
             
             # Remove outliers (in reverse order to not mess up indices)
@@ -508,15 +508,15 @@ class FaceRecognitionSystem:
             # Recognize face
             name, is_known_face, confidence = self.compare_landmarks(landmarks)
 
-            # Continuous learning: Verbesserte Strategie für kontinuierliches Lernen
-            # Nur lernen wenn die Erkennung relativ sicher, aber nicht perfekt ist
+            # Continuous learning: Improved strategy for continuous learning
+            # Only learn when recognition is relatively certain, but not perfect
             if is_known_face:
-                # Niedrige Konfidenz: Versuche zu lernen
+                # Low confidence: Try to learn
                 if 0.6 < confidence < 0.95:
                     self.add_landmark_to_person(name, landmarks)
-                # Sehr niedrige Konfidenz: Nur gelegentlich lernen (reduziert falsche Zuordnungen)
+                # Very low confidence: Only learn occasionally (reduces false associations)
                 elif 0.4 < confidence <= 0.6:
-                    # Nur in 30% der Fälle lernen, um Fehler zu reduzieren
+                    # Only learn in 30% of cases to reduce errors
                     if np.random.random() < 0.3:
                         self.add_landmark_to_person(name, landmarks)
 
