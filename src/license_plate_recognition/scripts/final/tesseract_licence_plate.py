@@ -68,8 +68,6 @@ def preprocess_image(image):
     gray = cv2.resize(gray, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
     blur = cv2.GaussianBlur(gray, (3, 3), 0)
     _, thresh = cv2.threshold(blur, 130, 255, cv2.THRESH_BINARY_INV)
-    cv2.imshow("thresh", thresh)
-    cv2.waitKey(0)
 
     return gray, thresh
 
@@ -160,11 +158,6 @@ def extract_text_from_contours(contours, gray, dialtion):
 
         for i, text in enumerate(ocr_data["text"]):
             if text.strip():
-                # Handle specific edge case (e.g., "G" misread as "0")
-                if plate_num and plate_num[-1].isdigit() and text.strip() == "G":
-                    plate_num += "0"
-                    continue
-
                 plate_num += text.strip()
                 conf = int(ocr_data["conf"][i])
                 if conf > 0:
@@ -173,7 +166,7 @@ def extract_text_from_contours(contours, gray, dialtion):
 
     avg_confidence = total_confidence / num_chars if num_chars > 0 else 0
     return plate_num, avg_confidence, im2
-
+#ZUSATZ, das richtuge Ergebnis ausgeben
 
 def get_text(image_path):
     """
@@ -208,21 +201,18 @@ def get_text(image_path):
 
         save_image(os.path.basename(file), im2)
 
-def main():
-    """
-    Entry point of the script.
 
-    - Configures Tesseract.
-    - Collects image paths.
-    - Processes images for license plate text detection.
-
-    Returns:
-        None
+if __name__ == "__main__":
     """
+       Entry point of the script.
+
+       - Configures Tesseract.
+       - Collects image paths.
+       - Processes images for license plate text detection.
+
+       Returns:
+           None
+       """
     configure_tesseract()
     images = get_images()
     get_text(images)
-
-
-if __name__ == "__main__":
-    main()
