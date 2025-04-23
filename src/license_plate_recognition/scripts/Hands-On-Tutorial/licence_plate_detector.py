@@ -4,7 +4,7 @@ from ultralytics import YOLO
 
 
 class LicensePlateDetector:
-    def __init__(self, model_path=""):#TODO
+    def __init__(self, model_path="model/license_plate_detector"):
         """
         Initializes the YOLO model for license plate detection.
 
@@ -56,7 +56,14 @@ class LicensePlateDetector:
         Returns:
             None
         """
-        #TODO
+
+        for file in dir:
+            image = cv2.imread(file)
+            if image is None:
+                print(f"Error: Failed to load image: {file}. Skipping...")
+                continue
+
+            #TODO 1 + 2
 
     def run(self):
         """

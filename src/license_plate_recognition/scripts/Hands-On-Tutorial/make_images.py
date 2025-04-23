@@ -2,6 +2,7 @@ import cv2
 import time
 import os
 
+
 class Image:
     image_counter = 0
 
@@ -21,7 +22,6 @@ class Image:
 
         os.makedirs(subfolder, exist_ok=True)
         output_path = os.path.join(subfolder, image_filename)
-
         print(f"Image saved: {image_filename}")
         cv2.imwrite(output_path, image)
 

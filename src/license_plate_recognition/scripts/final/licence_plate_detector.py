@@ -4,13 +4,15 @@ from ultralytics import YOLO
 
 
 class LicensePlateDetector:
-    def __init__(self, model_path="model/licence_plate_ncnn_model"):
+
+    def __init__(self, model_path="model/license_plate_detector"):
         """
         Initializes the YOLO model for license plate detection.
 
         Args:
             model_path (str): Path to the pre-trained YOLO model.
         """
+        self.plate_counter = 0
         self.model = YOLO(model_path)
 
     def get_images(self, image_folder="data/images", file_extension=".png"):
@@ -63,7 +65,7 @@ class LicensePlateDetector:
                 continue
 
             results = self.model(file_path)
-            plate_counter = 0
+
 
             for result in results:
                 for box in result.boxes:
@@ -74,8 +76,8 @@ class LicensePlateDetector:
                     if confidence > 0.4 and class_id == 0:
                         license_plate = image[y1:y2, x1:x2]
 
-                        plate_filename = f"plate_{os.path.splitext(os.path.basename(file_path))[0]}_{plate_counter}.png"
-                        plate_counter += 1
+                        plate_filename = f"plate_{os.path.splitext(os.path.basename(file_path))[0]}_{self.plate_counter}.png"
+                        self.plate_counter += 1
 
                         self.save_image(plate_filename, license_plate, subfolder="data/detected_plates/license_plates")
 
