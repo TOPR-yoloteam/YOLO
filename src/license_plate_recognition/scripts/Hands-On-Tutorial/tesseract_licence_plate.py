@@ -3,6 +3,8 @@ import pytesseract
 import cv2
 import os
 
+class OCR:
+
 
 def configure_tesseract():
     """
@@ -78,7 +80,6 @@ def apply_dilation(thresh):
         np.ndarray: Dilated binary image.
     """
     #TODO
-
 
 
 def find_and_sort_contours(dilation):
