@@ -1,218 +1,196 @@
+import os
+import cv2
 import numpy as np
 import pytesseract
-import cv2
-import os
 
 
-def configure_tesseract():
-    """
-    Configures the Tesseract-OCR executable path.
-    This is platform-specific and should be set to the correct path for Tesseract-OCR.
-    """
-    pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Valentin.Talmon\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
-    # pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+class LicensePlateOCR:
+    def __init__(self, tesseract_path=r"C:\Users\Valentin.Talmon\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"):
+        """
+        Initializes the OCR pipeline and configures the path to Tesseract executable.
 
+        Args:
+            tesseract_path (str): Path to the Tesseract executable.
+        """
+        pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
-def get_images(image_folder="data/detected_plates/license_plates", file_extension=".png"):
-    """
-    Collects all image files with a specified extension from a folder.
+    def get_images(self, image_folder="data/detected_plates/license_plates", file_extension=".png"):
+        """
+        Collects all image files with a specified extension from a folder.
 
-    Args:
-        image_folder (str): Path to the folder containing images.
-        file_extension (str): File extension to filter by (e.g., ".png").
+        Args:
+            image_folder (str): Path to the folder containing images.
+            file_extension (str): File extension to filter by (e.g., ".png").
 
-    Returns:
-        list: A list of absolute paths to all valid image files.
-    """
-    return [
-        os.path.join(image_folder, file)
-        for file in os.listdir(image_folder)
-        if file.endswith(file_extension)
-    ]
+        Returns:
+            list: A list of absolute paths to all valid image files.
+        """
+        return [
+            os.path.join(image_folder, file)
+            for file in os.listdir(image_folder)
+            if file.endswith(file_extension)
+        ]
 
+    def save_image(self, image_name, image, subfolder="data/ocr_images"):
+        """
+        Saves an image to the specified folder.
 
-def save_image(image_name, image, subfolder="data/ocr_images"):
-    """
-    Saves an image to the specified folder.
+        Args:
+            image_name (str): Name of the image file to save.
+            image (np.ndarray): The image (as a NumPy array) to be saved.
+            subfolder (str): Destination path where the image will be saved.
 
-    Args:
-        image_name (str): Name of the image file to save.
-        image (np.ndarray): The image (as a NumPy array) to be saved.
-        subfolder (str): Destination path where the image will be saved.
+        Returns:
+            None
+        """
+        os.makedirs(subfolder, exist_ok=True)
+        output_path = os.path.join(subfolder, image_name)
+        cv2.imwrite(output_path, image)
 
-    Returns:
-        None
-    """
-    os.makedirs(subfolder, exist_ok=True)
-    output_path = os.path.join(subfolder, image_name)
-    cv2.imwrite(output_path, image)
+    def preprocess_image(self, image):
+        """
+        Processes the input image to prepare it for contour detection and OCR.
 
+        Args:
+            image (np.ndarray): The input image to preprocess.
 
-def preprocess_image(image):
-    """
-    Processes the input image to prepare it for contour detection and OCR.
+        Returns:
+            tuple: A tuple containing the grayscale image and thresholded binary image.
+        """
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.resize(gray, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
+        blur = cv2.GaussianBlur(gray, (3, 3), 0)
+        _, thresh = cv2.threshold(blur, 130, 255, cv2.THRESH_BINARY_INV)
+        return gray, thresh
 
-    Steps include:
-        1. Grayscale conversion.
-        2. Resizing for better OCR performance.
-        3. Various blurring techniques to reduce noise.
-        4. Thresholding for binary image creation.
+    def apply_dilation(self, thresh):
+        """
+        Applies dilation to enhance binary image regions for contour detection.
 
-    Args:
-        image (np.ndarray): The input image to preprocess.
+        Args:
+            thresh (np.ndarray): Thresholded binary image.
 
-    Returns:
-        tuple: A tuple containing the grayscale image and thresholded binary image.
-    """
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    gray = cv2.resize(gray, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
-    blur = cv2.GaussianBlur(gray, (3, 3), 0)
-    _, thresh = cv2.threshold(blur, 130, 255, cv2.THRESH_BINARY_INV)
+        Returns:
+            np.ndarray: Dilated binary image.
+        """
+        rect_kern = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+        return cv2.dilate(thresh, rect_kern, iterations=1)
 
-    return gray, thresh
+    def find_and_sort_contours(self, dilation):
+        """
+        Finds and sorts contours from a dilated binary image.
 
+        Args:
+            dilation (np.ndarray): Dilated binary image.
 
-def apply_dilation(thresh):
-    """
-    Applies dilation to enhance binary image regions for contour detection.
+        Returns:
+            list: A list of contours sorted by their x-coordinate.
+        """
+        try:
+            contours, _ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        except:
+            _, contours, _ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        return sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
-    Args:
-        thresh (np.ndarray): Thresholded binary image.
+    def extract_text_from_contours(self, contours, gray, dilation):
+        """
+        Extracts text from the detected contours using Tesseract OCR.
 
-    Returns:
-        np.ndarray: Dilated binary image.
-    """
-    rect_kern = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-    return cv2.dilate(thresh, rect_kern, iterations=1)
+        Args:
+            contours (list): A list of contours detected in the image.
+            gray (np.ndarray): Grayscale version of the original image.
+            dilation (np.ndarray): Dilated binary image.
 
+        Returns:
+            tuple: Extracted license plate text, the average confidence score, and the annotated image.
+        """
+        plate_num = ""
+        total_confidence = 0
+        num_chars = 0
 
-def find_and_sort_contours(dilation):
-    """
-    Finds and sorts contours from a dilated binary image.
+        im2 = gray.copy()
+        height, width = gray.shape
 
-    Args:
-        dilation (np.ndarray): Dilated binary image.
+        for cnt in contours:
+            x, y, w, h = cv2.boundingRect(cnt)
+            if height / float(h) > 6:
+                continue
+            ratio = h / float(w)
+            if ratio < 1.5:
+                continue
+            area = h * w
+            if width / float(w) > 15:
+                continue
+            if area < 100:
+                continue
 
-    Returns:
-        list: A list of contours sorted by their x-coordinate.
-    """
-    try:
-        contours, _ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    except:
-        _, contours, _ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    return sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0])
+            cv2.rectangle(im2, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
+            x_start = max(0, x - 5)
+            y_start = max(0, y - 5)
+            x_end = min(width, x + w + 5)
+            y_end = min(height, y + h + 5)
+            roi = dilation[y_start:y_end, x_start:x_end]
 
-def extract_text_from_contours(contours, gray, dialtion):
-    """
-    Extracts text from the detected contours using Tesseract OCR.
+            ocr_data = pytesseract.image_to_data(
+                roi,
+                config='-c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 8 --oem 3',
+                output_type=pytesseract.Output.DICT
+            )
 
-    - Filters contours based on specific size, aspect ratio, and area criteria.
-    - For each valid ROI, text and confidence scores are extracted using OCR.
+            for i, text in enumerate(ocr_data["text"]):
+                if text.strip():
+                    plate_num += text.strip()
+                    conf = int(ocr_data["conf"][i])
+                    if conf > 0:
+                        total_confidence += conf
+                        num_chars += 1
 
-    Args:
-        contours (list): A list of contours detected in the image.
-        gray (np.ndarray): Grayscale version of the original image.
-        thresh (np.ndarray): Thresholded binary image.
+        avg_confidence = total_confidence / num_chars if num_chars > 0 else 0
+        return plate_num, avg_confidence, im2
 
-    Returns:
-        tuple: Extracted license plate text, the average confidence score, and the annotated image.
-    """
-    plate_num = ""
-    total_confidence = 0
-    num_chars = 0
+    def get_text(self, image_paths):
+        """
+        Processes each image and extracts license plate text using OCR.
 
-    im2 = gray.copy()
-    height, width = gray.shape
+        Args:
+            image_paths (list): A list of file paths pointing to images.
 
-    for cnt in contours:
-        roi = None
-        x, y, w, h = cv2.boundingRect(cnt)
+        Returns:
+            None
+        """
+        for file in image_paths:
+            image = cv2.imread(file)
+            if image is None:
+                print(f"Error: Unable to read the image {file}. Skipping.")
+                continue
 
-        # Filtering out unwanted contours based on heuristics
-        if height / float(h) > 6:
-            continue
-        ratio = h / float(w)
-        if ratio < 1.5:
-            continue
-        area = h * w
-        if width / float(w) > 15:
-            continue
-        if area < 100:
-            continue
+            gray, thresh = self.preprocess_image(image)
+            dilation = self.apply_dilation(thresh)
+            contours = self.find_and_sort_contours(dilation)
+            result, avg_confidence, im2 = self.extract_text_from_contours(contours, gray, dilation)
 
-        rect = cv2.rectangle(im2, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #Expand the region of interest (ROI) for OCR
-        x_start = max(0, x - 5)
-        y_start = max(0, y - 5)
-        x_end = min(width, x + w + 5)
-        y_end = min(height, y + h + 5)
-        roi = dialtion[y_start:y_end, x_start:x_end]
+            if result:
+                print(f"Image: {os.path.basename(file)}")
+                print(f"Text: {result} | Probabilities: {avg_confidence}")
+            else:
+                print(f"Image: {os.path.basename(file)} → No valid text detected.")
 
+            self.save_image(os.path.basename(file), im2)
 
-        ocr_data = pytesseract.image_to_data(
-            roi,
-            config='-c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 8 --oem 3',
-            output_type=pytesseract.Output.DICT
-        )
+    def run(self):
+        """
+        Entry point to run the OCR pipeline:
+        - Loads image paths
+        - Applies OCR to detect license plate text
 
-        for i, text in enumerate(ocr_data["text"]):
-            if text.strip():
-                plate_num += text.strip()
-                conf = int(ocr_data["conf"][i])
-                if conf > 0:
-                    total_confidence += conf
-                    num_chars += 1
-
-    avg_confidence = total_confidence / num_chars if num_chars > 0 else 0
-    return plate_num, avg_confidence, im2
-#ZUSATZ, das richtuge Ergebnis ausgeben
-
-def get_text(image_path):
-    """
-    Processes each image and extracts license plate text using OCR.
-
-    - Loops through the provided image paths.
-    - Preprocesses each image.
-    - Applies contour detection, text extraction, and displays results.
-
-    Args:
-        image_path (list): A list of file paths pointing to images.
-
-    Returns:
-        None
-    """
-    for file in image_path:
-        image = cv2.imread(file)
-        if image is None:
-            print(f"Error: Unable to read the image {file}. Skipping.")
-            continue
-
-        gray, thresh = preprocess_image(image)
-        dilation = apply_dilation(thresh)
-        contours = find_and_sort_contours(dilation)
-        result, avg_confidence, im2 = extract_text_from_contours(contours, gray, dilation)
-
-        if result:
-            print(f"Image: {os.path.basename(file)}")
-            print(f"Text: {result} | Probabilities: {avg_confidence}")
-        else:
-            print(f"Image: {os.path.basename(file)} → No valid text detected.")
-
-        save_image(os.path.basename(file), im2)
+        Returns:
+            None
+        """
+        images = self.get_images()
+        self.get_text(images)
 
 
 if __name__ == "__main__":
-    """
-       Entry point of the script.
-
-       - Configures Tesseract.
-       - Collects image paths.
-       - Processes images for license plate text detection.
-
-       Returns:
-           None
-       """
-    configure_tesseract()
-    images = get_images()
-    get_text(images)
+    ocr = LicensePlateOCR()
+    ocr.run()
