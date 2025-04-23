@@ -1,3 +1,4 @@
+import os
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -7,11 +8,21 @@ mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1)
 mp_drawing = mp.solutions.drawing_utils
 
-# Load the sunglasses image (with alpha channel)
-glasses = cv2.imread('/YOLO/src/face_recognition/data/img/sunglasses.png', cv2.IMREAD_UNCHANGED)
+# Build absolute path to the sunglasses image relative to this script
+base_dir = os.path.dirname(__file__)
+glasses_path = os.path.abspath(os.path.join(base_dir, '..', '..', 'data', 'img', 'sunglasses.png'))
+glasses = cv2.imread(glasses_path, cv2.IMREAD_UNCHANGED)
+
+# Check if the image was loaded successfully
+if glasses is None:
+    print(f"Error: Could not load image.\nChecked path: {glasses_path}")
+    exit()
+else:
+    print(f"Image loaded successfully: {glasses_path}")
 
 # Start webcam capture
 cap = cv2.VideoCapture(0)
+
 
 while cap.isOpened():
     ret, frame = cap.read()
