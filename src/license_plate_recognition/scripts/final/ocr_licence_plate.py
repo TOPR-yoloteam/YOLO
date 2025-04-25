@@ -92,14 +92,14 @@ class LicensePlateOCR:
             _, contours, _ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         return sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
-    def extract_text_from_contours(self, contours, gray, dilation):
+    def extract_text_from_contours(self, contours, gray, thresh):
         """
         Extracts text from the detected contours using Tesseract OCR.
 
         Args:
             contours (list): A list of contours detected in the image.
             gray (np.ndarray): Grayscale version of the original image.
-            dilation (np.ndarray): Dilated binary image.
+            thresh (np.ndarray): Threshold binary image.
 
         Returns:
             tuple: Extracted license plate text, the average confidence score, and the annotated image.
@@ -130,7 +130,7 @@ class LicensePlateOCR:
             y_start = max(0, y - 5)
             x_end = min(width, x + w + 5)
             y_end = min(height, y + h + 5)
-            roi = dilation[y_start:y_end, x_start:x_end]
+            roi = thresh[y_start:y_end, x_start:x_end]
 
             ocr_data = pytesseract.image_to_data(
                 roi,
@@ -140,6 +140,9 @@ class LicensePlateOCR:
 
             for i, text in enumerate(ocr_data["text"]):
                 if text.strip():
+                    if plate_num and plate_num[-1].isdigit() and text.strip() == "G":
+                        plate_num += "0"
+                        continue
                     plate_num += text.strip()
                     conf = int(ocr_data["conf"][i])
                     if conf > 0:
@@ -168,11 +171,11 @@ class LicensePlateOCR:
             gray, thresh = self.preprocess_image(image)
             dilation = self.apply_dilation(thresh)
             contours = self.find_and_sort_contours(dilation)
-            result, avg_confidence, im2 = self.extract_text_from_contours(contours, gray, dilation)
+            result, avg_confidence, im2 = self.extract_text_from_contours(contours, gray, thresh)
 
             if result:
                 print(f"Image: {os.path.basename(file)}")
-                print(f"Text: {result} | Probabilities: {avg_confidence}")
+                print(f"Text: {result} | Probabilities: {avg_confidence:.2f}")
             else:
                 print(f"Image: {os.path.basename(file)} → No valid text detected.")
 

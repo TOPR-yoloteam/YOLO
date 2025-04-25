@@ -4,7 +4,7 @@ from ultralytics import YOLO
 
 
 class LicensePlateDetector:
-    def __init__(self, model_path="model/license_plate_detector"):
+    def __init__(self, model_path="model/license_plate_detector_ncnn_model"):
         """
         Initializes the YOLO model for license plate detection.
 
@@ -12,8 +12,9 @@ class LicensePlateDetector:
             model_path (str): Path to the pre-trained YOLO model.
         """
         self.model = YOLO(model_path)
+        self.plate_counter = 0
 
-    def get_images(self, image_folder="data/images", file_extension=".png"):
+    def get_images(self, image_folder="data/images", file_extension=[".png", ".jpg", ".jpeg"]):
         """
         Collects all image files with a specified extension from a folder.
 
@@ -27,7 +28,7 @@ class LicensePlateDetector:
         return [
             os.path.join(image_folder, file)
             for file in os.listdir(image_folder)
-            if file.endswith(file_extension)
+            if file.endswith(tuple(file_extension))
         ]
 
     def save_image(self, image_name, image, subfolder="data/detected_plates"):

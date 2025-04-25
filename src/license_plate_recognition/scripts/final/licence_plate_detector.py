@@ -4,18 +4,18 @@ from ultralytics import YOLO
 
 
 class LicensePlateDetector:
-
-    def __init__(self, model_path="model/license_plate_detector"):
+    def __init__(self):
         """
         Initializes the YOLO model for license plate detection.
 
         Args:
             model_path (str): Path to the pre-trained YOLO model.
         """
+        self.model = YOLO("model/license_plate_detector_ncnn_model")
         self.plate_counter = 0
-        self.model = YOLO(model_path)
 
-    def get_images(self, image_folder="data/images", file_extension=".png"):
+
+    def get_images(self, image_folder="data/images", file_extension=[".png", ".jpg", ".jpeg"]):
         """
         Collects all image files with a specified extension from a folder.
 
@@ -29,7 +29,7 @@ class LicensePlateDetector:
         return [
             os.path.join(image_folder, file)
             for file in os.listdir(image_folder)
-            if file.endswith(file_extension)
+            if file.endswith(tuple(file_extension))
         ]
 
     def save_image(self, image_name, image, subfolder="data/detected_plates"):
@@ -48,23 +48,23 @@ class LicensePlateDetector:
         output_path = os.path.join(subfolder, image_name)
         cv2.imwrite(output_path, image)
 
-    def process_images(self, images):
+    def process_images(self, dir):
         """
         Processes a list of images: detects, extracts, and saves license plates found in them.
 
         Args:
-            images (list): List of file paths for the images to process.
+            dir (list): List of file paths for the images to process.
 
         Returns:
             None
         """
-        for file_path in images:
-            image = cv2.imread(file_path)
+        for file in dir:
+            image = cv2.imread(file)
             if image is None:
-                print(f"Error: Failed to load image: {file_path}. Skipping...")
+                print(f"Error: Failed to load image: {file}. Skipping...")
                 continue
 
-            results = self.model(file_path)
+            results = self.model(file)
 
 
             for result in results:
@@ -73,10 +73,10 @@ class LicensePlateDetector:
                     confidence = box.conf[0].item()
                     class_id = int(box.cls[0].item())
 
-                    if confidence > 0.4 and class_id == 0:
+                    if confidence > 0.4 and class_id == 1:
                         license_plate = image[y1:y2, x1:x2]
 
-                        plate_filename = f"plate_{os.path.splitext(os.path.basename(file_path))[0]}_{self.plate_counter}.png"
+                        plate_filename = f"plate_{os.path.splitext(os.path.basename(file))[0]}_{self.plate_counter}.png"
                         self.plate_counter += 1
 
                         self.save_image(plate_filename, license_plate, subfolder="data/detected_plates/license_plates")
@@ -91,7 +91,7 @@ class LicensePlateDetector:
                             (0, 255, 0),
                             2
                         )
-            self.save_image(os.path.basename(file_path), image)
+            self.save_image(os.path.basename(file), image)
 
     def run(self):
         """

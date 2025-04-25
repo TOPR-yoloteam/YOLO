@@ -14,7 +14,7 @@ class LicensePlateOCR:
         """
         pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
-    def get_images(self, image_folder="data/detected_plates/license_plates", file_extension=".png"):
+    def get_images(self, image_folder="data/detected_plates/license_plates", file_extension=[".png", ".jpg", ".jpeg"]):
         """
         Collects all image files with a specified extension from a folder.
 
@@ -28,7 +28,7 @@ class LicensePlateOCR:
         return [
             os.path.join(image_folder, file)
             for file in os.listdir(image_folder)
-            if file.endswith(file_extension)
+            if file.endswith(tuple(file_extension))
         ]
 
     def save_image(self, image_name, image, subfolder="data/ocr_images"):
@@ -69,6 +69,8 @@ class LicensePlateOCR:
         Returns:
             np.ndarray: Dilated binary image.
         """
+
+
         #TODO 1
 
     def find_and_sort_contours(self, dilation):
@@ -87,14 +89,14 @@ class LicensePlateOCR:
             _, contours, _ = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         return sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0])
 
-    def extract_text_from_contours(self, contours, gray, dilation):
+    def extract_text_from_contours(self, contours, gray, thresh):
         """
         Extracts text from the detected contours using Tesseract OCR.
 
         Args:
             contours (list): A list of contours detected in the image.
             gray (np.ndarray): Grayscale version of the original image.
-            dilation (np.ndarray): Dilated binary image.
+            thresh (np.ndarray): Threshold binary image.
 
         Returns:
             tuple: Extracted license plate text, the average confidence score, and the annotated image.
@@ -125,7 +127,7 @@ class LicensePlateOCR:
             y_start = max(0, y - 5)
             x_end = min(width, x + w + 5)
             y_end = min(height, y + h + 5)
-            roi = dilation[y_start:y_end, x_start:x_end]
+            roi = thresh[y_start:y_end, x_start:x_end]
 
             ocr_data = pytesseract.image_to_data(
                 roi,
@@ -135,6 +137,9 @@ class LicensePlateOCR:
 
             for i, text in enumerate(ocr_data["text"]):
                 if text.strip():
+                    if plate_num and plate_num[-1].isdigit() and text.strip() == "G":
+                        plate_num += "0"
+                        continue
                     plate_num += text.strip()
                     conf = int(ocr_data["conf"][i])
                     if conf > 0:
