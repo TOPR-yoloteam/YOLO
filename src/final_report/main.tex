@@ -1,14 +1,115 @@
-\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
+\documentclass[a4paper,12pt]{scrartcl}
+\usepackage[a4paper, left=2cm, right=2cm, top=1.5cm, bottom=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{lmodern}
+\usepackage[colorlinks=true,linkcolor=black]{hyperref}
+\usepackage{csquotes}
+\usepackage{float}
+\usepackage{acronym}
+\usepackage{subfigure}
+\usepackage{tabto}
+\usepackage{setspace}
 
-\title{Abschlussbericht TOPR}
-\author{Chantal Deusch, Jeremy Diem, Jan Gaschler, Serhat Gürel, Paulina Pyczot, Valentin Talmon-l Armée}
-\date{April 2025}
+% Codefarben
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{terminalbgcolor}{HTML}{330033}
+\definecolor{terminalrulecolor}{HTML}{000099}
 
+% Code-Einstellungen
+\lstset{
+	backgroundcolor=\color{terminalbgcolor},
+	basicstyle=\color{white}\fontfamily{qcr}\scriptsize\selectfont,
+	breaklines=true,
+	captionpos=b,
+	commentstyle=\color{mygreen},
+	frame=single,
+	keepspaces=true,
+	keywordstyle=\color{blue},
+	numbers=none,
+	numbersep=5pt,
+    framerule=2pt,
+	numberstyle=\color{mygray}\tiny\selectfont,
+	rulecolor=\color{terminalrulecolor},
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	stepnumber=2,
+	stringstyle=\color{mymauve},
+	tabsize=2
+}
+
+% BibLaTeX
+\usepackage[backend=biber,style=ieee]{biblatex}
+\addbibresource{data/references.bib}
+
+% Meta-Daten
+\newcommand*{\metaLogoPath}{data/thu_logo.png}
+\newcommand*{\metaAuthor}{Chantal Deusch, Jeremy Diem, Jan Gaschler, Serhat Gürel, Valentin Talmon-l'Armée, Paulina Pyczot}
+\newcommand*{\metaSupertitle}{Fakultät Informatik\\INF6}
+\newcommand*{\metaTitle}{Abschlussbericht des teamorientierten Projekts}
+\newcommand*{\metaSubtitle}{TOPR}
+\newcommand*{\metaSupervisor}{Prof. Dr. A. Franz, Prof. Dr. M. Schäffter, S. Schäbel, M. Balser}
+\newcommand*{\metaDate}{Sommersemester 2025}
+\newcommand*{\metaFakultaet}{Fakultät für Informatik} 
+
+% Dokumentstart
 \begin{document}
+\doublespacing
+\pagenumbering{gobble}
 
-\maketitle
+% Titelseite
+\begin{titlepage}
+\begin{center}
+    \includegraphics[width=5cm]{\metaLogoPath}\\[2em]
 
-\section{Introduction}
+    {\Large \metaSupertitle}\\[1em]
+    {\large \metaSubtitle}\\[2em]
+
+    \rule{\textwidth}{.5mm}\\[1em]
+    {\huge \bfseries \metaTitle}\\[1em]
+    \rule{\textwidth}{.5mm}\\[3em]
+
+    \textbf{Bearbeitende:}\\[0.5em]
+    \metaAuthor\\[2em]
+
+    \textbf{\metaFakultaet}\\[1em]
+    \textbf{\metaDate}\\[3em]
+
+    \textbf{Betreuung:}\\[0.5em]
+    \metaSupervisor
+\end{center}
+\end{titlepage}
+
+% Inhaltsverzeichnis
+\newpage
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
+\tableofcontents
+
+% Seitenzahlen ab hier
+\newpage
+\pagenumbering{arabic}
+
+% Inhalt über Include-Dateien
+\include{content/einleitung}
+\include{content/grundlagen}
+\include{content/anforderungen}
+\include{content/methodik}
+\include{content/ergebnis}
+\include{content/diskussion}
+\include{content/ausblick}
+
+% Literaturverzeichnis
+\newpage
+\printbibliography[title={Literaturverzeichnis}]
+
+\include{content/anhang}
 
 \end{document}
