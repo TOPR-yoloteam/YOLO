@@ -1,5 +1,3 @@
-
-
 \section{Theoretische Grundlagen und Stand der Technik}
 
 \subsection{Stand der Technik in der Objekterkennung}
@@ -74,5 +72,48 @@ Da oft mehrere Zellen oder Boxen dasselbe Objekt erkennen, liefert YOLO zunächs
 YOLO wird ständig weiterentwickelt. In diesem Projekt kam hauptsächlich YOLOv8 zum Einsatz. Diese Version stellt einen aktuellen Stand der Technik dar und bietet eine gute Balance aus Erkennungsgenauigkeit und hoher Geschwindigkeit, was für die Analyse von Videoströmen vorteilhaft ist. Sie profitiert von den Architekturoptimierungen und Trainingstechniken früherer Versionen und ist oft einfacher zu verwenden. Die Entwicklung schreitet kontinuierlich voran, wie neuere, von Ultralytics dokumentierte Varianten wie YOLOv11 zeigen, was die Dynamik in diesem Bereich unterstreicht.
 
 \subsection{OCR für Texterkennung}
+
+Optical Character Recognition (OCR) bezeichnet den Prozess der Umwandlung von Bildern, die getippten, gedruckten oder handgeschriebenen Text enthalten, in maschinenlesbaren Text. Im Kontext dieses Projekts ist OCR die Schlüsseltechnologie zur Extraktion der Zeichenfolgen aus detektierten Fahrzeugkennzeichen.
+
+\subsubsection{Typische OCR-Pipeline}
+Ein OCR-System durchläuft typischerweise mehrere Stufen:
+
+\begin{enumerate}
+    \item \textbf{Vorverarbeitung (Preprocessing):} Verbesserung der Bildqualität zur Optimierung der Erkennung. Dies kann Schritte wie Binarisierung (Umwandlung in Schwarz-Weiß), Rauschunterdrückung, Schräglagenkorrektur (Deskewing) und Kontrastanpassung umfassen [Quelle benötigt].
+
+    \item \textbf{Layout-Analyse (oder Segmentierung):} Identifizierung von Textbereichen und deren Struktur. Bei strukturierten Dokumenten wie Kennzeichen kann dies die Segmentierung einzelner Zeichen oder Zeichengruppen umfassen. Bei allgemeineren Texten geht es darum, Absätze, Spalten und Zeilen zu erkennen.
+
+    \item \textbf{Zeichenerkennung (Character Recognition):} Dies ist der Kernschritt, bei dem die segmentierten Zeichen oder Wörter klassifiziert werden. Traditionelle Methoden nutzten Merkmalsextraktion (z.B. topologische Merkmale, Momente) und Klassifikatoren (z.B. SVMs, k-NN). Moderne Ansätze verwenden überwiegend tiefe neuronale Netze, insbesondere CNNs und Recurrent Neural Networks (RNNs), oft in Kombination (CRNN - Convolutional Recurrent Neural Network) [Quelle benötigt - CRNN Paper]. RNNs, speziell LSTMs (Long Short-Term Memory), sind gut geeignet, um sequentielle Informationen in Wörtern oder Zeichenketten zu verarbeiten. Attention-Mechanismen können zusätzlich helfen, relevante Bildbereiche für jedes Zeichen zu fokussieren [Quelle benötigt].
+
+    \item \textbf{Nachverarbeitung (Postprocessing):} Korrektur von Erkennungsfehlern unter Verwendung von Sprachmodellen, Wörterbüchern oder kontextuellen Informationen. Bei Kennzeichen kann dies die Überprüfung auf gültige Formate oder die Nutzung von Prüfsummen (falls vorhanden) beinhalten.
+\end{enumerate}
+
+\subsubsection{Methoden und Werkzeuge}
+Es existieren verschiedene OCR-Engines und Bibliotheken. Eine der bekanntesten Open-Source-Lösungen ist Tesseract OCR, ursprünglich von HP entwickelt und nun von Google weitergeführt. Tesseract verwendet seit Version 4 LSTM-basierte neuronale Netze und bietet eine gute Erkennungsleistung für viele Sprachen und Schriftarten [Quelle: Tesseract Dokumentation/GitHub]. Daneben gibt es kommerzielle Lösungen und spezialisierte Bibliotheken, die oft für spezifische Anwendungsfälle wie die Kennzeichenerkennung optimiert sind.
+
+\subsubsection{Anwendung bei der Kennzeichenerkennung (ANPR/LPR)}
+Automatic Number Plate Recognition (ANPR) oder License Plate Recognition (LPR) ist ein spezialisierter Anwendungsfall von OCR. Die typische Pipeline sieht oft wie folgt aus:
+
+\begin{enumerate}
+    \item \textbf{Kennzeichen-Detektion:} Zunächst wird der Bereich des Kennzeichens im Bild lokalisiert. Hierfür eignen sich Objekterkennungsmodelle wie YOLO (siehe Abschnitt 2.2) hervorragend, die darauf trainiert werden, Kennzeichen als Objektklasse zu erkennen [Quelle benötigt].
+
+    \item \textbf{Zeichensegmentierung:} Innerhalb des detektierten Kennzeichenbereichs werden die einzelnen Zeichen isoliert. Dies kann durch traditionelle Bildverarbeitungsalgorithmen (z.B. Konturanalyse, Projektionsprofile) oder durch spezialisierte neuronale Netze erfolgen.
+
+    \item \textbf{Zeichenerkennung:} Jedes segmentierte Zeichen wird durch ein OCR-Modul klassifiziert.
+\end{enumerate}
+
+Alternativ können End-to-End-Ansätze verwendet werden, die Detektion und Erkennung in einem einzigen Netzwerk kombinieren oder direkt die gesamte Zeichenkette ohne explizite Segmentierung erkennen [Quelle benötigt].
+
+\subsubsection{Herausforderungen}
+Die OCR von Kennzeichen unterliegt spezifischen Herausforderungen wie:
+\begin{itemize}
+    \item variierenden Lichtverhältnissen (Tag/Nacht, Schatten, Blendung),
+    \item unterschiedlichen Kameraperspektiven und -abständen,
+    \item Verschmutzung oder Beschädigung der Kennzeichen,
+    \item verschiedenen Kennzeichenlayouts und Schriftarten (je nach Land/Region),
+    \item Bewegungsunschärfe [Quelle benötigt]
+\end{itemize}
+
+Die Robustheit des OCR-Systems gegenüber diesen Faktoren ist entscheidend für die praktische Anwendbarkeit.
 
 \subsection{Gesichtserkennung mit neuronalen Netzen}
