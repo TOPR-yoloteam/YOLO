@@ -3,6 +3,20 @@ import mediapipe as mp
 import numpy as np
 import time
 import pygame
+import os
+
+# Build absolute path to the sound relative to this script
+base_dir = os.path.dirname(__file__)
+sound_path = os.path.abspath(os.path.join(base_dir, '..', '..', 'data', 'audio', 'alarm_sound.wav'))
+
+# Try to load the sound
+try:
+    sound = pygame.mixer.Sound(sound_path)
+    print(f"Sound loaded successfully: {sound_path}")
+    sound.play()  # Play the sound
+except pygame.error as e:
+    print(f"Error: Could not load sound.\nChecked path: {sound_path}\nReason: {e}")
+    exit()
 
 # Initialize Mediapipe Face Mesh
 mp_face_mesh = mp.solutions.face_mesh
@@ -108,7 +122,7 @@ while cap.isOpened():
                 # If both eyes have been closed for more than the fatigue threshold
                 if time.time() - fatigue_time > fatigue_threshold:
                     # Play alarm sound when fatigue is detected
-                    play_sound('/YOLO/src/face_recognition/data/audio/alarm_sound.wav')  # Make sure to provide the correct path to the sound file
+                    play_sound(sound_path)  # Make sure to provide the correct path to the sound file
 
             else:
                 fatigue_time = 0  # Reset fatigue timer if eyes are open
