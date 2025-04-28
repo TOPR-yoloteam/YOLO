@@ -24,6 +24,7 @@ Im Kontext dieses Projekts wird MediaPipe insbesondere für die Gesichtserkennun
 
 \paragraph{Komponenten der Gesichtsanalyse}
 \subparagraph{Gesichtserkennung}
+
 Die Gesichtserkennung in MediaPipe basiert auf dem BlazeFace-Modell, einem speziell für mobile und eingebettete Geräte optimierten neuronalen Netzwerk. BlazeFace zeichnet sich durch seine hohe Effizienz und geringe Rechenlast aus, was eine schnelle und ressourcenschonende Gesichtserkennung in Echtzeit ermöglicht. Insbesondere auf Geräten mit begrenzter Rechenleistung wie Smartphones. Im Gegensatz zu umfassenderen Gesichtsanalysemodellen konzentriert sich BlazeFace primär auf die Detektion von Gesichtern, ohne dabei detaillierte Gesichtslandmarken zu berücksichtigen. \\
 Es existieren mehrere Varianten von BlazeFace, die jeweils für unterschiedliche Anwendungsbereiche und Kameradistanzen optimiert wurden, wobei alle Versionen auf einem gemeinsamen, effizienten Basismodell aufbauen. Dieses Modell bietet einen ausgewogenen Kompromiss zwischen Genauigkeit und Geschwindigkeit. \\
 Die Variante BlazeFace (short-range) ist für den Einsatz in Nahbereichsszenarien konzipiert, typischerweise bei einer Entfernung von bis zu zwei Metern zur Kamera. Sie eignet sich daher besonders für Selfie-Aufnahmen oder Interaktionen mit der frontseitigen Kamera mobiler Endgeräte. Diese Version ist die leichtgewichtigste und schnellste Ausführung des Modells und wurde explizit auf nahe Gesichter hin optimiert.
@@ -38,6 +39,29 @@ Nach der Vorhersage folgt das Postprocessing, um die endgültigen Erkennungserge
 Durch diesen mehrstufigen Erkennungsprozess kann BlazeFace eine schnelle und präzise Gesichtserkennung durchführen, die sowohl auf mobilen Geräten als auch in Echtzeitanwendungen effektiv eingesetzt werden kann.
 
 \subparagraph{Gesichtspunkterkennung}
+
+\begin{wrapfigure}{r}{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.38\textwidth]{data/mesh_topology.png}
+    \caption{\footnotesize Die vorhergesagte Netztopologie (a) und ihre 3-stufige Catmull-Clark-Unterteilung (b).\newline Quelle: \cite{Kartynnik.2019}}
+\end{wrapfigure}
+
+Bei dem neuronalen Netzwerk von Mediapipe wird jeder Punkt auf einem erkannten 3D-Gesichtsmodell einzeln und unabhängig als eine eigene Landmarke betrachtet. Die Netztopologie besteht aus 468 Punkten, die in festen Quadraten angeordnet sind (siehe Figur 5a). Die Punkte wurden manuell ausgewählt in Übereinstimmung mit den angenommenen Anwendungen (AR-Effekte, virtuelles Make-up, etc.). Bereiche, bei denen man eine höhere Variabilität und eine größere Bedeutung für die menschliche Wahrnehmung sieht, wurden mit einer höheren Punktdichte versehen. Dies ermöglicht den Aufbau einer plausiblen, glatten Oberflächendarstellung z.B. mit Hilfe der Catmull-Clark-Unterteilung.\footnote{Die Catmull-Clark-Unterteilung ist ein rekursiver Algorithmus zur Erzeugung glatter Oberflächen aus polygonalen Netzen. Er fügt neue Punkte und Flächen hinzu und verschiebt bestehende Punkte, um eine glattere Darstellung zu erzielen.} (siehe Figur 5b). \cite{Kartynnik.2019} \\
+Für die Gesichtspunkterkennung mit MediaPipe kommt eine zweistufige ML-Pipeline zum Einsatz. Diese besteht aus einem Gesichtserkennungsnetzwerk, das Gesichter im Bild lokalisiert, und einem Landmarken-Netzwerk, das daraufhin bis zu 468 3D-Punkte innerhalb des Gesichts ermittelt. Diese Punkte repräsentieren wichtige Merkmale des Gesichts, wie Augen, Nase, Mund und Kieferlinie. \cite{mediapipe.docs} \\
+Zunächst wird das Eingabebild vorverarbeitet, ein leichtgewichtiges CNN wie BlazeFace auf das gesamte Bild angewendet, um Bounding Boxes der Gesichter zu ermitteln, und in die Größe 256x256 Pixel skaliert, wie in Abschnitt \textit{4.3.3.2.1 Gesichtserkennung} beschrieben. \\
+Der skalierte Bildausschnitt dient als Eingabe für das neuronale Netz zur Netzvorhersage. In diesem Mesh-Vorhersagenetzwerk wird der Ausschnitt verarbeitet. Dieses Modell gibt einen Vektor von normalisierten 3D-Gesichtspunkt-Koordinaten\footnote{Normalisierte Koordinaten bedeuten hier, dass die Werte in einem Standardbereich (oft zwischen 0 und 1) liegen. Dies erleichtert die Verarbeitung durch das neuronale Netz und macht die Ergebnisse unabhängig von der ursprünglichen Größe des Bildausschnitts.} aus. Die X- und Y-Koordinaten entsprechen den Positionen im 2D-Bildraum und basieren auf den Pixelkoordinaten des Bildes. Die Z-Koordinaten repräsentieren die Tiefe relativ zu einer Referenzebene, die durch den Schwerpunkt des Gesichtsmeshes verläuft. Diese werden so skaliert, dass ein festes Seitenverhältnis zwischen der Ausdehnung der X- und Y-Koordinaten beibehalten wird. \cite{Kartynnik.2019}\\
+Die normalisierten Koordinaten werden in das ursprüngliche Bildkoordinatensystem transformiert, um die Position der Gesichtspunkte im Originalbild korrekt darzustellen. (siehe Figur 6) \\
+
+\begin{wrapfigure}{l}{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.38\textwidth]{data/face_mesh.png}
+    \caption{\footnotesize Gesichtsbild mit aufgelegtem MediaPipe-Face-Mesh \newline Quelle: \cite{face_mesh}}
+\end{wrapfigure}
+
+Zusätzlich zu den 3D-Koordinaten gibt das Netzwerk auch einen skalaren Wert aus, der die Wahrscheinlichkeit angibt, dass ein korrekt ausgerichtetes Gesicht im Bildausschnitt vorhanden ist. Dieser Wert wird \textit{Face Flag} genannt. Er wird bei der „Detect-then-Track"-Strategie als Schwellenwert verwendet. Diese Strategie wird bei Videostreams verwendet. Es erkennt das Gesicht im ersten Frame und verfolgt es in den folgenden Frames basierend auf den vorherigen Gesichtspunkten. Dadurch wird die Rechenlast reduziert, da die Gesichtserkennung nur dann aktiviert wird, wenn das System das Gesicht nicht mehr zuverlässig verfolgen kann. \cite{Kartynnik.2019}\\
+Optional kann das Attention Mesh Model eingesetzt werden. Dieses Modell verbessert die Genauigkeit in besonders wichtigen Bereichen wie Augen, Lippe und Iris, indem es in Submodelle aufgeteilt wird. Durch diese Aufteilung kann MediaPipe gezielt mehr Modellkapazität auf relevante Gesichtsregionen konzentrieren und eine noch höhere Präzision erreichen. \cite{Grishchenko.2020} \\
+
+
 \subparagraph{Gesichtswiedererkennung mit Gesichtspunkte}
 \paragraph{Metriken}
 \paragraph{Anwendungsbeispiel: Zutrittskontrollen}
