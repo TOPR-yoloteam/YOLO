@@ -3,7 +3,7 @@ import mediapipe as mp
 from ultralytics import YOLO
 import torch
 
-# Load YOLOv11 model
+# Load YOLOv11 models
 model = YOLO("YOLO/src/face_recognition/models/yolov8n.pt")
 
 # Setup MediaPipe Face Mesh

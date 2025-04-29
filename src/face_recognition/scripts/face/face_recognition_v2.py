@@ -16,7 +16,7 @@ class FaceRecognitionSystem:
         if not os.path.exists(self.faces_dir):
             os.makedirs(self.faces_dir)
 
-        # Load YOLO model
+        # Load YOLO models
         self.model = YOLO(self.model_path)
 
         # Initialize camera

@@ -25,8 +25,8 @@ import face_recognition
 import numpy as np
 import os
 
-# Load the YOLO model for object detection
-#model = YOLO("C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/models/yolov8n.pt")
+# Load the YOLO models for object detection
+#models = YOLO("C:/Users/pauli/Programming/PycharmProjects/YOLO/YOLO/src/face_recognition/models/yolov8n.pt")
 model = YOLO("/YOLO/src/face_recognition/models/yolov11s-face.pt")
 
 # List of known imgs&videos

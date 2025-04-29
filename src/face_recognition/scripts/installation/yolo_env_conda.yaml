@@ -19,6 +19,7 @@ dependencies:
   - ultralytics           # YOLO models for object detection (including person detection)
   - dlib                  # Machine learning toolkit (especially for facial landmarks)
   - face_recognition      # High-level face detection and recognition built on dlib
+  - pickle                # Landmark recognition
 
   # pip-only packages
   - pip:
@@ -28,3 +29,5 @@ dependencies:
 
 # Create environment with: conda env create -f yolo_env_conda.yaml
 # Activate environment with: conda activate yolo_env_conda
+
+
