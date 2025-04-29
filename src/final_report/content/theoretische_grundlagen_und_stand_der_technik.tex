@@ -11,6 +11,56 @@ Innerhalb der Deep-Learning-basierten Objekterkennung existieren zwei Hauptstrat
     \item \textbf{One-Stage Detectors:} Hierbei wird die Objekterkennung als direktes Regressionsproblem formuliert. Bounding-Box-Koordinaten und Klassenwahrscheinlichkeiten werden in einem einzigen Durchlauf vorhergesagt. Bekannte Vertreter sind SSD (\textit{Single Shot MultiBox Detector}) und insbesondere YOLO (\textit{You Only Look Once}), die sich durch hohe Verarbeitungsgeschwindigkeit für Echtzeitanwendungen auszeichnen.
 \end{enumerate}
 
+\subsubsection{Bildverarbeitung und Computer Vision mit OpenCV}
+OpenCV ist eine frei verfügbare Softwarebibliothek, die viele Verfahren zur Bildverarbeitung und für Aufgaben der Computer Vision enthält. Sie ist Open Source und wird unter der Apache-2.0-Lizenz bereitgestellt. OpenCV kann mit verschiedenen Programmiersprachen wie C, C++, Python und Java verwendet werden. Die Bibliothek unterstützt eine Vielzahl plattformübergreifender Betriebssysteme und nutzt sowohl die CPU als auch die GPU, um eine besonders schnelle Bildverarbeitung zu ermöglichen. Entwickelt wurde OpenCV ursprünglich von Intel, das auch heute noch an der Weiterentwicklung beteiligt ist.
+
+OpenCV spielt in vielen Bereichen eine zentrale Rolle – von der Steuerung autonomer Fahrzeuge bis hin zur Gesichtserkennung in mobilen Anwendungen. Besonders durch seine Fähigkeit, komplexe visuelle Daten in Echtzeit zu verarbeiten, ist die Bibliothek ein unverzichtbares Werkzeug in der Forschung und Entwicklung künstlicher Intelligenz, insbesondere im Bereich des maschinellen Lernens und Deep Learnings. Die von OpenCV bereitgestellten Werkzeuge ermöglichen die Entwicklung fortschrittlicher Vision-Anwendungen, die früher als schwer umsetzbar oder nur mit großem Aufwand realisierbar galten.
+
+\paragraph{Grundlagen}
+Die Bildverarbeitung bildet einen zentralen Bestandteil der Computer Vision. Sie befasst sich mit der gezielten Veränderung und Analyse von Pixelwerten in digitalen Bildern, um diese zu verbessern oder bestimmte Informationen daraus zu gewinnen. Zu den grundlegenden Konzepten der Bildverarbeitung zählen:
+
+\begin{itemize}
+    \item \textbf{Pixel:} Die kleinste Einheit eines digitalen Bildes, die einzelne Farbinformationen enthält. Die Farbwerte eines Pixels hängen vom verwendeten Farbraum ab.
+    \item \textbf{Bildauflösung:} Gibt die Anzahl der Pixel in einem Bild an und wird durch die Breite und Höhe in Pixeln beschrieben. Eine höhere Auflösung ermöglicht in der Regel eine detailliertere Darstellung von Bildinhalten.
+    \item \textbf{Farbräume:} Sie definieren, wie Farben in einem Bild mathematisch dargestellt werden. Gängige Farbräume sind unter anderem RGB (Rot, Grün, Blau), HSV (Farbton, Sättigung, Helligkeit) und YCbCr, die je nach Anwendungsfall unterschiedliche Vorteile bieten.
+\end{itemize}
+
+\paragraph{Bildverarbeitungsfunktionen}
+Die Bildverarbeitung umfasst eine Vielzahl an Techniken zur Analyse und gezielten Veränderung digitaler Bilder. Zu den grundlegenden Funktionen zählen unter anderem:
+
+\begin{itemize}
+    \item \textbf{Geometrische Transformationen:} Hierzu gehören Operationen wie Rotation, Skalierung und Verschiebung (Translation), mit denen die Form oder Ausrichtung eines Bildes verändert wird.
+    \item \textbf{Farbraumkonversionen:} Dabei wird ein Bild von einem Farbraum in einen anderen überführt – zum Beispiel von RGB in HSV –, was häufig die Bildanalyse erleichtert oder die Bearbeitung effizienter macht.
+    \item \textbf{Filteroperationen:} Durch den Einsatz spezieller Filter, wie dem Gaußschen Weichzeichner, Kantenfiltern oder Medianfiltern, lassen sich bestimmte Bildmerkmale hervorheben, Kanten verstärken oder Bildrauschen reduzieren.
+\end{itemize}
+
+\paragraph{Installation und Einrichtung der Umgebung}
+Die Installation von OpenCV hängt vom verwendeten Betriebssystem sowie von der bevorzugten Programmiersprache ab. Für Python-Anwender bietet sich der einfachste Weg über den Paketmanager \texttt{pip} an:
+
+\begin{verbatim}
+pip install opencv-python
+\end{verbatim}
+
+Wird hingegen mit C++ gearbeitet, empfiehlt es sich, die Bibliothek direkt von der offiziellen OpenCV-Website herunterzuladen. Anschließend muss sie entsprechend den Anweisungen für das jeweilige Betriebssystem kompiliert werden. Dabei ist darauf zu achten, dass alle erforderlichen Abhängigkeiten – insbesondere CMake und ein geeigneter Compiler – im Vorfeld korrekt installiert sind, um eine reibungslose Einrichtung sicherzustellen.
+
+\paragraph{Grundlegende OpenCV-Funktionen und Methoden}
+OpenCV stellt eine umfangreiche Sammlung an Funktionen bereit, mit denen sich sowohl einfache als auch komplexe Aufgaben der Bildverarbeitung umsetzen lassen. Zu den grundlegenden Möglichkeiten zählen unter anderem:
+
+\begin{itemize}
+    \item \textbf{Bild einlesen und speichern:} Mithilfe der Funktionen \texttt{cv2.imread()} und \texttt{cv2.imwrite()} können Bilder unkompliziert geladen und gesichert werden. Dabei werden zahlreiche Bildformate wie JPEG, PNG oder TIFF unterstützt.
+    \item \textbf{Kamerazugriff:} OpenCV ermöglicht auch die Verarbeitung von Live-Bildern über angeschlossene Kameras. Durch die Nutzung der Klasse \texttt{cv2.VideoCapture} lassen sich Videoströme von Kameras oder auch von gespeicherten Videodateien erfassen und weiterverarbeiten.
+\end{itemize}
+
+\paragraph{Kernfunktionen}
+\begin{itemize}
+    \item \textbf{Bildskalierung:} Mit OpenCV lässt sich die Größe von Bildern anpassen, ohne das ursprüngliche Seitenverhältnis zu verändern. Die Funktion \texttt{cv2.resize()} ermöglicht es, ein Bild effizient auf eine neue Dimension zu skalieren.
+    \item \textbf{Schwellenwertsetzung (Thresholding):} Dieser Prozess wandelt ein Bild in ein binäres Format um. OpenCV bietet eine Reihe von Schwellenwerttechniken, wie die einfache, adaptive und Otsu-Schwellenwertsetzung. Mit der Funktion \texttt{cv2.threshold()} lässt sich ein Bild optimal für die nächste Analysephase vorbereiten.
+    \item \textbf{Kantenerkennung:} Die Erkennung von Kanten stellt einen wichtigen Schritt in vielen Computer-Vision-Anwendungen dar. OpenCV bietet verschiedene Algorithmen, um Kanten im Bild zu identifizieren, darunter den Sobel-Operator sowie den bekannten Canny-Kantendetektor.
+\end{itemize}
+
+\paragraph{Zusammenfassung}
+OpenCV ist eine leistungsstarke Bibliothek für die Bildverarbeitung und Computer Vision, die es Entwicklern ermöglicht, komplexe visuelle Aufgaben effizient zu lösen und eine Vielzahl von Anwendungsfällen in unterschiedlichen Branchen zu unterstützen.
+
 \subsubsection{YOLO als Basis für schnelle Detektion}
 
 YOLO unterteilt das Eingabebild in ein Gitter. Jede Zelle ist für die Erkennung von Objekten zuständig, deren Mittelpunkt in sie fällt. Für jede Zelle werden Begrenzungsrahmen, ein Konfidenzwert und Klassenwahrscheinlichkeiten vorhergesagt. 
