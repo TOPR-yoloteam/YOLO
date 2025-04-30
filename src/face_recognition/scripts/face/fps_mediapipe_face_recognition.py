@@ -668,6 +668,7 @@ class FaceRecognitionSystem:
 
             # Capture frame
             ret, frame = self.cap.read()
+            
             if not ret:
                 print("Error capturing frame")
                 break
@@ -711,25 +712,25 @@ class FaceRecognitionSystem:
 
                 # Draw text input interface
                 display_frame = self.draw_text_input(display_frame)
-            process_end = time.time()
-            process_time = process_end - process_start
+                process_end = time.time()
+                process_time = process_end - process_start
 
-            # Calculate performance metrics
-            fps, avg_process_time, stability_score = self.calculate_performance_metrics(frame_start_time, process_time)
+                # Calculate performance metrics
+                fps, avg_process_time, stability_score = self.calculate_performance_metrics(frame_start_time, process_time)
 
-            # Record performance data
-            self.record_performance_data(elapsed_time, fps, avg_process_time, stability_score)
+                # Record performance data
+                self.record_performance_data(elapsed_time, fps, avg_process_time, stability_score)
 
-            # Display performance metrics on the frame
-            cv2.putText(display_frame, f"FPS: {round(fps, 1)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                        0.7, (0, 255, 0), 2, cv2.LINE_AA)
-            cv2.putText(display_frame, f"Processing: {round(avg_process_time * 1000, 1)}ms", (10, 60),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
-            cv2.putText(display_frame, f"Stability: {stability_score}%", (10, 90),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+                # Display performance metrics on the frame
+                cv2.putText(display_frame, f"FPS: {round(fps, 1)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.7, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(display_frame, f"Processing: {round(avg_process_time * 1000, 1)}ms", (10, 60),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(display_frame, f"Stability: {stability_score}%", (10, 90),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
 
-            # Display frame
-            cv2.imshow('Face Recognition with MediaPipe', display_frame)
+                # Display frame
+                cv2.imshow('Face Recognition with MediaPipe', display_frame)
 
                 # Process key inputs for text entry
                 key = cv2.waitKey(1) & 0xFF
