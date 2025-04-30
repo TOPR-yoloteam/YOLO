@@ -23,7 +23,7 @@ class FaceRecognitionSystem:
         self.face_mesh = self.mp_face_mesh.FaceMesh(
             static_image_mode=False,
             max_num_faces=10,
-            min_detection_confidence=0.8,
+            min_detection_confidence=0.9,
             min_tracking_confidence=0.8
         )
 
