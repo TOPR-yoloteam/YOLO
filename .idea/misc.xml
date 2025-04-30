@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="YOLO" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Yolo" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="YOLO" project-jdk-type="Python SDK" />
 </project>
