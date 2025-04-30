@@ -643,14 +643,25 @@ class FaceRecognitionSystem:
                   f"Stability: {performance_entry['stability']}%")
             self.last_record_time = current_time
 
-        # Print all data after 60 seconds
-        if elapsed_time >= self.total_duration:
-            print("\nPerformance Summary:")
-            print("Time (s) | FPS | Processing (ms) | Stability (%)")
-            print("-" * 50)
-            for data in self.performance_data:
-                print(f"{data['time']:8} | {data['fps']:>4} | {data['avg_process_time']:>15} | {data['stability']:>13}")
-            self.performance_data.clear()  # Clear data for the next run
+    def calculate_and_print_summary(self):
+        """Calculate and print the average performance metrics."""
+        if not self.performance_data:
+            print("No performance data recorded.")
+            return
+
+        avg_fps = sum(data['fps'] for data in self.performance_data) / len(self.performance_data)
+        avg_process_time = sum(data['avg_process_time'] for data in self.performance_data) / len(self.performance_data)
+        avg_stability = sum(data['stability'] for data in self.performance_data) / len(self.performance_data)
+
+        print("\nPerformance Summary:")
+        print("Time (s) | FPS | Processing (ms) | Stability (%)")
+        print("-" * 50)
+        for data in self.performance_data:
+            print(f"{data['time']:8} | {data['fps']:>4} | {data['avg_process_time']:>15} | {data['stability']:>13}")
+        print("-" * 50)
+        print(f"Average FPS: {avg_fps:.2f}")
+        print(f"Average Processing Time: {avg_process_time:.2f}ms")
+        print(f"Average Stability: {avg_stability:.2f}%")
 
     def run(self):
         """Main loop for face recognition"""
@@ -668,7 +679,6 @@ class FaceRecognitionSystem:
 
             # Capture frame
             ret, frame = self.cap.read()
-            
             if not ret:
                 print("Error capturing frame")
                 break
@@ -678,82 +688,69 @@ class FaceRecognitionSystem:
 
             # Measure processing time
             process_start = time.time()
+            display_frame = frame.copy()  # Default display frame
+
             if self.state == "normal":
                 # Normal operation: detect and identify faces
                 display_frame, face_locations_list = self.detect_and_recognize_faces(frame)
-                # Display result frame
-                cv2.imshow('Face Recognition with MediaPipe', display_frame)
-
-                # Process keyboard inputs
-                key = cv2.waitKey(1) & 0xFF
-                if key == ord('q'):
-                    break
-                elif key == ord('c'):  # New keyboard shortcut to clean outliers for all persons
-                    print("Cleaning outlier landmarks for all persons...")
-                    for i in range(len(self.known_face_names)):
-                        self._clean_landmark_outliers(i)
-                    self.save_landmarks_data()
-
             elif self.state == "entering_name":
                 # Text entry mode
-                # Display a simpler frame with highlighted face
                 display_frame = frame.copy()
-
                 if self.selected_face_loc:
                     top, right, bottom, left = self.selected_face_loc
-
-                    # Highlight selected face
                     cv2.rectangle(display_frame, (left, top), (right, bottom), (255, 255, 0), 2)
-
-                    # Display what will be saved
-                    cv2.putText(display_frame, "Face to be saved",
-                                (left, top - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
-
-                # Draw text input interface
                 display_frame = self.draw_text_input(display_frame)
-                process_end = time.time()
-                process_time = process_end - process_start
 
-                # Calculate performance metrics
-                fps, avg_process_time, stability_score = self.calculate_performance_metrics(frame_start_time, process_time)
+            process_end = time.time()
+            process_time = process_end - process_start
 
-                # Record performance data
-                self.record_performance_data(elapsed_time, fps, avg_process_time, stability_score)
+            # Calculate performance metrics
+            fps, avg_process_time, stability_score = self.calculate_performance_metrics(frame_start_time, process_time)
 
-                # Display performance metrics on the frame
-                cv2.putText(display_frame, f"FPS: {round(fps, 1)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                            0.7, (0, 255, 0), 2, cv2.LINE_AA)
-                cv2.putText(display_frame, f"Processing: {round(avg_process_time * 1000, 1)}ms", (10, 60),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
-                cv2.putText(display_frame, f"Stability: {stability_score}%", (10, 90),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+            # Record performance data
+            self.record_performance_data(elapsed_time, fps, avg_process_time, stability_score)
 
-                # Display frame
-                cv2.imshow('Face Recognition with MediaPipe', display_frame)
+            # Display performance metrics on the frame
+            cv2.putText(display_frame, f"FPS: {round(fps, 1)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.7, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.putText(display_frame, f"Processing: {round(avg_process_time * 1000, 1)}ms", (10, 60),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.putText(display_frame, f"Stability: {stability_score}%", (10, 90),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
 
-                # Process key inputs for text entry
-                key = cv2.waitKey(1) & 0xFF
+            # Display frame
+            cv2.imshow('Face Recognition with MediaPipe', display_frame)
 
+            # Process keyboard inputs
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):  # Exit
+                break
+            elif key == ord('c') and self.state == "normal":  # Clean outliers
+                print("Cleaning outlier landmarks for all persons...")
+                for i in range(len(self.known_face_names)):
+                    self._clean_landmark_outliers(i)
+                self.save_landmarks_data()
+            elif self.state == "entering_name":
+                # Handle text input for name entry
                 if key == 13:  # ENTER key - save face with name
                     if self.current_text:
                         success = self.save_face(self.current_text, self.selected_face_loc)
                         if not success:
                             print("Error saving face")
-                    # Return to normal mode
-                    self.state = "normal"
+                    self.state = "normal"  # Return to normal mode
                 elif key == 27:  # ESC key - cancel
                     self.state = "normal"
                 elif key == 8:  # BACKSPACE - delete last character
                     self.current_text = self.current_text[:-1]
-                elif key == ord('q'):  # q key - exit
-                    break
                 elif 32 <= key <= 126:  # Printable ASCII characters
                     self.current_text += chr(key)
 
         # Release camera and close windows
         self.cap.release()
         cv2.destroyAllWindows()
+
+        # Print summary
+        self.calculate_and_print_summary()
 
 
 if __name__ == "__main__":
