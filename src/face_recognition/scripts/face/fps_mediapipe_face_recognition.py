@@ -74,6 +74,11 @@ class FaceRecognitionSystem:
         self.frame_times = deque(maxlen=30)  # Store last 30 frame times
         self.process_times = deque(maxlen=30)  # Store processing times
         self.instant_fps_values = deque(maxlen=30)  # Store FPS values for stability calculation
+        self.performance_data = []  # Store performance data for console output
+        self.start_time = time.time()  # Start time for 60-second tracking
+        self.last_record_time = self.start_time  # Last time data was recorded
+        self.total_duration = 60  # Total duration for performance tracking
+        self.record_interval = 5  # Interval for recording data (in seconds)
 
         print("Initialization complete. Press 'q' to exit.")
 
@@ -622,6 +627,31 @@ class FaceRecognitionSystem:
 
         return fps, avg_process_time, stability_score
 
+    def record_performance_data(self, elapsed_time, fps, avg_process_time, stability_score):
+        """Record performance data every 5 seconds and print after 60 seconds."""
+        current_time = time.time()
+        if current_time - self.last_record_time >= self.record_interval:
+            performance_entry = {
+                "time": int(elapsed_time),
+                "fps": round(fps, 2),
+                "avg_process_time": round(avg_process_time * 1000, 2),  # In ms
+                "stability": stability_score
+            }
+            self.performance_data.append(performance_entry)
+            print(f"Time: {performance_entry['time']}s, FPS: {performance_entry['fps']}, "
+                  f"Processing Time: {performance_entry['avg_process_time']}ms, "
+                  f"Stability: {performance_entry['stability']}%")
+            self.last_record_time = current_time
+
+        # Print all data after 60 seconds
+        if elapsed_time >= self.total_duration:
+            print("\nPerformance Summary:")
+            print("Time (s) | FPS | Processing (ms) | Stability (%)")
+            print("-" * 50)
+            for data in self.performance_data:
+                print(f"{data['time']:8} | {data['fps']:>4} | {data['avg_process_time']:>15} | {data['stability']:>13}")
+            self.performance_data.clear()  # Clear data for the next run
+
     def run(self):
         """Main loop for face recognition"""
         # Set up mouse callback once, outside the loop
@@ -630,10 +660,14 @@ class FaceRecognitionSystem:
 
         while True:
             frame_start_time = time.time()  # Start time for FPS calculation
+            elapsed_time = frame_start_time - self.start_time  # Elapsed time since start
+
+            # Stop after 60 seconds
+            if elapsed_time >= self.total_duration:
+                break
 
             # Capture frame
             ret, frame = self.cap.read()
-            
             if not ret:
                 print("Error capturing frame")
                 break
@@ -677,22 +711,25 @@ class FaceRecognitionSystem:
 
                 # Draw text input interface
                 display_frame = self.draw_text_input(display_frame)
-                process_end = time.time()
-                process_time = process_end - process_start
+            process_end = time.time()
+            process_time = process_end - process_start
 
-                # Calculate performance metrics
-                fps, avg_process_time, stability_score = self.calculate_performance_metrics(frame_start_time, process_time)
+            # Calculate performance metrics
+            fps, avg_process_time, stability_score = self.calculate_performance_metrics(frame_start_time, process_time)
 
-                # Display performance metrics on the frame
-                cv2.putText(display_frame, f"FPS: {round(fps, 1)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                            0.7, (0, 255, 0), 2, cv2.LINE_AA)
-                cv2.putText(display_frame, f"Processing: {round(avg_process_time * 1000, 1)}ms", (10, 60),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
-                cv2.putText(display_frame, f"Stability: {stability_score}%", (10, 90),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+            # Record performance data
+            self.record_performance_data(elapsed_time, fps, avg_process_time, stability_score)
 
-                # Display frame
-                cv2.imshow('Face Recognition with MediaPipe', display_frame)
+            # Display performance metrics on the frame
+            cv2.putText(display_frame, f"FPS: {round(fps, 1)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.7, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.putText(display_frame, f"Processing: {round(avg_process_time * 1000, 1)}ms", (10, 60),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.putText(display_frame, f"Stability: {stability_score}%", (10, 90),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+
+            # Display frame
+            cv2.imshow('Face Recognition with MediaPipe', display_frame)
 
                 # Process key inputs for text entry
                 key = cv2.waitKey(1) & 0xFF
