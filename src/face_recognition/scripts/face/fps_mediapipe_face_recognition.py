@@ -5,7 +5,8 @@ import time
 import mediapipe as mp
 import pickle
 from datetime import datetime
-
+from collections import deque
+import statistics
 
 class FaceRecognitionSystem:
     def __init__(self):
@@ -68,6 +69,11 @@ class FaceRecognitionSystem:
         self.learning_cooldown = {}  # Dictionary to store the last learning timestamp
         self.min_learning_interval = 2.0  # Minimum 2 seconds between landmark additions
         self.base_diversity_threshold = 0.1  # Base value for diversity threshold
+
+        # Performance metrics
+        self.frame_times = deque(maxlen=30)  # Store last 30 frame times
+        self.process_times = deque(maxlen=30)  # Store processing times
+        self.instant_fps_values = deque(maxlen=30)  # Store FPS values for stability calculation
 
         print("Initialization complete. Press 'q' to exit.")
 
@@ -574,6 +580,48 @@ class FaceRecognitionSystem:
 
         return frame
 
+    def calculate_performance_metrics(self, frame_start_time, process_time):
+        """Calculate FPS, processing time, and stability metrics."""
+        # Time between frames for FPS calculation
+        if self.frame_times:
+            frame_time = frame_start_time - self.frame_times[-1]
+            if frame_time > 0:  # Prevent division by zero
+                self.frame_times.append(frame_start_time)
+                # Calculate instantaneous FPS for this frame
+                instant_fps = 1.0 / frame_time
+                self.instant_fps_values.append(instant_fps)
+        else:
+            self.frame_times.append(frame_start_time)
+
+        # Add processing time
+        self.process_times.append(process_time)
+
+        # Calculate average FPS
+        if len(self.frame_times) >= 2:
+            avg_frame_time = (self.frame_times[-1] - self.frame_times[0]) / (len(self.frame_times) - 1)
+            fps = 1.0 / avg_frame_time if avg_frame_time > 0 else 0
+        else:
+            fps = 0
+
+        # Calculate average processing time
+        avg_process_time = sum(self.process_times) / len(self.process_times) if self.process_times else 0
+
+        # Calculate FPS stability
+        fps_stability = 0
+        if len(self.instant_fps_values) > 1:
+            try:
+                fps_stability = statistics.stdev(self.instant_fps_values)
+            except statistics.StatisticsError:
+                fps_stability = 0
+
+        # Calculate stability score
+        stability_score = 100
+        if fps > 0:
+            stability_score = round(100 - min(100, (10 * fps_stability / max(fps, 1))))
+            stability_score = max(0, min(100, stability_score))  # Ensure within 0-100 range
+
+        return fps, avg_process_time, stability_score
+
     def run(self):
         """Main loop for face recognition"""
         # Set up mouse callback once, outside the loop
@@ -581,9 +629,11 @@ class FaceRecognitionSystem:
         cv2.setMouseCallback('Face Recognition with MediaPipe', self.mouse_callback)
 
         while True:
+            frame_start_time = time.time()  # Start time for FPS calculation
+
             # Capture frame
             ret, frame = self.cap.read()
-
+            
             if not ret:
                 print("Error capturing frame")
                 break
@@ -591,6 +641,8 @@ class FaceRecognitionSystem:
             # Flip frame (selfie view)
             frame = cv2.flip(frame, 1)
 
+            # Measure processing time
+            process_start = time.time()
             if self.state == "normal":
                 # Normal operation: detect and identify faces
                 display_frame, face_locations_list = self.detect_and_recognize_faces(frame)
@@ -625,6 +677,19 @@ class FaceRecognitionSystem:
 
                 # Draw text input interface
                 display_frame = self.draw_text_input(display_frame)
+                process_end = time.time()
+                process_time = process_end - process_start
+
+                # Calculate performance metrics
+                fps, avg_process_time, stability_score = self.calculate_performance_metrics(frame_start_time, process_time)
+
+                # Display performance metrics on the frame
+                cv2.putText(display_frame, f"FPS: {round(fps, 1)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.7, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(display_frame, f"Processing: {round(avg_process_time * 1000, 1)}ms", (10, 60),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(display_frame, f"Stability: {stability_score}%", (10, 90),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
 
                 # Display frame
                 cv2.imshow('Face Recognition with MediaPipe', display_frame)
