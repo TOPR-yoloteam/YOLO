@@ -14,6 +14,10 @@ drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1, color=(0, 25
 # Webcam
 cap = cv2.VideoCapture(0)
 
+# Optional: Auflösung reduzieren für bessere Performance auf Apple Silicon
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
 # Verbesserte FPS- und Performance-Variablen
 frame_times = deque(maxlen=30)  # Speichert die letzten 30 Frame-Zeiten für stabilere FPS
 process_times = deque(maxlen=30)  # Speichert die Verarbeitungszeiten der Gesichtserkennung
@@ -29,6 +33,11 @@ record_interval = 5  # Alle 5 Sekunden speichern
 
 print(
     f"Performance-Aufzeichnung über {total_duration} Sekunden gestartet. Werte werden alle {record_interval} Sekunden gespeichert.")
+
+# Metal-Beschleunigung für OpenCV aktivieren (falls verfügbar)
+if hasattr(cv2, 'ocl'):
+    cv2.ocl.setUseOpenCL(True)
+    print(f"OpenCL Unterstützung: {cv2.ocl.haveOpenCL()}, Aktiviert: {cv2.ocl.useOpenCL()}")
 
 try:
     while cap.isOpened():
