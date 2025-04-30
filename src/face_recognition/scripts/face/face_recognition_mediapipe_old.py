@@ -3,7 +3,7 @@ import mediapipe as mp
 
 # MediaPipe Face Mesh Setup
 mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=5, min_detection_confidence=0.5)
+face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=5, min_detection_confidence=0.8)
 
 # drawing tools
 mp_drawing = mp.solutions.drawing_utils
