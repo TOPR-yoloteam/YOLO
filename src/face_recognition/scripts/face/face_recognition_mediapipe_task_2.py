@@ -318,15 +318,14 @@ class FaceRecognitionSystem:
                     continue # Skip this comparison
 
                 # --- TODO 2: Calculate Distance ---
-                # Calculate the Euclidean distance between the current landmarks ('landmarks')
-                # and the stored landmarks ('known_landmarks').
-                # Use 'np.linalg.norm'.
-                # Optional: Consider the feature weights 'self.feature_weights'.
-                # Simple version (unweighted):
-                # distance = np.linalg.norm(landmarks - known_landmarks)
-                # Weighted version:
-                diff = (landmarks - known_landmarks) * self.feature_weights
-                distance = np.linalg.norm(diff)
+                # Option 1: Mit Fallback für unterschiedliche Größen
+                if len(self.feature_weights) == len(landmarks):
+                    # Gewichtete Version, wenn Größen übereinstimmen
+                    diff = (landmarks - known_landmarks) * self.feature_weights
+                    distance = np.linalg.norm(diff)
+                else:
+                    # Standard-Euklidischer Abstand, wenn Größen nicht übereinstimmen
+                    distance = np.linalg.norm(landmarks - known_landmarks)
                 # --- End TODO 2 ---
 
                 # Check if this distance is the smallest found so far
