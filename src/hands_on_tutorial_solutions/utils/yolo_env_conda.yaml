@@ -11,7 +11,6 @@ dependencies:
   - pygame                # Multimedia handling (e.g., simple UI, window management)
 
   # Special libraries for text, characters, and license plate recognition
-  - easyocr               # Lightweight OCR engine for text detection
   - pytesseract           # Python binding for Tesseract OCR
   - tesseract             # Tesseract OCR engine (backend for pytesseract)
 
