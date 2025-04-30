@@ -172,13 +172,13 @@ Die Gesichtserkennung ist ein Spezialfall der Objekterkennung und der biometrisc
 
 \subsubsection{Technologien im Detail}
 
-\paragraph{Gesichtsdetektion:} 
+\paragraph{Gesichtsdetektion} 
 Wie in Abschnitt 2.1 und 2.2 beschrieben, können Modelle wie YOLO hierfür eingesetzt werden. Alternativ nutzen viele Frameworks dedizierte, oft schnellere Detektoren (z.B. basierend auf SSD oder spezialisierten Architekturen).
 
-\paragraph{Landmarken-Detektion:} 
+\paragraph{Landmarken-Detektion} 
 Frameworks wie Google's MediaPipe bieten spezialisierte Modelle zur Detektion von hunderten von Gesichtslandmarken in Echtzeit (z.B. das Face Mesh mit 468 3D-Landmarken). Diese detaillierten Landmarken sind nicht nur für die Gesichtsausrichtung nützlich, sondern ermöglichen auch die Analyse von Mimik, Augenbewegungen (wie im Projektkontext für Eye Tracking relevant), Kopfbewegungen und die Extraktion geometrischer Merkmale, die potenziell für biometrische Erkennungsansätze genutzt werden können. Die Landmarken selbst können als Merkmalsvektor dienen, obwohl für die reine Identifikation meist Embeddings aus tieferen CNNs verwendet werden.
 
-\paragraph{Embedding-Generierung:} 
+\paragraph{Embedding-Generierung} 
 Bibliotheken wie face\_recognition (die auf dlib basiert) kapseln oft den Prozess der Detektion, Landmarken-Findung und Embedding-Generierung mithilfe vortrainierter Modelle (z.B. ResNet-basiert). Sie liefern direkt die 128-dimensionalen Embeddings, die dann für den Vergleich genutzt werden können. Diese Bibliotheken vereinfachen die Implementierung von Standard-Gesichtserkennungspipelines.
 
 \subsubsection{MediaPipe Framework für Wahrnehmungsaufgaben}
@@ -209,14 +209,14 @@ Im Kontext dieses Projekts wird MediaPipe insbesondere für die detaillierte Ana
 \subsubsection{Vergleich von Latenz und Interferenz (YOLO vs. MediaPipe)}
 Bei der Betrachtung von Latenz und Störanfälligkeit (Interferenz) zeigen YOLO und MediaPipe unterschiedliche Charakteristika, die von der spezifischen Aufgabe und Implementierung abhängen:
 
-\paragraph{Latenz:}
+\paragraph{Latenz}
 \begin{itemize}
     \item \textbf{YOLO:} Als One-Stage Detector ist YOLO für die initiale Objektdetektion im gesamten Bild optimiert und erreicht hierbei oft sehr geringe Latenzen, insbesondere auf geeigneter Hardware (GPUs). Die Latenz skaliert mit der Modellgröße (z.B. YOLOv8n vs. YOLOv8x) und der Eingabeauflösung.
     
     \item \textbf{MediaPipe:} Die Latenz von MediaPipe-Pipelines hängt stark von der spezifischen Aufgabe und dem zugrundeliegenden Graphen ab. Lösungen wie Face Mesh sind für Echtzeit-Performance auf mobilen Geräten optimiert und weisen oft geringe Latenzen auf, insbesondere wenn sie auf einer bereits detektierten Region of Interest (ROI) operieren. Wird jedoch eine Pipeline verwendet, die intern ebenfalls eine Detektion durchführt (z.B. die allgemeine Face Detection Solution), addieren sich die Latenzen der einzelnen Komponenten. Im kombinierten Ansatz (YOLO zur Detektion, MediaPipe zur Landmarken-Extraktion in der ROI) ist die Gesamtlatenz die Summe beider Schritte.
 \end{itemize}
 
-\paragraph{Interferenz / Robustheit:}
+\paragraph{Interferenz / Robustheit}
 \begin{itemize}
     \item \textbf{YOLO:} Die Robustheit gegenüber Störungen (z.B. wechselnde Lichtverhältnisse, teilweise Verdeckung, ungewöhnliche Posen) hängt stark vom Trainingsdatensatz und der Modellvariante ab. Größere Modelle sind oft robuster, benötigen aber mehr Rechenleistung. YOLO kann Schwierigkeiten bei sehr kleinen oder dicht gedrängten Objekten haben, obwohl spätere Versionen hier Verbesserungen zeigen.
     
