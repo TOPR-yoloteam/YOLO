@@ -1,7 +1,16 @@
 \section{Methodik}
 \subsection{Softwarearchitektur}
 \subsection{Kennzeichenerkennung}
+Tesseract ist eine Open-Source-Software, die sich auf die Texterkennung (OCR) spezialisiert hat. Sie erkennt nicht nur einzelne Zeichen und Textzeilen, sondern ist auch in der Lage, zusammenhängende Texte zu analysieren und in strukturierte Textblöcke zu gliedern. Zur Steigerung der Erkennungsgenauigkeit nutzt Tesseract leistungsfähige Sprachmodelle, darunter auch Wörterbücher. Dank zahlreicher Zusatzmodule unterstützt Tesseract über 100 Sprachen und Sprachvarianten darunter nicht nur lateinische Antiqua-Schriften, sondern auch Fraktur, Devanagari, sowie chinesische, arabische, hebräische und kyrillische Schriften.
 \subsubsection{Testaufbau}
+Das implementierte System zur Kennzeichenerkennung basiert auf einer Kombination aus Hardware- und Softwarekomponenten. Für die grundlegende Funktionsfähigkeit werden folgende Hardware-Voraussetzungen benötigt: ein Raspberry Pi oder ein funktionsfähiger Computer, eine handelsübliche oder integrierte Webcam, eine SD-Karte mit dem entsprechenden Betriebssystem-Image für den Raspberry Pi sowie eine Tastatur, Maus und ein HDMI-Kabel zur Verbindung mit einem Monitor. Alternativ können Tastatur, Maus und HDMI-Kabel entfallen, wenn der Raspberry Pi über den RealVNC Viewer ferngesteuert und eingerichtet wird.\singlespacing 
+Auf der Softwareseite kommen verschiedene Technologien zum Einsatz. Zur Objekterkennung wird das Modell YOLOv5 verwendet, während OpenCV zur Bildverarbeitung und Tesseract OCR für die Texterkennung eingesetzt werden. \singlespacing
+Der Ablauf der Kennzeichenerkennung erfolgt in drei Schritten: \\
+1. Bilderfassung: Die Kamera nimmt acht Bilder auf, die lokal auf dem Gerät gespeichert werden.\\
+2. Erkennung: Die gespeicherten Bilder werden mithilfe von YOLOv5 analysiert. Die erkannten Kennzeichenbereiche (Bounding Boxes) werden markiert und die Bilder erneut gespeichert. \\
+3. Texterkennung: Im letzten Schritt erfolgt die optische Zeichenerkennung (OCR) mit Tesseract. Dabei werden die Buchstaben extrahiert, separat gespeichert und das erkannte Kennzeichen im Konsolenfenster ausgegeben. \\
+
+Das System wurde speziell am Beispiel für den Einsatz an europäischen Mautstationen konzipiert und optimiert. 
 \subsubsection{Datensammlung und Annotation}
 \subsubsection{Training und Optimierung des Modells}
 \subsubsection{Herausforderungen bei realen Bedingungen}
