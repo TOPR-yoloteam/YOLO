@@ -1,5 +1,6 @@
 import cv2
 import time
+import statistics
 import mediapipe as mp
 
 # Setup
@@ -14,7 +15,8 @@ cap = cv2.VideoCapture(0)
 # FPS-Variablen
 prev_frame_time = 0
 curr_frame_time = 0
-fps_values = []
+fps_buffer = []   # Einzelne FPS-Werte sammeln
+fps_values = []   # Gespeicherte Median-FPS
 
 # Zeitvariablen für 1-minütige Aufzeichnung
 start_time = time.time()
@@ -22,8 +24,7 @@ last_record_time = start_time
 total_duration = 60  # 1 Minute
 record_interval = 5  # Alle 5 Sekunden speichern
 
-print(
-    f"FPS-Aufzeichnung über {total_duration} Sekunden gestartet. Werte werden alle {record_interval} Sekunden gespeichert.")
+print(f"FPS-Aufzeichnung über {total_duration} Sekunden gestartet. Werte werden alle {record_interval} Sekunden gespeichert.")
 
 try:
     while cap.isOpened():
@@ -45,13 +46,20 @@ try:
         fps = 1 / (curr_frame_time - prev_frame_time) if prev_frame_time > 0 else 0
         prev_frame_time = curr_frame_time
 
-        # Alle 5 Sekunden FPS-Wert speichern
+        # FPS-Wert zum Buffer hinzufügen
+        if fps > 0:
+            fps_buffer.append(fps)
+
+        # Alle 5 Sekunden Median-FPS speichern
         if current_time - last_record_time >= record_interval:
-            fps_values.append((int(elapsed_time), round(fps, 2)))
-            print(f"Zeit: {int(elapsed_time)}s, FPS: {round(fps, 2)}")
+            if fps_buffer:
+                median_fps = statistics.median(fps_buffer)
+                fps_values.append((int(elapsed_time), round(median_fps, 2)))
+                print(f"Zeit: {int(elapsed_time)}s, Median-FPS: {round(median_fps, 2)}")
+                fps_buffer = []  # Buffer leeren
             last_record_time = current_time
 
-        # Bild in RGB
+        # Bild in RGB umwandeln
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         # MediaPipe-Verarbeitung
@@ -74,10 +82,10 @@ try:
                     connection_drawing_spec=drawing_spec
                 )
 
-        # Bild anzeigen (fehlte im Original)
+        # Bild anzeigen
         cv2.imshow('MediaPipe Face Mesh', frame)
 
-        # Beenden mit 'q' (fehlte im Original)
+        # Beenden mit 'q'
         if cv2.waitKey(5) & 0xFF == ord('q'):
             break
 
@@ -90,12 +98,12 @@ finally:
 
     # FPS-Liste ausgeben
     print("\nFPS-Aufzeichnung abgeschlossen!")
-    print("Zeit (s) | FPS")
-    print("-" * 20)
-    for time_point, fps in fps_values:
-        print(f"{time_point:8} | {fps}")
+    print("Zeit (s) | Median-FPS")
+    print("-" * 30)
+    for time_point, median_fps in fps_values:
+        print(f"{time_point:8} | {median_fps}")
 
-    # Durchschnitt berechnen
+    # Gesamtdurchschnitt berechnen (von allen Medians)
     if fps_values:
-        avg_fps = sum(fps for _, fps in fps_values) / len(fps_values)
-        print(f"\nDurchschnittliche FPS: {round(avg_fps, 2)}")
+        overall_median_fps = statistics.median([fps for _, fps in fps_values])
+        print(f"\nGesamt-Median der FPS: {round(overall_median_fps, 2)}")
