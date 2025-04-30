@@ -166,6 +166,10 @@ class FaceRecognitionSystemTask2:
         #       - If a match is found, update name and is_known_face
         #    c. Draw a bounding box and label for the face
         #    d. If the face is unknown and in "normal" state, add a "Learn Face" button
+        #
+        # This is just the minimum, so that the code works at all. It serves no other purpose.
+        face_locations = face_recognition.face_locations(rgb_frame)
+        face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
         # --- End TODO Task 2.4 ---
 
         return display_frame, face_locations
