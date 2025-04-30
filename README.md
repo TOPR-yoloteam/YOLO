@@ -1,2 +1,2 @@
 # YOLO
-Personenerkennung mit YOLO
+Kennzeichen- und Gesichtserkennung mit YOLO
