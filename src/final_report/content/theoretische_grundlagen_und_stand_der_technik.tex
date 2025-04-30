@@ -176,74 +176,32 @@ Die Gesichtserkennung ist ein Spezialfall der Objekterkennung und der biometrisc
 Wie in Abschnitt 2.1 und 2.2 beschrieben, können Modelle wie YOLO hierfür eingesetzt werden. Alternativ nutzen viele Frameworks dedizierte, oft schnellere Detektoren (z.B. basierend auf SSD oder spezialisierten Architekturen).
 
 \paragraph{Landmarken-Detektion} 
-Frameworks wie Google's MediaPipe bieten spezialisierte Modelle zur Detektion von hunderten von Gesichtslandmarken in Echtzeit (z.B. das Face Mesh mit 468 3D-Landmarken). Diese detaillierten Landmarken sind nicht nur für die Gesichtsausrichtung nützlich, sondern ermöglichen auch die Analyse von Mimik, Augenbewegungen (wie im Projektkontext für Eye Tracking relevant), Kopfbewegungen und die Extraktion geometrischer Merkmale, die potenziell für biometrische Erkennungsansätze genutzt werden können. Die Landmarken selbst können als Merkmalsvektor dienen, obwohl für die reine Identifikation meist Embeddings aus tieferen CNNs verwendet werden.
+Frameworks wie Google's MediaPipe bieten spezialisierte Modelle zur Detektion von hunderten Gesichtslandmarken in Echtzeit (z.B. das Face Mesh mit 468 3D-Landmarken). Diese Landmarken sind nützlich für die Gesichtsausrichtung, Mimik- und Augenbewegungsanalyse (z.B. Eye Tracking) sowie die Extraktion biometrischer Merkmale. Sie können als Merkmalsvektor dienen, wobei für die Identifikation meist Embeddings aus tieferen CNNs verwendet werden.
 
 \paragraph{Embedding-Generierung} 
-Bibliotheken wie face\_recognition (die auf dlib basiert) kapseln oft den Prozess der Detektion, Landmarken-Findung und Embedding-Generierung mithilfe vortrainierter Modelle (z.B. ResNet-basiert). Sie liefern direkt die 128-dimensionalen Embeddings, die dann für den Vergleich genutzt werden können. Diese Bibliotheken vereinfachen die Implementierung von Standard-Gesichtserkennungspipelines.
+Bibliotheken wie \texttt{face\_recognition} (basierend auf dlib) vereinfachen die Implementierung von Gesichtserkennungspipelines. Sie kapseln Detektion, Landmarken-Findung und Embedding-Generierung mithilfe vortrainierter Modelle (z.B. ResNet-basiert) und liefern 128-dimensionale Embeddings für den Vergleich.
 
 \subsubsection{MediaPipe Framework für Wahrnehmungsaufgaben}
 
-MediaPipe ist ein Open-Source-Framework von Google, das die Entwicklung komplexer Computer-Vision-Anwendungen erleichtert. Es ermöglicht die Erstellung effizienter, plattformübergreifender Machine-Learning-Pipelines für die Verarbeitung von Video-, Bild- und Audiodaten in Echtzeit. Dank seiner modularen Architektur und der Nutzung vorgefertigter Komponenten, sogenannter ``Calculators'', können Entwickler schnell Prototypen erstellen und diese zu ausgereiften Anwendungen weiterentwickeln.
+MediaPipe ist ein Open-Source-Framework von Google, das die Entwicklung plattformübergreifender Computer-Vision-Anwendungen erleichtert. Es ermöglicht effiziente Machine-Learning-Pipelines für Video-, Bild- und Audiodaten in Echtzeit. Dank modularer Architektur und vorgefertigter Komponenten (\textit{Calculators}) können Entwickler schnell Prototypen erstellen und zu ausgereiften Anwendungen weiterentwickeln.
 
 \paragraph{Graphbasierte Architektur}
-Ein zentrales Merkmal von MediaPipe ist seine graphbasierte Architektur. Datenflüsse werden in sogenannten ``Graphs'' definiert, wobei jeder Knotenpunkt (``Node'' oder ``Calculator'') spezifische Aufgaben übernimmt (z.B. Bilddekodierung, Inferenz mit einem ML-Modell, Landmarken-Rendering). Diese Struktur ermöglicht eine flexible und effiziente Verarbeitung von Datenströmen, was besonders für Anwendungen mit hohen Echtzeitanforderungen von Vorteil ist. Die Graphen können komplexe Abhängigkeiten und parallele Verarbeitungspfade abbilden.
+Ein zentrales Merkmal von MediaPipe ist seine graphbasierte Architektur. Datenflüsse werden in \textit{Graphs} definiert, wobei jeder Knotenpunkt spezifische Aufgaben übernimmt (z.B. Bilddekodierung, ML-Inferenz, Landmarken-Rendering). Diese Struktur ermöglicht eine flexible und effiziente Verarbeitung von Datenströmen, besonders für Echtzeitanwendungen.
 
 \paragraph{Vortrainierte Lösungen}
-MediaPipe bietet eine Vielzahl vortrainierter Lösungen (``Solutions'') für gängige Wahrnehmungsaufgaben, darunter:
+MediaPipe bietet vortrainierte Lösungen (\textit{Solutions}) für gängige Wahrnehmungsaufgaben, darunter:
 
 \begin{itemize}
-    \item \textbf{Face Detection:} Schnelle Detektion von Gesichtern.
+    \item \textbf{Face Detection:} Schnelle Gesichtserkennung.
     \item \textbf{Face Mesh:} Detaillierte Erkennung von 468 3D-Gesichtslandmarken.
     \item \textbf{Iris Tracking:} Präzise Lokalisierung der Iris.
     \item \textbf{Hands:} Erkennung von Handposen und -landmarken.
     \item \textbf{Pose:} Erkennung von Körperposen und -landmarken.
     \item \textbf{Object Detection:} Allgemeine Objekterkennung.
-    \item Weitere Lösungen für Aufgaben wie Segmentierung, Haar-Segmentierung etc.
+    \item Weitere Lösungen wie Segmentierung und Haar-Segmentierung.
 \end{itemize}
 
-Diese Lösungen sind für den Einsatz auf verschiedenen Plattformen (Android, iOS, Web, Desktop) optimiert und können sowohl auf leistungsstarken Servern als auch auf mobilen Geräten oft in Echtzeit betrieben werden. Sie kapseln die Komplexität der zugrundeliegenden Modelle und Graphen und bieten einfache APIs für Entwickler.
+Diese Lösungen sind für verschiedene Plattformen (Android, iOS, Web, Desktop) optimiert und oft in Echtzeit einsetzbar. Sie kapseln die Komplexität der zugrundeliegenden Modelle und bieten einfache APIs.
 
 \paragraph{Einsatz im Projektkontext}
-Im Kontext dieses Projekts wird MediaPipe insbesondere für die detaillierte Analyse von Gesichtsmerkmalen eingesetzt, wie z.B. die Extraktion von Landmarken für die biometrische Erkennung oder das Eye Tracking. Dies ermöglicht eine präzise und effiziente Erfassung relevanter Merkmale, was beispielsweise bei Zutrittskontrollsystemen oder Müdigkeitserkennung von großer Bedeutung ist.
-
-\subsubsection{Vergleich von Latenz und Interferenz (YOLO vs. MediaPipe)}
-Bei der Betrachtung von Latenz und Störanfälligkeit (Interferenz) zeigen YOLO und MediaPipe unterschiedliche Charakteristika, die von der spezifischen Aufgabe und Implementierung abhängen:
-
-\paragraph{Latenz}
-\begin{itemize}
-    \item \textbf{YOLO:} Als One-Stage Detector ist YOLO für die initiale Objektdetektion im gesamten Bild optimiert und erreicht hierbei oft sehr geringe Latenzen, insbesondere auf geeigneter Hardware (GPUs). Die Latenz skaliert mit der Modellgröße (z.B. YOLOv8n vs. YOLOv8x) und der Eingabeauflösung.
-    
-    \item \textbf{MediaPipe:} Die Latenz von MediaPipe-Pipelines hängt stark von der spezifischen Aufgabe und dem zugrundeliegenden Graphen ab. Lösungen wie Face Mesh sind für Echtzeit-Performance auf mobilen Geräten optimiert und weisen oft geringe Latenzen auf, insbesondere wenn sie auf einer bereits detektierten Region of Interest (ROI) operieren. Wird jedoch eine Pipeline verwendet, die intern ebenfalls eine Detektion durchführt (z.B. die allgemeine Face Detection Solution), addieren sich die Latenzen der einzelnen Komponenten. Im kombinierten Ansatz (YOLO zur Detektion, MediaPipe zur Landmarken-Extraktion in der ROI) ist die Gesamtlatenz die Summe beider Schritte.
-\end{itemize}
-
-\paragraph{Interferenz / Robustheit}
-\begin{itemize}
-    \item \textbf{YOLO:} Die Robustheit gegenüber Störungen (z.B. wechselnde Lichtverhältnisse, teilweise Verdeckung, ungewöhnliche Posen) hängt stark vom Trainingsdatensatz und der Modellvariante ab. Größere Modelle sind oft robuster, benötigen aber mehr Rechenleistung. YOLO kann Schwierigkeiten bei sehr kleinen oder dicht gedrängten Objekten haben, obwohl spätere Versionen hier Verbesserungen zeigen.
-    
-    \item \textbf{MediaPipe:} Die vortrainierten MediaPipe-Lösungen sind in der Regel auf große und diverse Datensätze trainiert und zeigen oft eine gute Robustheit gegenüber Variationen in Beleuchtung und Pose für ihre spezifische Aufgabe (z.B. Face Mesh). Da sie oft auf spezifische Merkmale fokussieren (z.B. Landmarken), können sie bei starker Verdeckung oder untypischen Erscheinungsbildern jedoch ebenfalls an Grenzen stoßen. Die Performance kann auch durch die Qualität der initialen Detektion beeinflusst werden, falls die Pipeline auf einer ROI arbeitet.
-\end{itemize}
-
-\subsubsection{Herausforderungen}
-Trotz großer Fortschritte bleiben Herausforderungen bestehen:
-
-\begin{itemize}
-    \item \textbf{Pose Variation:} Starke Abweichungen von der frontalen Ansicht.
-    
-    \item \textbf{Illumination:} Ungleichmäßige oder extreme Beleuchtung (Schatten, Gegenlicht).
-    
-    \item \textbf{Occlusion:} Teile des Gesichts sind verdeckt (Maske, Sonnenbrille, Haare).
-    
-    \item \textbf{Expression:} Starke mimische Veränderungen.
-    
-    \item \textbf{Aging:} Veränderungen des Gesichts über die Zeit.
-    
-    \item \textbf{Resolution / Blurring:} Geringe Bildqualität oder Bewegungsunschärfe.
-    
-    \item \textbf{Look-alikes:} Hohe Ähnlichkeit zwischen verschiedenen Personen.
-    
-    \item \textbf{Presentation Attacks (Spoofing):} Versuche, das System mit Fotos, Videos oder Masken zu täuschen (relevant für Kapitel 3.3).
-\end{itemize}
-
-Die Robustheit gegenüber diesen Faktoren und die Sicherheit gegen Angriffe sind zentrale Forschungs- und Entwicklungsbereiche in der Gesichtserkennung.
-
-Zusammenfassend lässt sich sagen, dass YOLO oft Vorteile bei der schnellen Initialdetektion im Gesamtbild hat, während MediaPipe seine Stärken in der effizienten und robusten Extraktion spezifischer Merkmale (wie Landmarken) auf Endgeräten ausspielt. Die Wahl oder Kombination hängt von den spezifischen Anforderungen an Geschwindigkeit, Genauigkeit und Robustheit der Anwendung ab.
+Im Projekt wird MediaPipe für die detaillierte Analyse von Gesichtsmerkmalen genutzt, z.B. für Landmarkenextraktion zur biometrischen Erkennung oder Eye Tracking. Dies ermöglicht präzise und effiziente Erfassung relevanter Merkmale, z.B. für Zutrittskontrollsysteme oder Müdigkeitserkennung.
