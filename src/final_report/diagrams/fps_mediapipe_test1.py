@@ -4,7 +4,7 @@ import numpy as np
 # --- Daten vorbereiten ---
 
 # Für Balkendiagramm (Durchschnittswerte)
-labels = ['FPS Ø', 'Processing Time Ø (ms)', 'Stability (%)']
+labels = ['FPS Ø', 'Verarbeitungszeit Ø (ms)', 'Stabilität (%)']
 confidence_05 = [27.16, 8.81, 97.73]
 confidence_08 = [20.6, 12.68, 99.0]
 
@@ -38,5 +38,5 @@ for bar in bars1 + bars2:
                 ha='center', va='bottom')
 
 plt.tight_layout()
-plt.show()
+plt.savefig('src/final_report/data/Vergleich_Confidence_50_vs_80.png')
 

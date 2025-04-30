@@ -1,4 +1,23 @@
 \section{Anforderungen}
 \subsection{Funktionale Anforderungen}
+\begin{itemize}
+    \item \textbf{Kennzeichenerkennung:}Im Rahmen eines Hands-On-Tutorials wird eine KI-gestützte automatisierte Kennzeichenerkennung umgesetzt. Ausgedruckte Kennzeichen werden von dem System in Form von Bildmaterial aufgenommen und ausgelesen. Anhand einfacher Codebeispiele und Echtzeit-Tests können die Teilnehmenden nachvollziehen, wie zuverlässig oder fehleranfällig solche Systeme in der Praxis sind. Dabei liegt trotz Laborumgebung auch ein Fokus auf realistische Bedingungen wie unscharfe Aufnahmen oder schlechte Lichtverhältnisse. Die Studierenden sollen selbst ausprobieren, wie die Technik funktioniert, und kritisch reflektieren, wann und warum Fehler passieren. 
+    \item \textbf{Gesichtererkennung:}Als weiterer Bestandteil des Hands-On-Tutorials wird eine KI-gestützte Personenerkennung mit Gesichtsunterscheidung implementiert, um Studierenden einen praktischen Einstieg in die Welt der künstlichen Intelligenz zu ermöglichen. Das System lernt Gesichter von verschiedenen Personen, unterscheidet diese voneinander und erkennt auch Unbekannte Gesichter als nicht bekannte Personen. Den Studenten wird der Umgang sowohl mit dem YOLO- als auch dem Mediapipe Modell gelehrt. 
+    \item \textbf{Benutzerinteraktion und Visualisierung:}Die visuelle Rückmeldung der KI-Modelle spielt eine zentrale Rolle. Die Ergebnisse werden in den Bildaufnahmen und dem Videostream durch Bounding Boxes, Beschriftungen und farblichen Markierungen verdeutlicht. Dadurch ist es den Studenten ermöglicht die Vorgehensweise der KI-Modelle visuell zu erkennen und ein tieferes Verständnis hinter den Technischen Grundlagen zu erlangen. 
+\end{itemize}
 \subsection{Nicht-funktionale Anforderungen}
+\begin{itemize}
+    \item \textbf{Benutzerfreundlichkeit und Umsetzbarkeit:}Das Hands-On-Tutorial soll für Internationale Studenten gut verständlich und nachvollziehbar sein. Die eingesetzten KI-Modelle sollen so integriertsein, dass sie für Studierende mit unterschiedlichen Vorkenntnissen leicht zugänglich sind. 
+    \item \textbf{Zuverlässigkeit:}Das System soll auch bei ungeeigneten oder fehlerhaften Eingaben stabil bleiben und dem Nutzer Rückmeldung geben, ohne abzustürzen. Fehler- oder Warnmeldungen sollen verständlich formuliert sein und zur Problemlösung beitragen. 
+    \item \textbf{Skalierbarkeit:}Das Tutorial soll, solange die Hardwarezugänglichkeit es zulässt, skalierbar sein und für eine unbegrenzte Anzahl an Teilnehmern verfügbar sein.  
+    \item \textbf{Hardwarelimitierung:}Das System soll auf leistungsschwacher Hardware wie einem Raspberry Pi lauffähig ist. Ziel ist es nicht nur eine kostengünstige Option für Laborbedingen zu schaffen, sondern auch ein auch ein Gefühl für Tiny Machine Learning schaffen. 
+\end{itemize}
 \subsection{User Stories}
+\begin{itemize}
+    \item Als Studierender möchte ich in einem verständlich aufgebauten Tutorial praxisnah in das Thema KI einsteigen 
+    \item Als Studierender möchte ich eine klar strukturierte Einführung in Modelle zur Kennzeichen- und Gesichtserkennung erhalten, um deren Funktionsweise und Einsatzmöglichkeiten nachvollziehen zu können. 
+    \item Als Studierender möchte ich auch außerhalb der Lehrveranstaltung Zugriff auf das Projekt haben, damit ich selbstständig weiterarbeiten und mein Wissen vertiefen kann. 
+    \item Als Student möchte ich die Grenzen intelligenter Systeme erleben, um ein realistisches Verständnis für aktuelle KI-Technologien zu entwickeln. 
+    \item Als Lehrender möchte ich, dass das Tutorial auf einfacher Hardware wie dem Raspberry Pi funktioniert, damit ich reale Einsatzgrenzen sowie praxisnahe Beispiele aus dem Bereich Tiny Machine Learning vermitteln kann. 
+    \item Als Lehrender möchte ich, dass das Tutorial die Lernenden zur kritischen Reflexion anregt. Sie sollen nicht nur die Funktionen nutzen, sondern auch die dahinterliegenden Konzepte und Grenzen verstehen. 
+\end{itemize}

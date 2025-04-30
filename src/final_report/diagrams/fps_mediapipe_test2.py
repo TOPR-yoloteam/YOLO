@@ -20,4 +20,4 @@ ax.grid(True, linestyle='--', alpha=0.7)
 ax.legend()
 
 plt.tight_layout()
-plt.show()
+plt.savefig('src/final_report/data/FPS_ueber_Zeit.png')
