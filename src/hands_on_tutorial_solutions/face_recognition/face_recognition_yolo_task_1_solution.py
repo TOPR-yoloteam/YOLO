@@ -12,7 +12,7 @@ class FaceRecognitionSystemTask1:
         - Sets up camera
         """
         # Paths and directories
-        self.model_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "models", "yolov8n-face.pt")
+        self.model_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "models", "yolov8n-face.pt")
 
         # --- Solution Task 1.1: Load YOLO model ---
         self.model = YOLO(self.model_path)
