@@ -1,0 +1,18 @@
+src/face_recognition/scripts/face/eye_tracking.py
+- Augen auf/zu erkennen
+- Blinzeln erkennen
+- Müdigkeitsalarm (bei zu langen geschlossenen Augen)
+
+src/face_recognition/scripts/face/filter_test_mediapipe.py
+
+- Sonnenbrillen-Filter (nicht fehlerfrei)
+
+src/face_recognition/scripts/face/face_recognition_mediapipe.py
+
+- Gesichter (wieder)erkennen
+- Gesichter lernen/verbessern
+- Mit Gesichtspunkten (Landmarks)
+
+src/face_recognition/scripts/face/face_recognition_mediapipe_old.py:
+
+- Facemesh auf Gesicht
