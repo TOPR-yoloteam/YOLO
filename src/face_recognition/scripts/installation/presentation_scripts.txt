@@ -16,3 +16,44 @@ src/face_recognition/scripts/face/face_recognition_mediapipe.py
 src/face_recognition/scripts/face/face_recognition_mediapipe_old.py:
 
 - Facemesh auf Gesicht
+
+Nützliche Befehle:
+1. **Versionen prüfen:**
+   - Python Version:
+     python --version
+   - Conda Version:
+     conda --version
+   - Installierte Conda-Pakete:
+     conda list
+   - Installierte Python-Pakete:
+     pip list
+   - Installierte Python-Pakete (mit Version):
+     pip freeze
+   - Installierte Python-Pakete (mit Version und Pfad):
+     pip show package_name
+
+2. **Conda-Umgebungen:**
+   - Liste der Conda-Umgebungen:
+     conda env list
+   - Pfad der aktiven Umgebung:
+     echo $CONDA_PREFIX
+
+3. **Dateien durchsuchen:**
+   - Datei nach Name suchen:
+     find /path/to/search -name "filename"
+
+4. **Pfade von ausführbaren Dateien:**
+   - Pfad von `python`:
+     which python
+
+5. **Speicherplatz und Systeminfos:**
+   - Speicherplatz eines Verzeichnisses:
+     du -sh /path/to/directory
+   - Systeminformationen:
+     uname -a
+
+6. **Umgebung erstellen:**
+   - Umgebung aus YAML-Datei erstellen:
+     conda env create -f yolo_env_conda.yaml
+   - Umgebung aktivieren:
+     conda activate yolo_env_conda
