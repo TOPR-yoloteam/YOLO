@@ -5,15 +5,18 @@ import time
 import pygame
 import os
 
+# Initialize pygame mixer FIRST
+pygame.mixer.init()
+
 # Build absolute path to the sound relative to this script
 base_dir = os.path.dirname(__file__)
 sound_path = os.path.abspath(os.path.join(base_dir, '..', '..', 'data', 'audio', 'alarm_sound.wav'))
 
-# Try to load the sound
+# Try to load the sound AFTER initializing the mixer, but don't play it yet
 try:
     sound = pygame.mixer.Sound(sound_path)
     print(f"Sound loaded successfully: {sound_path}")
-    sound.play()  # Play the sound
+    # sound.play() removed so sound isn't played at startup
 except pygame.error as e:
     print(f"Error: Could not load sound.\nChecked path: {sound_path}\nReason: {e}")
     exit()
@@ -37,9 +40,6 @@ RIGHT_EYE_EAR_IDX = {
     "left": 362,
     "right": 263
 }
-
-# Initialize pygame mixer
-pygame.mixer.init()
 
 def play_sound(file_path):
     pygame.mixer.music.load(file_path)  # load sound file
@@ -128,13 +128,13 @@ while cap.isOpened():
                 fatigue_time = 0  # Reset fatigue timer if eyes are open
 
             # Display the eye states
-            cv2.putText(frame, f"Left Eye: {left_eye_state}", (30, 30), cv2.FONT_HERSHEY_SIMPLEX,
+            cv2.putText(frame, f"Right Eye: {left_eye_state}", (30, 30), cv2.FONT_HERSHEY_SIMPLEX,
                         0.7, (0, 255, 0) if left_eye_state == "OPEN" else (0, 0, 255), 2)
-            cv2.putText(frame, f"Right Eye: {right_eye_state}", (30, 60), cv2.FONT_HERSHEY_SIMPLEX,
+            cv2.putText(frame, f"Left Eye: {right_eye_state}", (30, 60), cv2.FONT_HERSHEY_SIMPLEX,
                         0.7, (0, 255, 0) if right_eye_state == "OPEN" else (0, 0, 255), 2)
 
     # Show the result frame
-    cv2.imshow("Test", frame)
+    cv2.imshow("Eye Tracking", frame)
     if cv2.waitKey(5) & 0xFF == 27:  # ESC key to exit
         break
 
