@@ -587,31 +587,32 @@ class FaceRecognitionSystem:
 
     def calculate_performance_metrics(self, frame_start_time, process_time):
         """Calculate FPS, processing time, and stability metrics."""
-        # Time between frames for FPS calculation
+        # Zeit zwischen Frames für die Gesamt-FPS
         if self.frame_times:
             frame_time = frame_start_time - self.frame_times[-1]
             if frame_time > 0:  # Prevent division by zero
                 self.frame_times.append(frame_start_time)
-                # Calculate instantaneous FPS for this frame
+                # Gesamt-FPS (reale Bildwechselfrequenz)
                 instant_fps = 1.0 / frame_time
                 self.instant_fps_values.append(instant_fps)
         else:
             self.frame_times.append(frame_start_time)
 
-        # Add processing time
+        # Verarbeitungszeit hinzufügen
         self.process_times.append(process_time)
 
-        # Calculate average FPS
+        # Gesamt-FPS berechnen (reale Bildrate)
         if len(self.frame_times) >= 2:
             avg_frame_time = (self.frame_times[-1] - self.frame_times[0]) / (len(self.frame_times) - 1)
             fps = 1.0 / avg_frame_time if avg_frame_time > 0 else 0
         else:
             fps = 0
 
-        # Calculate average processing time
+        # Erkennungs-FPS berechnen (theoretische max. FPS wenn nur Erkennung läuft)
         avg_process_time = sum(self.process_times) / len(self.process_times) if self.process_times else 0
+        recognition_fps = 1.0 / avg_process_time if avg_process_time > 0 else 0
 
-        # Calculate FPS stability
+        # FPS-Stabilität berechnen
         fps_stability = 0
         if len(self.instant_fps_values) > 1:
             try:
@@ -619,26 +620,28 @@ class FaceRecognitionSystem:
             except statistics.StatisticsError:
                 fps_stability = 0
 
-        # Calculate stability score
+        # Stabilitätswert berechnen
         stability_score = 100
         if fps > 0:
             stability_score = round(100 - min(100, (10 * fps_stability / max(fps, 1))))
             stability_score = max(0, min(100, stability_score))  # Ensure within 0-100 range
 
-        return fps, avg_process_time, stability_score
+        return fps, recognition_fps, avg_process_time, stability_score
 
-    def record_performance_data(self, elapsed_time, fps, avg_process_time, stability_score):
+    def record_performance_data(self, elapsed_time, fps, recognition_fps, avg_process_time, stability_score):
         """Record performance data every 5 seconds and print after 60 seconds."""
         current_time = time.time()
         if current_time - self.last_record_time >= self.record_interval:
             performance_entry = {
                 "time": int(elapsed_time),
                 "fps": round(fps, 2),
+                "recognition_fps": round(recognition_fps, 2),
                 "avg_process_time": round(avg_process_time * 1000, 2),  # In ms
                 "stability": stability_score
             }
             self.performance_data.append(performance_entry)
             print(f"Time: {performance_entry['time']}s, FPS: {performance_entry['fps']}, "
+                  f"Max FPS: {performance_entry['recognition_fps']}, "
                   f"Processing Time: {performance_entry['avg_process_time']}ms, "
                   f"Stability: {performance_entry['stability']}%")
             self.last_record_time = current_time
@@ -650,16 +653,18 @@ class FaceRecognitionSystem:
             return
 
         avg_fps = sum(data['fps'] for data in self.performance_data) / len(self.performance_data)
+        avg_recognition_fps = sum(data['recognition_fps'] for data in self.performance_data) / len(self.performance_data)
         avg_process_time = sum(data['avg_process_time'] for data in self.performance_data) / len(self.performance_data)
         avg_stability = sum(data['stability'] for data in self.performance_data) / len(self.performance_data)
 
         print("\nPerformance Summary:")
-        print("Time (s) | FPS | Processing (ms) | Stability (%)")
-        print("-" * 50)
+        print("Time (s) | FPS | Max FPS | Processing (ms) | Stability (%)")
+        print("-" * 60)
         for data in self.performance_data:
-            print(f"{data['time']:8} | {data['fps']:>4} | {data['avg_process_time']:>15} | {data['stability']:>13}")
-        print("-" * 50)
+            print(f"{data['time']:8} | {data['fps']:>4} | {data['recognition_fps']:>7} | {data['avg_process_time']:>15} | {data['stability']:>13}")
+        print("-" * 60)
         print(f"Average FPS: {avg_fps:.2f}")
+        print(f"Average Max FPS: {avg_recognition_fps:.2f}")
         print(f"Average Processing Time: {avg_process_time:.2f}ms")
         print(f"Average Stability: {avg_stability:.2f}%")
 
@@ -705,17 +710,19 @@ class FaceRecognitionSystem:
             process_time = process_end - process_start
 
             # Calculate performance metrics
-            fps, avg_process_time, stability_score = self.calculate_performance_metrics(frame_start_time, process_time)
+            fps, recognition_fps, avg_process_time, stability_score = self.calculate_performance_metrics(frame_start_time, process_time)
 
             # Record performance data
-            self.record_performance_data(elapsed_time, fps, avg_process_time, stability_score)
+            self.record_performance_data(elapsed_time, fps, recognition_fps, avg_process_time, stability_score)
 
             # Display performance metrics on the frame
             cv2.putText(display_frame, f"FPS: {round(fps, 1)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                         0.7, (0, 255, 0), 2, cv2.LINE_AA)
-            cv2.putText(display_frame, f"Processing: {round(avg_process_time * 1000, 1)}ms", (10, 60),
+            cv2.putText(display_frame, f"Max FPS: {round(recognition_fps, 1)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.7, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.putText(display_frame, f"Processing: {round(avg_process_time * 1000, 1)}ms", (10, 90),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
-            cv2.putText(display_frame, f"Stability: {stability_score}%", (10, 90),
+            cv2.putText(display_frame, f"Stability: {stability_score}%", (10, 120),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
 
             # Display frame
