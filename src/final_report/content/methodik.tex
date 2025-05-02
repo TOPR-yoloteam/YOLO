@@ -11,13 +11,17 @@ Der Ablauf der Kennzeichenerkennung erfolgt in drei Schritten: \\
 3. Texterkennung: Im letzten Schritt erfolgt die optische Zeichenerkennung (OCR) mit Tesseract. Dabei werden die Buchstaben extrahiert, separat gespeichert und das erkannte Kennzeichen im Konsolenfenster ausgegeben. \\
 
 Das System wurde speziell am Beispiel für den Einsatz an europäischen Mautstationen konzipiert und optimiert. 
-\subsubsection{Datensammlung und Annotation}
 \subsubsection{Training und Optimierung des Modells}
+Training an sich mit Bild und ergebnissen, welcher Datensatz, warum v5? Model Export für Inferenzgeschwindigkeit (ultralytics Homepage gibt es ein gutes Bild dazu)
+\subsubsection{Image Preprocessing}
+Grau Blur Thresh Dilation Contours, Da evtl noch mathematische begründung reinpacken inkl Code
+\subsubsection{Optical Character Recognition}
+auf Code eingehen und evlt Tesseract text von Jerry
 \subsubsection{Herausforderungen bei realen Bedingungen}
 Im Rahmen der Entwicklung unseres Kennzeichenerkennungssystems, das auf eine Mautstationssituation ausgelegt ist, traten verschiedene Herausforderungen auf, die unter realen Bedingungen von besonderer Bedeutung sind. \singlespacing
 
 Eine der ersten Schwierigkeiten bestand in der Vielfalt von Kfz-Kennzeichen weltweit. 
- Während die Objekterkennung des Kennzeichens selbst (die Lokalisierung auf dem Bild) zuverlässig funktionierte, erwies sich das anschließende Auslesen der Schriftzeichen als problematisch. 
+Während die Objekterkennung des Kennzeichens selbst (die Lokalisierung auf dem Bild) zuverlässig funktionierte, erwies sich das anschließende Auslesen der Schriftzeichen als problematisch. 
  Dies lag an den unterschiedlichen Formaten, Schriftarten und Normen, die international variieren. 
  Nach eingehender Analyse kamen wir zu dem Entschluss, dass die Entwicklung eines universellen Kennzeichenerkenners, der alle internationalen Standards abdeckt, den Rahmen unseres Projektes deutlich überschreiten würde. 
  Stattdessen entschieden wir uns, eine optimierte Lösung speziell für deutsche Kfz-Kennzeichen zu entwickeln, um innerhalb der gegebenen Projektgrenzen eine funktional stabile Erkennung zu gewährleisten.\singlespacing
