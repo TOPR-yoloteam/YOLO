@@ -57,3 +57,6 @@ Nützliche Befehle:
      conda env create -f yolo_env_conda.yaml
    - Umgebung aktivieren:
      conda activate yolo_env_conda
+
+     Öffne Bild in Linux:
+     xdg-open image.jpg

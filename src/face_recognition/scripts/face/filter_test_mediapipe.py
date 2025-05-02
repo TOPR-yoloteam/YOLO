@@ -5,7 +5,7 @@ import numpy as np
 
 # Initialize MediaPipe Face Mesh
 mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1)
+face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=5)
 mp_drawing = mp.solutions.drawing_utils
 
 # Build absolute path to the sunglasses image relative to this script
