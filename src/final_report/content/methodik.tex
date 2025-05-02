@@ -123,7 +123,6 @@ Als mögliche Erweiterung wäre ein Postprocessing-Konzept denkbar, bei dem erka
 \subsubsection{Evaluation und Genauigkeitsanalyse}
 
 
-
 \subsection{Gesichtserkennung}
 \subsubsection{Testaufbau}
 Das implementierte System realisiert eine Echtzeit-Gesichtserkennung mittels einer handelsüblichen Webcam (640$\times$480 Pixel) und verwendet das Modell \texttt{YOLOv8n-face} zur Detektion von Gesichtern. Die Identifikation erfolgt durch Kombination der YOLO-basierten Gesichtserkennung mit dem \texttt{face\_recognition}-Framework, das HOG-basierte Merkmalsextraktion nutzt. Bekannte Gesichter werden im lokalen Verzeichnis gespeichert und können über eine grafische Benutzeroberfläche dynamisch erweitert werden. Das System ist für Zutrittskontrollszenarien konzipiert und erlaubt das Anlernen neuer Gesichter im laufenden Betrieb.
