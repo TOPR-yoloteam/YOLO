@@ -16,6 +16,10 @@ Training an sich mit Bild und ergebnissen, welcher Datensatz, warum v5? Model Ex
 \subsubsection{Image Preprocessing}
 Grau Blur Thresh Dilation Contours, Da evtl noch mathematische begründung reinpacken inkl Code
 \subsubsection{Optical Character Recognition}
+In unserem Projekt kommt Tesseract zur Erkennung von KFZ-Kennzeichen zum Einsatz. Ziel ist es, die auf Bildern enthaltenen alphanumerischen Zeichen von Autokennzeichen automatisiert auszulesen. Hierfür verwenden wir die Python-Bibliothek pytesseract, die als Wrapper für die Tesseract-Engine fungiert und eine einfache Integration in bestehende Python-Projekte ermöglicht. 
+
+Wir haben verschiedene OCR-Engines evaluiert, darunter auch EasyOCR. Allerdings zeigte sich in der Praxis, insbesondere auf leistungsschwacher Hardware wie dem Raspberry Pi 4, dass EasyOCR deutlich höhere Anforderungen an Ressourcen wie RAM und Rechenzeit stellt. Tesseract hingegen bietet eine wesentlich effizientere Performance bei akzeptabler Genauigkeit, vor allem in unserem relativ klar definierten Anwendungsfall mit kontrastreichen Kennzeichenbildern. Darüber hinaus lässt sich Tesseract gut konfigurieren, beispielsweise durch Einschränkung auf bestimmte Zeichensätze oder Sprachen, was sich positiv auf die Erkennungsgenauigkeit und Laufzeit auswirkt. 
+
 auf Code eingehen und evlt Tesseract text von Jerry
 \subsubsection{Herausforderungen bei realen Bedingungen}
 Im Rahmen der Entwicklung unseres Kennzeichenerkennungssystems, das auf eine Mautstationssituation ausgelegt ist, traten verschiedene Herausforderungen auf, die unter realen Bedingungen von besonderer Bedeutung sind. \singlespacing
