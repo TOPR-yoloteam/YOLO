@@ -80,8 +80,16 @@ Durch diese Kette an Vorverarbeitungsschritten wird sichergestellt, dass relevan
 
 
 \subsubsection{Optical Character Recognition}
-In unserem Projekt kommt Tesseract zur Erkennung von KFZ-Kennzeichen zum Einsatz. Ziel ist es, die auf Bildern enthaltenen alphanumerischen Zeichen von Autokennzeichen automatisiert auszulesen. Hierfür verwenden wir die Python-Bibliothek pytesseract, die als Wrapper für die Tesseract-Engine fungiert und eine einfache Integration in bestehende Python-Projekte ermöglicht.\singlespacing
-Wir haben verschiedene OCR-Engines evaluiert, darunter auch EasyOCR. Allerdings zeigte sich in der Praxis, insbesondere auf leistungsschwacher Hardware wie dem Raspberry Pi 4, dass EasyOCR deutlich höhere Anforderungen an Ressourcen wie RAM und Rechenzeit stellt. Tesseract hingegen bietet eine wesentlich effizientere Performance bei akzeptabler Genauigkeit, vor allem in unserem relativ klar definierten Anwendungsfall mit kontrastreichen Kennzeichenbildern. Darüber hinaus lässt sich Tesseract gut konfigurieren, beispielsweise durch Einschränkung auf bestimmte Zeichensätze oder Sprachen, was sich positiv auf die Erkennungsgenauigkeit und Laufzeit auswirkt. 
+
+Nach Abschluss der Bildvorverarbeitung, bei der die Kennzeichenbilder in eine geeignete Form gebracht wurden, erfolgt die Erkennung der enthaltenen alphanumerischen Zeichen mittels Optical Character Recognition (OCR). Zu Beginn des Projekts wurden dazu verschiedene OCR-Engines untersucht, darunter auch EasyOCR. Diese Deep-Learning-basierte Bibliothek liefert in vielen Anwendungsfällen gute Ergebnisse, zeigte jedoch im praktischen Einsatz auf ressourcenschwacher Hardware wie dem Raspberry Pi 4 deutliche Einschränkungen. Der hohe Speicherbedarf und die langen Inferenzzeiten verhinderten eine Echtzeitverarbeitung.\singlespacing
+
+Im Vergleich dazu bot Tesseract eine deutlich geringere Systemlast bei gleichzeitig stabiler Erkennungsleistung. Besonders in unserem Anwendungsfall – kontrastreiche, segmentierte Kennzeichenbilder – erwies sich Tesseract als ausreichend genau. Durch gezielte Konfigurationsmöglichkeiten, wie die Beschränkung auf bestimmte Zeichensätze und Layout-Modi, ließ sich die Leistung zusätzlich optimieren. Aus diesen Gründen fiel die Entscheidung auf die Kombination aus Tesseract und der Python-Bibliothek \texttt{pytesseract}.\singlespacing
+
+Im nächsten Schritt der Pipeline erfolgt eine Konturanalyse auf dem vorbereiteten binären Bild. Die erkannten Konturen werden nach verschiedenen geometrischen Kriterien gefiltert, um nur relevante Regionen weiterzuverarbeiten – etwa anhand von Größe, Seitenverhältnis und Position. Für jede verbleibende Kontur wird ein leicht vergrößerter Bildausschnitt (Region of Interest) definiert. Dieser wird an die OCR-Engine übergeben.\singlespacing
+
+Die Texterkennung wird über die Funktion \texttt{image\_to\_data} durchgeführt. Dabei wird der zu analysierende Zeichensatz auf Großbuchstaben und Ziffern eingeschränkt (\texttt{tessedit\_char\_whitelist}) und mit dem Seitenlayout-Modus \texttt{--psm 8} gearbeitet, der für einzelne Zeichen geeignet ist. Das Ergebnis umfasst neben dem erkannten Text auch Positionsdaten und Konfidenzwerte.
+
+Abschließend werden die erkannten Zeichenbereiche im Graustufenbild visuell hervorgehoben und als Bilddateien gespeichert, um die Ergebnisse nachvollziehbar und prüfbar zu machen.
 
 \subsubsection{Herausforderungen bei realen Bedingungen}
 Im Rahmen der Entwicklung unseres Kennzeichenerkennungssystems, das auf eine Mautstationssituation ausgelegt ist, traten verschiedene Herausforderungen auf, die unter realen Bedingungen von besonderer Bedeutung sind. \singlespacing
