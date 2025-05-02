@@ -12,7 +12,12 @@ Der Ablauf der Kennzeichenerkennung erfolgt in drei Schritten: \\
 
 Das System wurde speziell am Beispiel für den Einsatz an europäischen Mautstationen konzipiert und optimiert. 
 \subsubsection{Training und Optimierung des Modells}
-Training an sich mit Bild und ergebnissen, welcher Datensatz, warum v5? Model Export für Inferenzgeschwindigkeit (ultralytics Homepage gibt es ein gutes Bild dazu)
+Training an sich mit Bild und ergebnissen, welcher Datensatz, warum v5? Model Export für Inferenzgeschwindigkeit (ultralytics Homepage gibt es ein gutes Bild dazu)\\ \\
+
+Für die Erkennung der Kennzeichenbereiche wurde bewusst das Modell YOLOv5 eingesetzt. Dieses Modell biete eine ausgewogene Kombination aus Genauigkeit und Effizienz und eignet sich besonders gut für ressourcenbeschränkte Umgebungen wie den Raspberry Pi. Zwar existieren mittlerweile neuere und theoretisch leistungsfähigere Modellversionen, doch diese bringen meist deutlich höhere Anforderungen an Rechenleistung und Speicher mit sich, was eine stabile Ausführung auf einem Mikrocomputer wie dem Raspberry Pi erschwert oder sogar unmöglich macht.\\
+Gerade im Hinblick auf die beschränkten Hardwarekapazitäten des Raspberry Pi ist YOLOv5 insbesondere in den Varianten „nano“ oder „small“ eine sinnvolle Wahl. Diese Varianten sind speziell darauf ausgelegt, auch auf schwächerer Hardware zuverlässig zu funktionieren und dabei dennoch eine ausreichend hohe Erkennungsgenauigkeit zu gewährleisten. In der Praxis zeigt sich, dass mit YOLOv5 eine robuste Objekterkennung in nahezu Echtzeit möglich ist, ohne den Systembetrieb zu beeinträchtigen.\\
+Darüber hinaus wird YOLOv5 von einer großen Entwickler-Community unterstützt und lässt sich problemlos in Formate wie ONNX oder TensorRT umwandeln. Diese können für den Einsatz auf Geräten wie dem Raspberry Pi weiter optimiert werden, wodurch das Modell dort noch effizienter läuft. Insgesamt macht das YOLOv5 zu einer sehr praktischen Lösung für die Kennzeichenerkennung auf dieser Plattform.
+
 \subsubsection{Image Preprocessing}
 Grau Blur Thresh Dilation Contours, Da evtl noch mathematische begründung reinpacken inkl Code
 \subsubsection{Optical Character Recognition}
