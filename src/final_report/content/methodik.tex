@@ -12,13 +12,60 @@ Der Ablauf der Kennzeichenerkennung erfolgt in drei Schritten: \\
 
 Das System wurde speziell am Beispiel für den Einsatz an europäischen Mautstationen konzipiert und optimiert. 
 \subsubsection{Training und Optimierung des Modells}
-Training an sich mit Bild und ergebnissen, welcher Datensatz, warum v5? Model Export für Inferenzgeschwindigkeit (ultralytics Homepage gibt es ein gutes Bild dazu)
+Zur Detektion von KFZ-Kennzeichen im Bildmaterial kommt in unserem Projekt ein speziell trainiertes YOLOv5-Modell zum Einsatz. YOLO (You Only Look Once) ist eine auf Echtzeit ausgelegte Objekterkennungsarchitektur, die es ermöglicht, Objekte wie Nummernschilder direkt in Bildern zu lokalisieren und zu klassifizieren. Wir haben uns dabei für die besonders kompakte Variante YOLOv5(nano) entschieden, da diese für ressourcenschwache Systeme wie den Raspberry Pi 4 optimiert ist und eine hohe Inferenzgeschwindigkeit bei geringer Modellgröße bietet.
+\paragraph{Datengrundlage}
+Als Trainingsgrundlage diente ein öffentlich zugänglicher Datensatz aus Roboflow Universe mit rund 3.000 annotierten Bilder von KFZ-Kennzeichen\footnote{\url{https://universe.roboflow.com/roboflow-universe-projects/license-plate-recognition-rxg4e}}. Der Datensatz enthält bereits diverse Perspektiven, Lichtverhältnisse und Rotationen, was zur Robustheit des Modells beiträgt.
+
+Zusätzlich wurden während des Trainings verschiedene Datenaugmentierungen vorgenommen, um die Generalisierungsfähigkeit weiter zu verbessern. Hierzu zählten unter anderem:
+
+\begin{itemize}
+    \item Auto-Orientierung zur Korrektur der Bildausrichtung
+    \item Resize auf ein einheitliches Format von 640x640 Pixel
+    \item Rauschüberlagerung (bis zu 1{,}6\% der Pixel)
+    \item Unschärfeeffekte (bis zu 1{,}6\% Pixel Blur)
+  \end{itemize}
+
+Diese Maßnahmen wurden mit Roboflow automatisiert vorgenommen. Das Modell wurde anschließend in Google Colab auf einer GPU-Instanz trainiert. Die Trainingsdauer betrug etwa 1,5 bis 2 Stunden. Als Hyperparameter wurden 50 Epochen mit einer Batch-Größe von 10 verwendet. Die restlichen Parameter (zum Beispiel Lernrate) blieben auf den Standardwerten des YOLOv5-Frameworks.
+
+\paragraph{Trainingsergebnisse und Validierung}
+Zur Bewertung des Trainingsverlaufs wurden typische Metriken von YOLOv5 analysiert. Abbildung~\ref{fig:training} zeigt die Entwicklung der Kennzahlen über den Verlauf von 50 Trainings-Epochen.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.55\textwidth]{data/training_results.png}
+    \caption{Trainingsergebnisse des YOLOv5-Modells.}
+    \label{fig:training}
+\end{figure}
+
+Zu erkennen ist, dass sowohl die Trainings- als auch Validierungsverluste (box\_loss, cls\_loss, dfl\_loss) im Verlauf kontinuierlich abnehmen, was auf ein stabiles und erfolgreiches Training hindeutet. Besonders der Klassifikationsverlust (cls\_loss) zeigt eine schnelle Konvergenz in den ersten zehn Epochen. Die Präzision und der Recall pendeln sich im oberen Bereich ein – teils mit leichten Schwankungen, die jedoch durch das kleine Modell und die geringe Batch-Größe erklärbar sind.
+
+Besonders relevant ist der mean Average Precision (mAP) – ein Maß für die Genauigkeit bei verschiedenen IoU-Schwellenwerten. Der Wert mAP@0.5 steigt im Verlauf des Trainings auf über 0,9, während mAP@0.5:0.95 einen stabilen Endwert um 0,70 erreicht. Dies spricht für eine hohe Detektionsqualität, auch bei komplexeren Szenarien.
+\paragraph{Konfidenz und Modellanwendung}
+Die Ausgabe eines YOLO-Modells enthält neben den erkannten Objektpositionen auch sogenannte Konfidenzwerte, also Wahrscheinlichkeiten, mit denen das Modell ein Objekt als erkannt einstuft. In unserem Projekt wurde ein Konfidenzschwellenwert definiert, um falsch-positive Erkennungen zu reduzieren. Nur Detektionen mit einer Konfidenz über diesem Schwellenwert wurden weiterverarbeitet.
+
+Das trainierte YOLOv5-Modell im .pt-Format wurde zur Performanzoptimierung in das NCNN-Format konvertiert. NCNN ist ein hochoptimiertes Inferenz-Framework speziell für mobile und eingebettete Systeme. Dadurch konnte das Modell auf dem Raspberry Pi 4 mit hoher Effizienz ausgeführt werden. Die Anwendung läuft in einem Skript, das serienweise acht Bilder aufnimmt und analysiert – was nahezu Echtzeitverarbeitung ermöglicht.
+
+\paragraph{Einfluss der Trainingsdaten und Verbesserungsmöglichkeiten}
+Die Qualität und Diversität der Trainingsdaten hat direkten Einfluss auf die Erkennungsleistung. In unserem Fall war der Datensatz breit gefächert, jedoch auf Kennzeichen fokussiert. Mögliche Optimierungen für die Zukunft wären:
+
+\begin{itemize}
+    \item Erweiterung des Datensatzes um reale eigene Aufnahmen
+    \item Feinjustierung der Augmentierungstechniken
+    \item Transfer Learning mit größeren Basismodellen
+    \item Active Learning durch gezieltes Nachtraining mit fehlerhaften Beispielen
+  \end{itemize}
+
+  Dadurch könnte die Robustheit des Modells gezielt für Spezialfälle wie Nachtaufnahmen, verschmutzte Kennzeichen oder ungewöhnliche Kamerawinkel verbessert werden.
+
+
 \subsubsection{Image Preprocessing}
 Grau Blur Thresh Dilation Contours, Da evtl noch mathematische begründung reinpacken inkl Code
 \subsubsection{Optical Character Recognition}
 In unserem Projekt kommt Tesseract zur Erkennung von KFZ-Kennzeichen zum Einsatz. Ziel ist es, die auf Bildern enthaltenen alphanumerischen Zeichen von Autokennzeichen automatisiert auszulesen. Hierfür verwenden wir die Python-Bibliothek pytesseract, die als Wrapper für die Tesseract-Engine fungiert und eine einfache Integration in bestehende Python-Projekte ermöglicht. 
 
 Wir haben verschiedene OCR-Engines evaluiert, darunter auch EasyOCR. Allerdings zeigte sich in der Praxis, insbesondere auf leistungsschwacher Hardware wie dem Raspberry Pi 4, dass EasyOCR deutlich höhere Anforderungen an Ressourcen wie RAM und Rechenzeit stellt. Tesseract hingegen bietet eine wesentlich effizientere Performance bei akzeptabler Genauigkeit, vor allem in unserem relativ klar definierten Anwendungsfall mit kontrastreichen Kennzeichenbildern. Darüber hinaus lässt sich Tesseract gut konfigurieren, beispielsweise durch Einschränkung auf bestimmte Zeichensätze oder Sprachen, was sich positiv auf die Erkennungsgenauigkeit und Laufzeit auswirkt. 
+
+
+
 
 auf Code eingehen und evlt Tesseract text von Jerry
 \subsubsection{Herausforderungen bei realen Bedingungen}
