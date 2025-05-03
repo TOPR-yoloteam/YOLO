@@ -5,8 +5,8 @@ import numpy as np
 
 # Für Balkendiagramm (Durchschnittswerte)
 labels = ['FPS Ø', 'Verarbeitungszeit Ø (ms)', 'Stabilität (%)']
-confidence_05 = [27.16, 8.81, 97.73]
-confidence_08 = [20.6, 12.68, 99.0]
+confidence_05 = [16.83, 15.18, 97.73]
+confidence_08 = [20.6, 12.02, 98.27]
 
 
 

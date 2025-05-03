@@ -184,7 +184,7 @@ Das vorgestellte System kombiniert die Geschwindigkeit und Präzision moderner Y
 Für die Gesichtspunkterkennung haben wir uns für das Face Mesh Modell von Mediapipe entschieden. Bei diesem Modell sieht man alle 468 3D-Gesichtspunkte in Echtzeit. Die Bereitstellung der Punkte in 3D-Koordinaten eröffnet vielfältige Anwendungsmöglichkeiten, von der Gesichtswiedererkennung über die Emotionsanalyse bis hin zu Augmented Reality-Erlebnissen.
 
 (?) Der vollständige Code, der die hier beschriebene Gesichtspunkt-Erkennung mit MediaPipe implementiert, ist im Anhang und/oder auf GitHub verfügbar.
-Der ganze Code ist in Python geschrieben. 
+Der ganze Code ist in Python geschrieben.
 
 Zunächst müssen wir notwendigen die Bibliotheken importieren. Diese sind in unserem Fall die OpenCV und MediaPipe-Bibliotheken.
 Danach initialisieren wir die MediaPipe-Instanz. Dies geschieht mit dem folgenden Code:
@@ -214,7 +214,7 @@ Ein wichtiger Schritt ist die Konvertierung des Farbraums des aufgenommenen Bild
 Diese Konvertierung ist notwendig, da unterschiedliche Bibliotheken und Modelle intern mit verschiedenen Farbreihenfolgen arbeiten. Die Verwendung der falschen Reihenfolge kann zu fehlerhaften Ergebnissen führen.
 
 Nun verarbeitet MediaPipe das in RGB konvertierte Bild, um Gesichter zu erkennen und die entsprechenden Gesichtspunkte zu lokalisieren.
- 
+
 Sobald ein oder mehrere Gesichter im Bild erkannt wurden, zeichnen wir die 468 Gesichtspunkte und die Verbindungen zwischen ihnen auf das ursprüngliche Farbbild.
 \begin{lstlisting}
     if results.multi_face_landmarks:
@@ -242,6 +242,39 @@ Schließlich wird das mit den eingezeichneten Gesichtspunkten versehene Bild ang
 Dieser Code bildet die Grundlage für unsere Gesichtswiedererkennung.
 
 \paragraph{Gesichtswiedererkennung mit Gesichtspunkten: Code}
+
+Unser System zur Echtzeit-Gesichtserkennung nutzt MediaPipe Face Mesh, um Gesichter in Videostreams präzise zu erkennen.
+Seine Funktionalität umfasst das Erlernen und Speichern neuer Gesichter, das Wiedererkennen bekannter Personen und die Fähigkeit zum kontinuierlichen Dazulernen, wodurch sich die Erkennungsleistung stetig verbessert.
+
+Im Kern des Systems steht die Initialisierung, in der das MediaPipe Face Mesh-Modul eingerichtet und die Kamera gestartet wird.
+Zudem werden Speicherstrukturen für die Namen bekannter Gesichter und deren charakteristische Gesichtspunkte (Landmarks) vorbereitet.
+
+Die eigentliche Gesichtserkennung erfolgt durch die Funktion extract\_face\_landmarks. Diese nutzt MediaPipe, um detaillierte Gesichtsmerkmale zu extrahieren, wobei ein besonderer Fokus auf 50 Schlüsselpunkte in den Bereichen Augen, Nase, Mund und Augenbrauen liegt.
+Um eine konsistente Erkennung zu gewährleisten, werden die Koordinaten dieser Punkte normalisiert.
+
+Für den Gesichtsvergleich kommt die Methode recognize\_face zum Einsatz. Sie vergleicht neu erkannte Gesichtsmerkmale mit den gespeicherten Daten.
+Dabei werden gewichtete Abstände zwischen den Punkten berechnet, wobei einzelnen Gesichtsregionen – insbesondere den Augen – höhere Bedeutung zugewiesen wird, was die Genauigkeit der Erkennung erhöht.
+
+Der Lernprozess des Systems ist zweigeteilt. Zum einen können Benutzer aktiv ein neues Gesicht speichern, indem sie auf einen "Learn Face"-Button klicken oder eine bestimmte Taste drücken.
+Zum anderen verfügt das System über ein kontinuierliches Lernen: es ergänzt automatisch neue Gesichtsdaten, sofern diese genügend unterschiedlich zu bestehenden Samples sind.
+Eine Diversitätsprüfung stellt sicher, dass keine redundanten Daten gespeichert werden.
+
+Die Hauptschleife des Systems verarbeitet kontinuierlich neue Kamerabilder. Darin werden Gesichter erkannt, Landmark-Daten extrahiert, Vergleiche durchgeführt, Ergebnisse angezeigt und Benutzereingaben verarbeitet.
+
+Besondere Features des Systems tragen wesentlich zur hohen Leistungsfähigkeit bei:
+\begin{itemize}
+    \item Gewichtete Erkennung steigert die Genauigkeit.
+    \item Kontinuierliches Lernen verbessert die Erkennung über die Zeit
+    \item Diversitätsprüfung verhindert das Speichern ähnlicher Gesichtsausdrücke.
+    \item Konsistenzprüfung über mehrere Frames verringert Fehlerkennungen.
+    \item Outlier-Bereinigung sorgt für saubere Datensätze.
+\end{itemize}
+
+Das Benutzerinterface ermöglicht eine einfache Interaktion.
+Erkannte Gesichter werden mit Name und Konfidenzwert angezeigt, und neue Gesichter können bequem gelernt werden.
+
+Die Gesichtsmerkmale werden lokal gespeichert, wobei Pickle zur Serialisierung genutzt wird. Dadurch werden bekannte Gesichter beim nächsten Start automatisch wieder geladen.
+
 
 \paragraph{Metriken}
 Für die Bewertung der Gesichtspunkterkennung mit MediaPipe haben wir folgende Metriken genutzt, da wird diese am Ende auch noch mit YOLO vergleichen möchten:
@@ -292,6 +325,28 @@ Die Gegenüberstellung der Leistung bei unterschiedlichen Confidence-Werten in A
 \end{figure}
 
 \paragraph{Anwendungsbeispiel: Zutrittskontrollen}
+
+Mediapipe bietet zwar grundlegende Funktionen zur Gesichtserkennung, weist jedoch erhebliche Einschränkungen bei der zuverlässigen Wiedererkennung von Personen auf. 
+Während unser System Gesichter erkennen und deren Merkmale (Landmarks) identifizieren kann, ist es primär für die Erkennung der Gesichtsstruktur konzipiert und nicht für die biometrische Identifikation.
+
+Ein wesentliches Problem ist die langsame Anpassungsfähigkeit. Bei schnellen Bewegungen kann unser System die Wiedererkennung verlieren, wodurch Nutzer gezwungen sind, eine Position zu finden, in der sie erneut erkannt werden. 
+Die verwendete Landmark-Distanz-Methode erweist sich als besonders empfindlich: Selbst kleine Veränderungen im Gesichtsausdruck, bei Lichtverhältnissen oder der Perspektive können die Lage der Gesichtspunkte signifikant beeinflussen und damit die Wiedererkennung erschweren.
+
+Zudem fehlen wichtige Sicherheitsfunktionen. Es gibt keinen Schutz gegen einfache Täuschungsversuche, beispielsweise könnte jemand ein Foto hochhalten und das System würde dies als echtes Gesicht erkennen. 
+Dies macht die Technologie deutlich weniger robust als moderne Face-Recognition-Methoden. Auch die Verwaltung mehrerer Nutzerprofile würde bei diesem einfachen Ansatz schnell komplex und fehleranfällig werden.
+
+Mediapipe wurde eigentlich für andere Anwendungsbereiche entwickelt, insbesondere für Augmented Reality-Anwendungen, bei denen es darum geht, virtuelle Elemente auf Gesichter zu projizieren. 
+Seine Stärke liegt in der präzisen Erkennung von Gesichtspunkten, nicht in der Identifikation bestimmter Personen.
+
+Für eine zuverlässige Zutrittskontrolle wären zusätzliche Komponenten erforderlich:
+\begin{itemize}
+    \item Ein Vergleichssystem mit Face Embeddings und Klassifikationsalgorithmen
+    \item Lebenderkennung, um Angriffe mit Fotos oder Videos zu verhindern
+    \item Ein zuverlässiges Management-System für gespeicherte Nutzerprofile
+\end{itemize}
+
+Zusammenfassend kann Mediapipe durchaus als Baustein für einfache Zugangskontrollen in nicht-kritischen Bereichen dienen (etwa für private Projekte), ist jedoch für sicherheitsrelevante Anwendungen ohne erhebliche Erweiterungen und Kombinationen mit anderen Technologien nicht geeignet. 
+Die Stärken des Systems liegen eindeutig in der grundlegenden Gesichtserkennung, während für die zuverlässige Wiedererkennung und Identifikation von Personen fortgeschrittenere Lösungen notwendig sind.
 
 \subsubsection{Vergleich von YOLO und MediaPipe}
 \paragraph{Confidence Score}
