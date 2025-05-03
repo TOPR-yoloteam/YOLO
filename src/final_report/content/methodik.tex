@@ -180,18 +180,76 @@ Das vorgestellte System kombiniert die Geschwindigkeit und Präzision moderner Y
 \end{quote}
 
 \subsubsection{MediaPipe}
-\paragraph{Gesichtspunkterkennung}
+\paragraph{Gesichtspunkterkennung: Code}
+Für die Gesichtspunkterkennung haben wir uns für das Face Mesh Modell von Mediapipe entschieden. Bei diesem Modell sieht man alle 468 3D-Gesichtspunkte in Echtzeit. Die Bereitstellung der Punkte in 3D-Koordinaten eröffnet vielfältige Anwendungsmöglichkeiten, von der Gesichtswiedererkennung über die Emotionsanalyse bis hin zu Augmented Reality-Erlebnissen.
 
+(?) Der vollständige Code, der die hier beschriebene Gesichtspunkt-Erkennung mit MediaPipe implementiert, ist im Anhang und/oder auf GitHub verfügbar.
+Der ganze Code ist in Python geschrieben. 
 
-\paragraph{Gesichtswiedererkennung mit Gesichtspunkten}
+Zunächst müssen wir notwendigen die Bibliotheken importieren. Diese sind in unserem Fall die OpenCV und MediaPipe-Bibliotheken.
+Danach initialisieren wir die MediaPipe-Instanz. Dies geschieht mit dem folgenden Code:
+\begin{lstlisting}
+    # MediaPipe Face Mesh Setup
+    mp_face_mesh = mp.solutions.face_mesh
+    face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=5, min_detection_confidence=0.8)
+\end{lstlisting}
+
+\textbf{Parameter-Erläuterung:}
+\begin{itemize}
+    \item \texttt{static\_image\_mode=False}: Dieser Parameter ist entscheiden, wenn man Videostreams oder Live-Kameraaufnahmen verarbeiten möchte. Er signalisiert dem Modell, dass es sich um eine Sequenz von Bildern handelt und optimiert die Verarbeitung entsprechend.
+    \item \texttt{max\_num\_faces=5}: Damit legt man die maximale Anzahl von Gesichtern fest, die gleichzeitig im Bild erkannt werden sind. In userem Fall sind es maximal 5 Gesichter gleichzeitig.
+    \item \texttt{min\_detection\_confidence=0.8}: Dieser Wert bestimmt die Mindestsicherheit (in Prozent) für eine Gesichtserkennung. Ein höherer Wert führt zu präziseren Erkennungen, kann aber dazu führen, dass Gesichter bei ungünstigen Bedingungen (z.B. schlechte Beleuchtung, teilverdeckte Gesichter) nicht erkannt werden. Bei uns ist dieser Wert 80\%, da man da auch schon bei diesem Wert eine gute Erkennung hat.
+\end{itemize}
+
+Um die erkannten Gesichtspunkte und deren Verbindungen visuell darzustellen, initialisieren wir die Zeichenwerkzeuge von MediaPipe. drawing\_spec definiert das Aussehen der Punkte und Linien (z.B. Farbe, Dicke).
+
+Im nächsten Schritt wird die Webcam geöffnet, um Videobilder aufzunehmen. Alternativ könnte man hier auch den Pfad zu einer Bild- oder Videodatei angeben. 
+
+Die Hauptschleife des Programms läuft, solange die Kamera aktiv ist. In jeder Iteration der Schleife wird ein neues Bild von der Webcam erfasst und verarbeitet.
+
+Ein wichtiger Schritt ist die Konvertierung des Farbraums des aufgenommenen Bildes von BGR (Blue, Green, Red), dem Standardformat von OpenCV, nach RGB (Red, Green, Blue), das von MediaPipe erwartet wird.
+\begin{lstlisting}
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+\end{lstlisting}
+Diese Konvertierung ist notwendig, da unterschiedliche Bibliotheken und Modelle intern mit verschiedenen Farbreihenfolgen arbeiten. Die Verwendung der falschen Reihenfolge kann zu fehlerhaften Ergebnissen führen.
+
+Nun verarbeitet MediaPipe das in RGB konvertierte Bild, um Gesichter zu erkennen und die entsprechenden Gesichtspunkte zu lokalisieren.
+ 
+Sobald ein oder mehrere Gesichter im Bild erkannt wurden, zeichnen wir die 468 Gesichtspunkte und die Verbindungen zwischen ihnen auf das ursprüngliche Farbbild.
+\begin{lstlisting}
+    if results.multi_face_landmarks:
+    for face_landmarks in results.multi_face_landmarks:
+        # draw all landmarks
+        mp_drawing.draw_landmarks(
+            image=frame,
+            landmark_list=face_landmarks,
+            connections=mp_face_mesh.FACEMESH_TESSELATION,
+            landmark_drawing_spec=drawing_spec,
+            connection_drawing_spec=drawing_spec
+        )
+\end{lstlisting}
+\textbf{Parameter-Erläuterung}:
+\begin{itemize}
+    \item \texttt{image=frame}: Das Originalbild (im BGR-Format), auf das die Landmarken gezeichnet werden sollen.
+    \item \texttt{landmark\_list=face\_landmarks}: Die Liste der erkannten Gesichtspunkte für ein einzelnes Gesicht.
+    \item \texttt{connections=mp\_face\_mesh.FACEMESH\_TESSELATION}: Die vordefinierten Verbindungen zwischen den Gesichtspunkten, die das Face Mesh Modell verwendet (z.B. um Augenbrauen, Lippen, Gesichtskonturen darzustellen).
+    \item \texttt{landmark\_drawing\_spec=drawing\_spec}: Die zuvor definierten Zeichenstil-Spezifikationen für die einzelnen Punkte.
+    \item \texttt{connection\_drawing\_spec=drawing\_spec}: Die zuvor definierten Zeichenstil-Spezifikationen für die Verbindungslinien.
+\end{itemize}
+
+Schließlich wird das mit den eingezeichneten Gesichtspunkten versehene Bild angezeigt. Die Schleife wird beendet und die Webcam freigegeben, sobald der Benutzer die ESC-Taste drückt oder das Programm manuell beendet.
+
+Dieser Code bildet die Grundlage für unsere Gesichtswiedererkennung.
+
+\paragraph{Gesichtswiedererkennung mit Gesichtspunkten: Code}
 
 \paragraph{Metriken}
-Für die Bewertung der Gesichtspunkterkennung mit MediaPipe sind folgende Metriken relevant:
+Für die Bewertung der Gesichtspunkterkennung mit MediaPipe haben wir folgende Metriken genutzt, da wird diese am Ende auch noch mit YOLO vergleichen möchten:
 \begin{itemize}
     \item \textbf{Failure Rate:} Anteil der Bilder, bei denen kein Gesicht erkannt wurde.
     \item \textbf{Landmark Error:} Durchschnittlicher Fehler bei der Lokalisierung der Gesichtspunkte.
     \item \textbf{Confidence Score:} Wahrscheinlichkeit, dass ein Gesicht erkannt wurde.
-    \item \textbf{Inferenzgeschwindigkeit:} Anzahl der Bilder pro Sekunde (FPS) bzw. durchschnittliche Latenz pro Bild.
+    \item \textbf{FPS / Inferenzzeit:} Anzahl der Bilder pro Sekunde (FPS) bzw. durchschnittliche Latenz pro Bild.
 \end{itemize}
 
 
@@ -201,7 +259,7 @@ Für die Bewertung der Gesichtspunkterkennung mit MediaPipe sind folgende Metrik
 \textbf{Confidence Score} \\
 
 
-\textbf{Inferenzgeschwindigkeit} \\
+\textbf{FPS / Inferenzzeit} \\
 
 Die Augfabenstellung umfasste die Analyse und Bewertung die Performance der MediaPipe Gesichtserkennung und Gesichtswiedererkennung hinsichtlich ihrer Inferenzgeschwindigkeit und Stabilität.
 
@@ -233,11 +291,9 @@ Die Gegenüberstellung der Leistung bei unterschiedlichen Confidence-Werten in A
     \label{fig:fps_ueber_zeit}
 \end{figure}
 
-
-\paragraph{Metriken}
 \paragraph{Anwendungsbeispiel: Zutrittskontrollen}
 
-\subsubsection{Vergleich}
+\subsubsection{Vergleich von YOLO und MediaPipe}
 \paragraph{Confidence Score}
 \paragraph{FPS / Inference Time}
 
