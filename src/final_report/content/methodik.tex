@@ -279,35 +279,24 @@ Die Gesichtsmerkmale werden lokal gespeichert, wobei Pickle zur Serialisierung g
 \paragraph{Metriken}
 Für die Bewertung der Gesichtspunkterkennung mit MediaPipe haben wir folgende Metriken genutzt, da wird diese am Ende auch noch mit YOLO vergleichen möchten:
 \begin{itemize}
-    \item \textbf{Failure Rate:} Anteil der Bilder, bei denen kein Gesicht erkannt wurde.
-    \item \textbf{Landmark Error:} Durchschnittlicher Fehler bei der Lokalisierung der Gesichtspunkte.
     \item \textbf{Confidence Score:} Wahrscheinlichkeit, dass ein Gesicht erkannt wurde.
     \item \textbf{FPS / Inferenzzeit:} Anzahl der Bilder pro Sekunde (FPS) bzw. durchschnittliche Latenz pro Bild.
 \end{itemize}
-
-
-\textbf{Failure Rate} \\
-
 
 \textbf{Confidence Score} \\
 
 
 \textbf{FPS / Inferenzzeit} \\
 
-Die Augfabenstellung umfasste die Analyse und Bewertung die Performance der MediaPipe Gesichtserkennung und Gesichtswiedererkennung hinsichtlich ihrer Inferenzgeschwindigkeit und Stabilität.
+Die Aufgabenstellung umfasste die Analyse und Bewertung der MediaPipe-Gesichtserkennung und -wiedererkennung hinsichtlich Inferenzgeschwindigkeit, Verarbeitungszeit und Stabilität.
 
-Für die Gesichtserkennung wurden für verschiedene Confidence-Werte (50\% und 80\%) die FPS (Frames per second), Verarbeitungszeit und die Stabilität berechnet und verglichen.
+Für die Gesichtserkennung wurden FPS, Verarbeitungszeit und Stabilität bei Confidence-Werten von 50\% und 80\% gemessen und verglichen. Die Gesichtserkennung erfolgte mit MediaPipe FaceMesh auf einer Webcam-Auflösung von 640×480 Pixeln über 60 Sekunden, wobei alle 5 Sekunden Messwerte erfasst wurden.
 
-Die Gesichtswiedererkennung wurde mit dem MediaPipe FaceMesh auf einer einheitlichen Webcam-Auflösung (640 auf 480) durchgeführt. Über einen Zeitraum von 60 Sekunden wurden in 5-Sekunden-Intervallen FPS, durschnittliche Verabeitungszeit pro Frame, erkannte Gesichter sowie ein Stabilitätswert berechnet und dokumentiert.
-Für die Confidence-Werte von 50\% und 80\% wurde jeweils ein separater Test durchgeführt.
+Die Ergebnisse (siehe Abbildung \ref{fig:vergleich_confidence}) zeigen, dass eine Erhöhung des Confidence-Werts von 50\% auf 80\% die Inferenzgeschwindigkeit signifikant verbessert: Die durchschnittlichen FPS stiegen von 16,83 auf 19,48 (+15,7\%), und die Verarbeitungszeit pro Frame sank von 15,18ms auf 12,02ms (-20,8\%). Ursache ist, dass bei höherer Confidence weniger unsichere Erkennungen verarbeitet werden müssen.
 
-Die Ergebnisse zeigen deutlich, dass eine Erhöhung des Confidence-Schwellenwerts von 50\% auf 80\% einen signifikanten Einfluss auf die Inferenzgeschwindigkeit hat. Bei einem Confidence-Wert von 50\% wurde eine durchschnittliche Framerate von 27.16 FPS mit einer mittleren Verarbeitungszeit von 8.81 ms pro Frame erreicht. Im Gegensatz dazu sank die durchschnittliche FPS bei einem Confidence-Wert von 80\% auf 20.6, während die mittlere Verarbeitungszeit auf 12.68 ms anstieg. Dies deutet darauf hin, dass ein höherer Confidence-Wert zu einer genaueren, aber auch langsameren Verarbeitung führt, da das Modell länger nach sichereren Erkennungen sucht.
+Der FPS-Verlauf über die Zeit (Abbildung \ref{fig:fps_ueber_zeit}) bestätigt diese Tendenz, zeigt aber auch natürliche Schwankungen aufgrund variierender Bildinhalte (z.B. Bewegungen oder Mimik).
 
-Die Stabilität der Gesichtserkennung blieb in beiden Tests mit durchschnittlich 97.73\% (bei 50\% Confidence) und 99\% (bei 80\% Confidence) relativ hoch. Dies deutet darauf hin, dass die Erkennung über die Zeit hinweg zuverlässig Gesichter identifizieren konnte, wobei der höhere Confidence-Wert tendenziell zu einer noch stabileren Erkennung führte.
-
-Die Beobachtungen während der Tests bestätigen, dass die Leistung der MediaPipe Gesichtserkennung von verschiedenen Faktoren beeinflusst wird. Eine höhere Anzahl von Gesichtern, eine bessere Auflösung des Eingabebildes und ein höherer Confidence-Wert scheinen die Verarbeitungszeit zu erhöhen und die FPS zu reduzieren. Zudem ist die Leistung erwartungsgemäß von der Hardware des verwendeten Geräts abhängig. Trotz dieser Schwankungen zeigte sich die Erkennung als recht stabil, ohne signifikante Ausreißer in den Leistungswerten über die Zeit, was auch in Abbildung \ref{fig:fps_ueber_zeit} visualisiert wird. Es ist jedoch anzumerken, dass die Stabilität auch von der Bewegung der erfassten Person abhängen kann, was in den vorliegenden Tests nicht explizit variiert wurde.
-
-Die Gegenüberstellung der Leistung bei unterschiedlichen Confidence-Werten in Abbildung \ref{fig:vergleich_confidence} verdeutlicht den Trade-off zwischen Geschwindigkeit und Konfidenz. Die Wahl des optimalen Confidence-Werts hängt somit stark von der jeweiligen Anwendung ab, bei der entweder eine hohe Geschwindigkeit oder eine hohe Sicherheit der Erkennung priorisiert wird.
+Zusammengefasst führt ein höherer Confidence-Wert zu einer schnelleren und stabileren Erkennung, birgt jedoch das Risiko, dass echte Gesichter unter schwierigen Bedingungen übersehen werden. Die Wahl des optimalen Confidence-Werts stellt somit einen Kompromiss zwischen Geschwindigkeit und Erkennungsempfindlichkeit dar.
 
 \begin{figure}[ht]
     \centering
@@ -323,6 +312,32 @@ Die Gegenüberstellung der Leistung bei unterschiedlichen Confidence-Werten in A
     \caption{FPS-Werte über Zeitspanne von 60 Sekunden.}
     \label{fig:fps_ueber_zeit}
 \end{figure}
+
+
+Im Anschluss an die Analyse der reinen Gesichtserkennung mit MediaPipe FaceMesh wurde die Performance des erweiterten Systems zur Gesichtserkennung und Wiedererkennung gemessen und ausgewertet.
+
+Die Ergebnisse sind in Abbildung \ref{fig:fps_recognition_mediapipe} dargestellt.
+
+Die wichtigsten Ergebnisse sind:
+\begin{itemize}
+    \item Die durchschnittliche Bildrate (FPS) lag bei 23,55 FPS, womit eine flüssige Echtzeiterkennung gewährleistet ist.
+    \item Die Verarbeitungszeit pro Frame betrug im Schnitt 22,71 ms, was eine solide Reaktionsgeschwindigkeit ermöglicht.
+    \item Die Stabilität lag im Mittel bei 98,64\%, was auf eine gleichmäßige und zuverlässige Verarbeitung hinweist.
+\end{itemize}
+
+Verglichen mit der reinen Gesichtserkennung zeigt sich, dass die Integration der Wiedererkennungslogik (Vergleich von Landmark-Distanzen) zwar die durchschnittliche Verarbeitungsgeschwindigkeit leicht reduziert, jedoch weiterhin ausreichend Echtzeitfähigkeit und hohe Stabilität gewährleistet. 
+Während bei der reinen Erkennung eine Erhöhung des Confidence-Werts zu einer Steigerung der Geschwindigkeit führte, hängt die Performance der Wiedererkennung primär von der Effizienz der Landmarkverarbeitung und der Distanzberechnung ab.
+
+Das System zeigt eine für viele praktische Anwendungen ausreichende Performance. Die Gesichtserkennung und -wiedererkennung mit MediaPipe FaceMesh kann bei moderater Rechenlast stabil und in Echtzeit arbeiten. 
+Für sicherheitskritische Zutrittskontrollen wäre jedoch eine weiter optimierte Erkennungs- und Vergleichslogik (z.B. robustere Feature-Extraktion und Klassifikation) erforderlich, da die reine Landmark-Vergleichsmethode bei schwierigen Bedingungen (z.B. starke Mimikänderungen, Lichtwechsel) anfällig bleibt
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.55\textwidth]{data/FPS_and_Processing_Time.png}
+    \caption{FPS und Verarbeitungszeit bei Wiedererkennung.}
+    \label{fig:fps_recognition_mediapipe}
+\end{figure}
+
 
 \paragraph{Anwendungsbeispiel: Zutrittskontrollen}
 
