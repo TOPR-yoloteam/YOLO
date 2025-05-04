@@ -1,0 +1,61 @@
+\section{Diskussion}
+
+\subsection{Welche Ziele wurden erreicht?}
+In diesem Abschnitt wird der Abgleich der ursprünglich definierten Projektziele (siehe Abschnitt 1.2) mit den tatsächlich erzielten Ergebnissen (dargestellt in Abschnitt 5) vorgenommen.
+
+\begin{itemize}
+    \item \textbf{Primärziel - Hands-On Tutorial:} Es wurde erfolgreich ein praxisorientiertes Hands-On-Tutorial für die THU Summer School entwickelt. Der Kern des Tutorials liegt in der kostengünstigen Umsetzung von Methoden zur Personen- und Schrifterkennung mittels eines Raspberry Pi. Es demonstriert Computer-Vision-Technologien, primär auf Basis von YOLOv5.
+    \begin{itemize}
+        \item \textbf{Kennzeichenerkennung (OCR):} Das entwickelte System ist in der Lage, Kfz-Kennzeichen aus Bilddateien zu detektieren und deren alphanumerischen Inhalt auszulesen. Eine Optimierung erfolgte spezifisch für deutsche Kennzeichenformate. Die durchgeführten Testläufe illustrierten sowohl die grundsätzliche Funktionsfähigkeit als auch die typischen Fehlerquellen unter Laborbedingungen.
+        \item \textbf{Personenerkennung (Gesichter):} Es wurde eine KI-gestützte Personenerkennung implementiert, die das Erlernen, Unterscheiden und Wiedererkennen von Gesichtern ermöglicht. Das Tutorial vermittelt den Studierenden den Umgang mit den Modellen YOLO und MediaPipe für diese Aufgabe.
+    \end{itemize}
+    \item \textbf{Sekundärziel - Anwendungsszenarien:} Die beiden Erkennungsaufgaben dienen als praxisnahe Demonstrationen für potenzielle Anwendungsfälle, wie automatisierte Mautprozesse oder Zutrittskontrollsysteme. Ziel war es hierbei, ein grundlegendes Verständnis für die technische Realisierung und die damit verbundenen Herausforderungen zu schaffen.
+    \item \textbf{Technische Umsetzung und Plattform:} Das Tutorial wurde erfolgreich auf einem Raspberry Pi implementiert. Dies bestätigt die Machbarkeit der vorgestellten Methoden auf ressourcenbeschränkter Hardware und gibt Einblicke in das Feld des \textit{Tiny Machine Learning}.
+    \item \textbf{Evaluation und Lehrmaterial:} Erste Testläufe mit Studierenden lieferten wertvolles Feedback. Basierend darauf wurde das Lehrmaterial in Form einer PowerPoint-Präsentation aufbereitet und um eine optionale Zusatzaufgabe zur Vertiefung der Kennzeichenerkennung ergänzt.
+\end{itemize}
+
+\subsection{Retrospektive}
+
+\subsubsection{Was lief gut?}
+Zusätzlich zu den bereits etablierten positiven Aspekten der Teamarbeit und Dokumentation können folgende Punkte hervorgehoben werden:
+\begin{itemize}
+    \item Die Kommunikation im Team war durchweg konstruktiv und effizient.
+    \item Die vereinbarte Arbeitsteilung funktionierte gut und wurde konsequent eingehalten.
+    \item Die Projektdokumentation ist umfassend und klar strukturiert.
+    \item Der entwickelte Code ist gut organisiert und ausreichend kommentiert.
+    \item \textbf{Testläufe und Feedback:} Studierende mit technischem Hintergrund konnten das Tutorial erfolgreich bearbeiten. Das bereitgestellte Installationsskript wurde als große Hilfe bei der Einrichtung des Raspberry Pi empfunden. Die Aufbereitung der Lehrmaterialien als PowerPoint-Präsentation fand Anklang.
+    \item \textbf{Gesichtserkennung (YOLO):} Die Kombination aus YOLOv8n-face und dem \texttt{face\_recognition}-Framework ermöglichte eine zuverlässige Gesichtserkennung (ca. 93\% in Tests).
+    \item \textbf{Gesichtserkennung (MediaPipe):} Die Gesichtspunkterkennung mittels MediaPipe Face Mesh erwies sich als präzise und echtzeitfähig. Das darauf aufbauende Wiedererkennungssystem zeigte trotz bekannter Limitationen eine für viele Anwendungsfälle ausreichende Performance (ca. 23 FPS im Test).
+\end{itemize}  
+
+\subsubsection{Was lief nicht so gut?}
+Neben den Erfolgen traten auch Herausforderungen und Limitationen auf, die hier reflektiert werden:
+\begin{itemize}
+    \item \textbf{Kennzeichenerkennung - Universalität:} Die enorme globale Vielfalt an Kennzeichenformaten und Schriftarten verhinderte die Entwicklung einer universell einsetzbaren Lösung im Rahmen des Projekts. Der Fokus musste daher auf deutsche Kennzeichen gelegt werden.
+    \item \textbf{Kennzeichenerkennung - Robustheit unter Realbedingungen:} Die Anpassung des Systems an stark variierende Lichtverhältnisse (Schatten, Überbelichtung) sowie an Verschmutzungen auf den Kennzeichen erwies sich als komplex. Eine robuste Lösung für alle denkbaren Umgebungsbedingungen hätte den Projektrahmen gesprengt.
+    \item \textbf{Kennzeichenerkennung - OCR-Genauigkeit:} Die verwendete OCR-Engine (Tesseract) zeigte Schwächen bei der Unterscheidung ähnlicher Zeichen wie '0', 'G' und 'O', was zu Fehlern bei der Textextraktion führte.
+    \item \textbf{Hardwarelimitierungen des Raspberry Pi:} Insbesondere die OCR-Komponente zur Schriftzeichenerkennung stellte hohe Anforderungen an die Rechenleistung des Raspberry Pi, was die Echtzeitfähigkeit des Gesamtsystems einschränkte. Der Einsatz von EasyOCR scheiterte an dessen hohem Speicherbedarf und den langen Inferenzzeiten auf der Zielhardware.
+    \item \textbf{Gesichtserkennung (MediaPipe - Wiedererkennung):} MediaPipe allein ist für robuste biometrische Identifikationsaufgaben, wie sie bei Zutrittskontrollen benötigt werden, nur eingeschränkt tauglich. Die verwendete Landmarken-Distanz-Methode ist anfällig für Variationen in Mimik, Kopfhaltung und Beleuchtung. Zudem fehlt eine integrierte Lebenderkennung (\textit{Liveness Detection}), um Täuschungsversuche (z.B. durch Vorhalten eines Fotos) abzuwehren.
+    \item \textbf{Tutorial-Schwierigkeitsgrad:} Ein Testlauf mit einem Studierenden ohne spezifischen technischen Hintergrund zeigte, dass das Tutorial für diese Zielgruppe potenziell eine hohe Einstiegshürde darstellt und die Bearbeitung innerhalb der vorgesehenen Zeit schwierig sein kann.
+\end{itemize}
+
+
+\subsubsection{Lessons Learned}
+
+\paragraph{Valentin Talmon-l'Armée} 
+Im Verlauf des Projekts habe ich wertvolle Einblicke in die praktische Anwendung von KI-Verfahren und die Bildverarbeitung gewonnen. Besonders das Arbeiten mit dem Raspberry Pi und die Nutzung von Git zur Versionskontrolle haben mein technisches Verständnis erweitert. Ich habe gelernt, dass neben der technischen Umsetzung auch eine klare und regelmäßige Abstimmung im Team entscheidend für den Projekterfolg ist. Die iterative Auseinandersetzung mit OCR- und Detektionsmethoden hat mir gezeigt, wie wichtig systematisches Testen und Anpassen im Entwicklungsprozess ist. Insgesamt konnte ich mein Wissen in mehreren Bereichen gezielt vertiefen und besser miteinander verknüpfen.
+
+\paragraph{Jan Gaschler}
+Das Projekt hat mir nicht nur technische Fähigkeiten vermittelt, sondern auch meine Teamarbeit und Kommunikationsfähigkeiten gestärkt. Die enge Zusammenarbeit mit meinen Kommilitonen war entscheidend für den Erfolg des Projekts. Ich habe gelernt, wie wichtig es ist, Feedback zu geben und zu empfangen, um gemeinsam Lösungen zu finden. Besonders die Herausforderungen bei der Implementierung der Gesichtserkennung haben mir gezeigt, wie wichtig es ist, flexibel zu bleiben und alternative Ansätze in Betracht zu ziehen. Ich habe auch ein besseres Verständnis für die ethischen Implikationen von Gesichtserkennungstechnologien entwickelt und werde diese Überlegungen in zukünftige Projekte einfließen lassen.
+
+\paragraph{Chantal Deusch}
+Im Rahmen des Projekts konnte ich wichtige Erfahrungen in der technischen Umsetzung von Gesichtserkennung und -wiedererkennung, sowohl auf Pixelebene als auch im Bereich der Biometrie, sammeln. Durch die Arbeit mit Technologien wie YOLO und Mediapipe habe ich neue Methoden und Ansätze kennengelernt. Besonders wichtig war zudem die Erkenntnis, dass Kommunikation und regelmäßige Abstimmungen im Team entscheidend für den Projekterfolg sind. Trotz sorgfältiger Planung traten immer wieder neue Herausforderungen auf, die Flexibilität und zusätzliche Zeit erforderten. Dadurch habe ich gelernt, dass technische Projekte oft komplexer und zeitintensiver sind als anfangs erwartet. Insgesamt war das Projekt eine wertvolle Erfahrung, sowohl im technischen als auch im organisatorischen Bereich.
+
+\paragraph{Serhat Gürel}
+Das Projekt bot mir die Möglichkeit, erste Kenntnisse im Bereich der Kunstlichen Intelligenz zu erwerben und ein grundlegendes Verständnis für diese komplexe Technologie zu entwickeln. Dabei wurde mir sowohl das Potenzial als auch die Grenzen intelligenter Systeme bewusst. Auch die Zusammenarbeit in einem Team an einem größeren Projekt war eine weitere lehrreiche Erfahrung. Das Arbeiten mit Git und Jira war anfangs zwar eine Hürde, aber im Laufe des Projektes und mit gegenseitiger Unterstützung im Team konnte auch diese erfolgreich überwunden werden. Besonders deutlich wurde mir, wie entscheidend regelmäßige Kommunikation und ein strukturierter Austausch im Team für den Projekterfolg sind. Abschließend kann ich sagen, dass mich das Projekt sowohl in technischer, planerischer und persönlicher Hinsicht weitergebracht hat.
+
+\paragraph{Paulina Pyczot}
+Im Rahmen des Projekts konnte ich meine Kenntnisse in der praktischen Anwendung von KI-Technologien und der Bildverarbeitung gezielt erweitern. Durch die Arbeit mit YOLO und MediaPipe vertiefte ich mein technisches Verständnis in der Gesichtserkennung, während der Umgang mit Git und Conda mein Know-how in der Versionierung und Projektstrukturierung stärkte. In meiner Rolle als Scrum Master übernahm ich nicht nur Verantwortung für die Organisation innerhalb des Teams, sondern koordinierte auch erfolgreich die Kommunikation mit externen Beteiligten. Besonders wertvoll war für mich die Erfahrung, wie wichtig klare Absprachen, Transparenz im Projektverlauf und eine flexible, teamorientierte Arbeitsweise für den Gesamterfolg sind. Insgesamt habe ich nicht nur meine technischen und organisatorischen Fähigkeiten weiterentwickelt, sondern auch gelernt, wie essenziell strukturierte Prozesse in interdisziplinären Projektteams sind.
+
+\paragraph{Jeremy Diem}
+Im Projekt habe ich wichtige und interessante Einblicke in die praktische Arbeit mit Künstlicher Intelligenz erhalten, insbesondere im Bereich der Bildverarbeitung und des Pre-Processings. Die Arbeit an praxisnahen Beispielen hat mir geholfen, theoretische Konzepte besser zu verstehen und anzuwenden. Dabei habe ich auch erfahren, wo die technischen Grenzen liegen insbesondere bei der Umsetzung rechenintensiver Aufgaben auf dem Raspberry Pi. Auch die Teamarbeit war eine prägende Erfahrung: Ich habe gelernt, wie wichtig es ist, sich regelmäßig abzustimmen und bei Herausforderungen offen zu kommunizieren und gegenseitig zu unterstützen. Darüber hinaus konnte ich meine Fähigkeiten im Umgang mit GitHub deutlich verbessern und habe erstmals Dokumentationen mit LaTeX erstellt, was mir neue Möglichkeiten im technischen Arbeiten eröffnet hat. 

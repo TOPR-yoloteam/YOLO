@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+.idea/
+LicenseTests/test.mp4
+
 # Distribution / packaging
 .Python
 build/
@@ -172,3 +175,43 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+.idea
+src/final_report/main.aux
+src/final_report/main.bbl
+src/final_report/main.bcf
+src/final_report/main.blg
+src/final_report/main.fdb_latexmk
+src/final_report/main.fls
+src/final_report/main.out
+src/final_report/content/anforderungen.aux
+src/final_report/content/anhang.aux
+src/final_report/content/ausblick_und_zukuenftige_entwicklungen.aux
+src/final_report/content/ausblick.aux
+src/final_report/content/diskussion.aux
+src/final_report/content/einleitung.aux
+src/final_report/content/ergebnis.aux
+src/final_report/content/grundlagen.aux
+src/final_report/content/methodik.aux
+src/final_report/content/quellenverzeichnis.aux
+src/final_report/content/theoretische_grundlagen_und_stand_der_technik.aux
+.DS_Store
+.gitignore
+src/.DS_Store
+src/face_recognition/scripts/.DS_Store
+src/face_recognition/scripts/face/.DS_Store
+src/final_report/.DS_Store
+src/final_report/main.pdf
+src/final_report/main.run.xml
+src/final_report/main.synctex.gz
+src/final_report/main.toc
+src/final_report/content/.DS_Store
+src/license_plate_recognition/.DS_Store
+.DS_Store
+src/face_recognition/scripts/face/landmarks_data/face_landmarks.pkl
+src/final_report/main.synctex(busy)
+src\final_report\main.bbl-SAVE-ERROR
+src\final_report\main.bbl
+main.blg
+.gitignore
+main.bbl
