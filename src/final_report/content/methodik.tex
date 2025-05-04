@@ -121,13 +121,18 @@ Als mögliche Erweiterung wäre ein Postprocessing-Konzept denkbar, bei dem erka
 
 \subsubsection{Evaluation und Genauigkeitsanalyse}
 
+Das von uns entwickelte System zur Kennzeichenerkennung stellt eine funktionale Lösung dar, die unter Berücksichtigung der begrenzten Hardware-Ressourcen des Raspberry Pi gute Ergebnisse erzielt. Hervorzuheben ist der praxisnahe Aufbau, der die zentralen Schritte Bildaufanahme, Objekterkennung (mittels YOLOv5) und Texterkennung (mit Tesseract) kombiniert. Verglichen mit professionellen Kennzeichenerkennungssystemen zeigt sich jedoch ein deutlicher Unterschied in Robustheit, Flexibilität und Genauigkeit. Industrielle Lösungen verfügen in der Regel über spezialisierte OCR-Modelle, umfangreiche Fehlerkorrekturmechanismen, integrierte Plausibilitätsprüfungen und leistungsstärkere Hardware. Diese Modelle sind in der Lage nahezu unter allen Umweltbedingungen zuverlässig zu arbeiten. Unser Modell hingegen stößt, im OCR-Bereich, bei stark wechselnden Lichtverhältnissen oder ungünstigen Kamerawinkeln an seine Grenzen. Auch die Echtzeitverarbeitung bleibt eingeschränkt und ist stark abhängig von der Systemauslastung.
+Trotzdem zeigt das Projekt klar auf, wie sich moderne Objekterkennungstechnologie auch auf einfacher Hardware realisieren lässt. Die OCR stellte sich in unserem Projekt als einer der kritischsten Punkte heraus. Während die Kennzeichenerkennung mit YOLOv5 zuverlässig funktionierte, kam es bei der Zeichenerkennung durch Tesseract unter schwierigen Bedingungen häufiger zu Fehlinterpretationen. Gerade bei verzerrten Perspektiven, schwachem Kontrast oder leicht verschmutzten Kennzeichen stößt die Standard-OCR schnell an ihre Grenzen. Professionelle Systeme arbeiten hier oft mit speziell trainierten Netzen die auf Kfz-Schriftarten und -Layouts optimiert sind.\singlespacing 
+Ein praktisches Beispiel dafür zeigt die Ausgabe unseres Systems.
+Obwohl mehrere Aufnahmen desselben Kennzeichens gemacht wurden, variiert das erkannte Ergebnis leicht. So wird z.B. aus „RAKL8136“ mehrfach „ARAKL813“ oder „RAKL84136“.Auch wenn die erkannten Texte teils hohe Konfidenzwerte zwischen 87 und 95 Prozent aufweisen, verdeutlicht dies die Grenzen der eingesetzten OCR unter realen Bedingungen.\singlespacing
+Trotzdem zeigt das Projekt klar auf, wie sich moderne Objekterkennungstechnologie auch auf einfacher Hardware realisieren lässt. Die OCR stellte sich in unserem Projekt als einer der kritischsten Punkte heraus. Während die Kennzeichenerkennung mit YOLOv5 zuverlässig funktionierte, kam es bei der Zeichenerkennung durch Tesseract unter schwierigen Bedingungen häufiger zu Fehlinterpretationen. Gerade bei verzerrten Perspektiven, schwachem Kontrast oder leicht verschmutzten Kennzeichen stößt die Standard-OCR schnell an ihre Grenzen. Professionelle Systeme arbeiten hier oft mit speziell trainierten Netzen die auf Kfz-Schriftarten und -Layouts optimiert sind.\singlespacing Abschließend lässt sich sagen, dass unser System in seiner aktuellen Form eine solide funktionale Basis für einfache Szenarien bietet, jedoch im Vergleich zu professionellen Lösungen noch deutliche Einschränkungen aufweist.
+
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.55\textwidth]{data/Genauigkeit.png}
+    \includegraphics[width=0.5\textwidth]{data/Genauigkeit.png}
     \caption{Terminal Ausgabe der Genauigkeit}
     \label{fig:genauigkeit}
 \end{figure}
-
 
 \subsection{Gesichtserkennung}
 \subsubsection{Testaufbau}
