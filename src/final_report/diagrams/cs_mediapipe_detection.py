@@ -37,14 +37,14 @@ plt.figure(figsize=(10, 7))
 has_mesh = mesh_scores_full > 0.01
 
 plt.scatter(detection_scores[has_mesh], mesh_scores_full[has_mesh],
-            c='blue', label='Detection + Mesh', alpha=0.6, edgecolors='k')
+            c='blue', label='Erkennung + Mesh', alpha=0.6, edgecolors='k')
 
 # Punkte ohne Mesh (mesh_confidence == 0)
 plt.scatter(detection_scores[~has_mesh], mesh_scores_full[~has_mesh],
-            c='red', label='Detection only', alpha=0.6, marker='x')
+            c='red', label='nur Erkennung', alpha=0.6, marker='x')
 
-plt.title('Detection Confidence vs Mesh Confidence')
-plt.xlabel('Detection Confidence')
+plt.title('Erkennungs Confidence vs Mesh Confidence')
+plt.xlabel('Erkennungs Confidence')
 plt.ylabel('Mesh Confidence')
 plt.legend()
 plt.grid(True)
