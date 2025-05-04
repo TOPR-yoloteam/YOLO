@@ -377,7 +377,7 @@ Das vorgestellte System kombiniert die Geschwindigkeit und Präzision moderner Y
 
 Für die Gesichtspunkterkennung nutzen wir das FaceMesh Modell von Mediapipe, das 468 3D-Gesichtspunkte in Echtzeit erfasst. Diese dreidimensionalen Koordinaten ermöglichen vielfältige Anwendungen in Gesichtserkennung, Emotionsanalyse und Augmented Reality.
 
-(?) Der vollständige Code, der die hier beschriebene Gesichtspunkt-Erkennung mit MediaPipe implementiert, ist im Anhang und/oder auf GitHub verfügbar.
+Der vollständige Code, der die hier beschriebene Gesichtspunkt-Erkennung mit MediaPipe implementiert, ist auf GitHub \cite{github_yolo} verfügbar.
 Der ganze Code ist in Python geschrieben.
 
 Zunächst müssen wir notwendigen die Bibliotheken importieren. Diese sind in unserem Fall die OpenCV und MediaPipe-Bibliotheken.
@@ -439,6 +439,9 @@ Dieser Code bildet die Grundlage für unsere Gesichtswiedererkennung.
 
 Unser System zur Echtzeit-Gesichtserkennung nutzt MediaPipe FaceMesh, um Gesichter in Videostreams präzise zu erkennen.
 Seine Funktionalität umfasst das Erlernen und Speichern neuer Gesichter, das Wiedererkennen bekannter Personen und die Fähigkeit zum kontinuierlichen Dazulernen, wodurch sich die Erkennungsleistung stetig verbessert.
+
+Der vollständige Code, der die hier beschriebene Gesichtswiedererkennung mit den Gesichtspunkten mit MediaPipe implementiert, ist auf GitHub \cite{github_yolo} verfügbar.
+Der ganze Code ist in Python geschrieben.
 
 Im Kern unseres Programms steht die Initialisierung, in der das MediaPipe FaceMesh-Modul eingerichtet und die Kamera gestartet wird, wie es in Abschnitt 4.3.3.1 beschrieben ist.
 Zudem werden Speicherstrukturen für die Namen bekannter Gesichter und deren charakteristische Gesichtspunkte (Landmarks) vorbereitet.
