@@ -1,0 +1,25 @@
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8  # Python 3.8 is specified as the required version for the environment
+  - opencv  # OpenCV: a powerful library for computer vision tasks like image processing, face detection, and object tracking
+  - pip
+  - mediapipe  # MediaPipe: a framework for building cross-platform machine learning pipelines, useful for tasks like face landmark detection and hand tracking
+  - pygame  # Pygame: a library used to create games and multimedia applications (interactive apps and games)
+  - dlib  # dlib: a machine learning toolkit for computer vision, commonly used for facial recognition and object detection
+  - pytesseract  # pytesseract: a Python wrapper for Tesseract OCR (Optical Character Recognition), useful for extracting text from images
+  - build-essential  # Build-essential: contains essential tools for compiling software, required for building some Python packages (e.g., dlib)
+  - cmake  # CMake: a build system generator that helps manage software builds across platforms, needed for compiling libraries like dlib
+  - libopenblas-dev  # Optimized math library for linear algebra, used by many machine learning libraries for efficient computation
+  - liblapack-dev  # LAPACK: a library for linear algebra operations, necessary for many scientific computing tasks
+  - libx11-dev  # Development files for the X Window System, which handles graphical user interfaces (GUIs) on Linux
+  - libgtk-3-dev  # GTK3: a toolkit used to create GUIs, needed for building applications with graphical interfaces
+  - python3-dev  # Python development headers and static libraries for compiling Python extensions that interact with system libraries
+  - pip:
+      - ultralytics  # ultralytics: a package for YOLO (You Only Look Once) models for object detection, widely used for real-time detection tasks
+      - face_recognition  # face_recognition: a Python library for face recognition, built on dlib, to detect and manipulate faces in images
+
+
+
+
