@@ -13,6 +13,7 @@
 \usepackage{tabto}
 \usepackage{setspace}
 \usepackage{wrapfig}
+\usepackage{listings}
 \usepackage[T1]{fontenc}
 
 
@@ -20,6 +21,7 @@
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{orange}{rgb}{1,0.5,0}
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
@@ -28,26 +30,22 @@
 
 % Code-Einstellungen
 \lstset{
-	backgroundcolor=\color{terminalbgcolor},
-	basicstyle=\color{white}\fontfamily{qcr}\scriptsize\selectfont,
-	breaklines=true,
-	captionpos=b,
-	commentstyle=\color{mygreen},
-	frame=single,
-	keepspaces=true,
-	keywordstyle=\color{blue},
-	numbers=none,
-	numbersep=5pt,
-    framerule=2pt,
-	numberstyle=\color{mygray}\tiny\selectfont,
-	rulecolor=\color{terminalrulecolor},
-	showspaces=false,
-	showstringspaces=false,
-	showtabs=false,
-	stepnumber=2,
-	stringstyle=\color{mymauve},
-	tabsize=2
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{mauve},
+  stringstyle=\color{orange},
+  commentstyle=\color{gray},
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  numbersep=10pt,
+  frame=single,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4,
+  showstringspaces=false
 }
+
 
 % BibLaTeX
 \usepackage[backend=biber,style=ieee]{biblatex}

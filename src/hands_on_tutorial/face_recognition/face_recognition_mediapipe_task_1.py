@@ -21,7 +21,7 @@ class FaceRecognitionSystemTask1: # Renamed class slightly for clarity
         # Use appropriate parameters. Consult the MediaPipe documentation
         # for parameters like 'max_num_faces', 'min_detection_confidence', 'min_tracking_confidence'.
         # Example: self.face_mesh = self.mp_face_mesh.FaceMesh(max_num_faces=5, min_detection_confidence=0.7)
-
+        self.face_mesh = None # Placeholder - Must be replaced
         # --- End TODO Task 1.1 ---
 
         # Initialize camera
