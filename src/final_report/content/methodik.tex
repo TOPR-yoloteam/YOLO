@@ -164,39 +164,6 @@ Das implementierte System realisiert eine Echtzeit-Gesichtserkennung mittels ein
 
     Das auf Gesichter spezialisierte Modell YOLOv8n-face erzielt eine höhere Genauigkeit als das generische YOLOv8n. Das neuere YOLOv11n-face bietet voraussichtlich noch bessere Erkennungsraten und eine deutlich schnellere Inferenz, erfordert jedoch ggf. Anpassungen und erneutes Training für die Kompatibilität mit dem aktuellen Code. Generische Modelle wie YOLOv8n erkennen mehr Objekttypen, sind aber für die reine Gesichtserkennung weniger effizient.
 
-\paragraph{Metriken}
-Für die Bewertung der Gesichtserkennung sind folgende Metriken relevant:
-\begin{itemize}
-    \item \textbf{Precision (Genauigkeit):} Anteil der korrekt erkannten Gesichter an allen als erkannt gemeldeten Gesichtern.
-    \item \textbf{Recall (Sensitivität):} Anteil der korrekt erkannten Gesichter an allen tatsächlich vorhandenen Gesichtern.
-    \item \textbf{F1-Score:} Harmonisches Mittel aus Precision und Recall.
-    \item \textbf{Inferenzgeschwindigkeit:} Anzahl der Bilder pro Sekunde (FPS) bzw. durchschnittliche Latenz pro Bild.
-\end{itemize}
-
-\paragraph{Python-Code zur Visualisierung}
-%Python Diagramm
-
-Zur Auswertung können folgende Attribute der \texttt{ultralytics}-Bibliothek genutzt werden:
-\begin{itemize}
-    \item \texttt{results.box.map50} für mAP@0.5 (mean Average Precision)
-    \item \texttt{results.speed} für Inferenzzeit (ms pro Bild)
-\end{itemize}
-
-\paragraph{Anwendungsbeispiel: Zutrittskontrollen}
-Das System ermöglicht eine zuverlässige Gesichtserkennung für Zutrittskontrollsysteme mit folgenden Eigenschaften:
-\begin{itemize}
-    \item Echtzeit-Erkennung mit einer Latenz von unter 250\,ms pro Bild.
-    \item Visuelles Feedback durch Markierung und Beschriftung erkannter Gesichter im Videostream.
-    \item Dynamisches Anlernen neuer Nutzer durch interaktive Eingabe.
-    \item Speicherung der Gesichtsdaten in einem lokalen Verzeichnis; Erweiterung durch SQLite möglich.
-    \item Erweiterbar für Multi-Faktor-Authentifizierung (z.\,B. RFID + Gesicht).
-\end{itemize}
-
-\textbf{Ergebnisse:} In kontrollierter Umgebung erreicht das System eine Erkennungsrate von ca.~93\,\%. Bei schwierigen Lichtverhältnissen sinkt die Rate auf etwa 78\,\%. Für produktive Anwendungen empfiehlt sich die Ergänzung durch IR-Kameras und Liveness Detection.
-
-\begin{quote}
-Das vorgestellte System kombiniert die Geschwindigkeit und Präzision moderner YOLO-Modelle mit der Flexibilität des Face-Recognition-Frameworks und ist damit für den Einsatz in sicherheitskritischen Zutrittskontrollen geeignet.
-\end{quote}
 
 \subsubsection{MediaPipe}
 \paragraph{Gesichtspunkterkennung: Code} 
