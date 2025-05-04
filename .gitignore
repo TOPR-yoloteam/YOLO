@@ -208,3 +208,4 @@ src/final_report/main.toc
 src/final_report/content/.DS_Store
 src/license_plate_recognition/.DS_Store
 .DS_Store
+src/face_recognition/scripts/face/landmarks_data/face_landmarks.pkl
