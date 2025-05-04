@@ -20,7 +20,7 @@ class FaceRecognitionSystem:
         self.model_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "models", "yolov8n-face.pt")
 
         # Create faces directory if it doesn't exist
-        if not os.path.exists(self.faces_dir):
+        if not os.pafth.exists(self.faces_dir):
             os.makedirs(self.faces_dir)
 
         # Load YOLO model
