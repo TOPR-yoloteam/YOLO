@@ -390,7 +390,7 @@ Der ganze Code ist in Python geschrieben.
 
 Zunächst müssen wir notwendigen die Bibliotheken importieren. Diese sind in unserem Fall die OpenCV und MediaPipe-Bibliotheken.
 Danach initialisieren wir die MediaPipe-Instanz. Dies geschieht mit dem folgenden Code:
-\begin{lstlisting}
+\begin{lstlisting}[language=Python, caption={Initialisierung FaceMesh}, label={lst:mediapipe_facemesh}, inputencoding=utf8]
     # MediaPipe FaceMesh Setup
     mp_face_mesh = mp.solutions.face_mesh
     face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=5, min_detection_confidence=0.8)
@@ -410,7 +410,7 @@ Im nächsten Schritt wird die Webcam geöffnet, um Videobilder aufzunehmen. Alte
 Die Hauptschleife des Programms läuft, solange die Kamera aktiv ist. In jeder Iteration der Schleife wird ein neues Bild von der Webcam erfasst und verarbeitet.
 
 Ein wichtiger Schritt ist die Konvertierung des Farbraums des aufgenommenen Bildes von BGR (Blue, Green, Red), dem Standardformat von OpenCV, nach RGB (Red, Green, Blue), das von MediaPipe erwartet wird.
-\begin{lstlisting}
+\begin{lstlisting} [language=Python, caption={Konvertierung von BGR zu RGB}, label={lst:mediapipe_rgb}, inputencoding=utf8]
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 \end{lstlisting}
 Diese Konvertierung ist notwendig, da unterschiedliche Bibliotheken und Modelle intern mit verschiedenen Farbreihenfolgen arbeiten. Die Verwendung der falschen Reihenfolge kann zu fehlerhaften Ergebnissen führen.
@@ -418,7 +418,7 @@ Diese Konvertierung ist notwendig, da unterschiedliche Bibliotheken und Modelle 
 Nun verarbeitet MediaPipe das in RGB konvertierte Bild, um Gesichter zu erkennen und die entsprechenden Gesichtspunkte zu lokalisieren.
 
 Sobald ein oder mehrere Gesichter im Bild erkannt wurden, zeichnen wir die 468 Gesichtspunkte und die Verbindungen zwischen ihnen auf das ursprüngliche Farbbild.
-\begin{lstlisting}
+\begin{lstlisting}[language=Python, caption={Zeichnen der Gesichtspunkte}, label={lst:mediapipe_drawing}, inputencoding=utf8]
     if results.multi_face_landmarks:
     for face_landmarks in results.multi_face_landmarks:
         # draw all landmarks
@@ -453,7 +453,7 @@ Zudem werden Speicherstrukturen für die Namen bekannter Gesichter und deren cha
 
 Die eigentliche Gesichtserkennung erfolgt durch die Funktion \texttt{extract\_face\_landmarks}. Diese nutzt MediaPipe, um detaillierte Gesichtsmerkmale zu extrahieren, wobei ein besonderer Fokus auf 50 Schlüsselpunkte in den Bereichen Augen, Nase, Mund und Augenbrauen liegt.
 Um eine konsistente Erkennung zu gewährleisten, werden die Koordinaten dieser Punkte normalisiert. Das heißt, dass sie relativ zur Gesichtsgröße und -position skaliert werden, um Verzerrungen durch unterschiedliche Perspektiven und Entfernungen zu minimieren.
-\begin{lstlisting}
+\begin{lstlisting}[language=Python, caption={Extrahieren und Normalisierung der wichtigsten Gesichtspunkte}, label={lst:mediapipe_extract}, inputencoding=utf8]
     # Define indices for key landmarks (eyes, nose, mouth, etc.)
     key_landmarks_indices = [33, 133, 160, 158, 153, ...] 
     ...
@@ -466,7 +466,7 @@ Dabei werden gewichtete Abstände zwischen den Punkten berechnet, wobei einzelne
 
 Unser Programm lernt kontinuierlich neue Gesichtsvarianten, um robuster zu werden. Neue Landmark-Daten werden gespeichert, wenn die Erkennung eine Übereinstimmung zwischen 60\% und 95\% aufweist. 
 Bei einer geringeren Sicherheit von 40\% bis 60\% erfolgt das Lernen nur mit einer Wahrscheinlichkeit von 30\%, um falsche Zuordnungen zu vermeiden.
-\begin{lstlisting}
+\begin{lstlisting}[language=Python, caption={Vergleich für Kontinuierliches Lernen}, label={lst:mediapipe_learning}, inputencoding=utf8]
     # Continuous learning: Improved strategy for continuous learning
             # Only learn when recognition is relatively certain, but not perfect
             if is_known_face:
