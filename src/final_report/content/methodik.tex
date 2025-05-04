@@ -356,6 +356,22 @@ Das auf Gesichter spezialisierte Modell YOLOv8n-face erzielt eine höhere Genaui
 
 \paragraph{Metriken}
 Für die Bewertung der Gesichtserkennung sind folgende Metriken relevant:
+\subparagraph{}{Confidence Threshold und FPS-Erklärung}
+
+Für die Bewertung der Gesichtserkennung mit \texttt{YOLOv8n-face} wurde die Verteilung der \texttt{detection\_scores} analysiert. Diese liegt im Mittel bei etwa $\mu = 0{,}937$ mit einer relativ geringen Varianz. Die Konfidenzwerte bleiben in der Regel über $0{,}85$, mit vereinzelten Ausreißern darunter. Auf Basis dieser Analyse wurde ein \textbf{Confidence Threshold von 0{,}90} gewählt, um eine gute Balance zwischen Erkennungsrate und Präzision zu erreichen. Werte unterhalb dieser Schwelle führten häufiger zu fehlerhaften oder instabilen Erkennungen.
+
+Zusätzlich wurde der \texttt{Mesh Confidence Score} betrachtet, der durchgehend sehr hoch ($\approx 0{,}96{-}0{,}98$) ausfiel. Daraus lässt sich schließen, dass die erkannten Gesichter nicht nur zuverlässig detektiert, sondern auch präzise vermesht wurden.
+
+Frames per Second (FPS). Die \textbf{FPS} gibt an, wie viele Bilder pro Sekunde das System verarbeiten kann. In unserem Fall dient dieser Wert als Kennzahl für die Echtzeittauglichkeit des Systems. Je höher der FPS-Wert, desto flüssiger läuft die Gesichtserkennung bei Videoeingaben. Bei zu niedrigen FPS kann die Erkennung verzögert oder ruckelig erscheinen, was insbesondere bei Überwachungs- oder Interaktionssystemen problematisch wäre. Ein Wert von \textbf{15–30 FPS} gilt als untere Grenze für akzeptable Echtzeitleistung, wobei unser System je nach Konfiguration und Optimierung diese Marke im Mittel erreicht oder übertrifft (siehe Abb. \ref{fig:fps-diagramm}).
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.55\textwidth]{data/fps_yolo_detection.png}
+    \caption{Verlauf der FPS während der Gesichtserkennung}
+    \label{fig:fps-diagramm}
+\end{figure}
+
+
 
 \paragraph{Anwendungsbeispiel: Zutrittskontrollen}
 Das System ermöglicht eine zuverlässige Gesichtserkennung für Zutrittskontrollsysteme mit folgenden Eigenschaften:
