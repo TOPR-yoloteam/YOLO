@@ -116,13 +116,6 @@ if mesh_scores:
     print("\nMesh Scores List (all frames):")
     print(f"[{', '.join(mesh_list)}]")
 
-# Speichern aller Frames, nicht nur jeden 5.
-with open('confidence_scores.txt', 'w') as f:
-    f.write("Frame,Detection,Mesh\n")
-    for i in range(max(len(detection_scores), len(mesh_scores))):
-        det_score = detection_scores[i] if i < len(detection_scores) else "N/A"
-        mesh_score = mesh_scores[i] if i < len(mesh_scores) else "N/A"
-        f.write(f"{i+1},{det_score},{mesh_score}\n")
 
 cap.release()
 cv2.destroyAllWindows()
