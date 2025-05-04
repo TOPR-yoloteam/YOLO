@@ -130,19 +130,38 @@ Das implementierte System realisiert eine Echtzeit-Gesichtserkennung mittels ein
 \subsubsection{YOLO}
 \paragraph{Vergleich der YOLO-Modelle}
 \begin{table}[h]
+    \small
+    \setlength{\tabcolsep}{6pt} % Weniger Abstand zwischen Spalten
+    \renewcommand{\arraystretch}{1.2} % Etwas mehr Zeilenhöhe
     \centering
-    \begin{tabular}{|l|c|c|c|c|l|}
+    \begin{tabular}{|l|c|c|c|c|p{3.8cm}|}
     \hline
-    \textbf{Modell} & \textbf{mAP (face)} & \textbf{Inferenzzeit (ms)} & \textbf{Parameter} & \textbf{FLOPs} & \textbf{Besonderheiten} \\
+    \textbf{Modell} & \textbf{mAP} & \textbf{Zeit (ms)} & \textbf{Parameter} & \textbf{FLOPs} & \textbf{Besonderheiten} \\
     \hline
-    YOLOv8n-face   & 39{,}2\%   & 80{,}4   & 3{,}2 Mio. & 8{,}7 Mrd. & Auf Gesichtserkennung spezialisiert \\
-    YOLOv8n        & 37{,}3\%   & 80{,}4   & 3{,}2 Mio. & 8{,}7 Mrd. & Generelles Objekterkennungsmodell   \\
-    YOLOv11n-face* & 41{,}5\%*  & 56{,}1   & 2{,}6 Mio. & 6{,}5 Mrd. & Verbesserte Architektur, schneller  \\
+    YOLOv8n-face   & 39{,}2\%  & 80{,}4  & 3{,}2 Mio. & 8{,}7 Mrd. & Auf Gesichtserkennung spezialisiert \\
+    YOLOv8n        & 37{,}3\%  & 80{,}4  & 3{,}2 Mio. & 8{,}7 Mrd. & Generelles Objekterkennungsmodell \\
+    YOLOv11n-face* & 41{,}5\%* & 56{,}1  & 2{,}6 Mio. & 6{,}5 Mrd. & Verbesserte Architektur, schneller und effizienter \\
     \hline
     \end{tabular}
-    \caption{Vergleich der wichtigsten YOLO-Modelle für die Gesichtserkennung. *Werte für YOLOv11n-face sind geschätzt, basierend auf aktuellen Trends in der YOLO-Architektur.}
+    \caption{Vergleich ausgewählter YOLO-Modelle für die Gesichtserkennung. *Werte für YOLOv11n-face geschätzt.}
     \end{table}
     
+    \subsection*{Erklärung der Kennzahlen}
+
+\begin{description}
+    \item[\textbf{mAP (mean Average Precision)}] 
+    Gibt an, wie genau ein Modell Objekte (hier: Gesichter) erkennen kann. Ein höherer mAP-Wert steht für präzisere Lokalisierung und Klassifikation. Bei kleinen Modellen gelten Werte ab etwa 40\,\% als solide.
+    
+    \item[\textbf{Inferenzzeit (ms)}] 
+    Die durchschnittliche Zeit, die das Modell benötigt, um ein einzelnes Bild zu verarbeiten (Vorwärtsdurchlauf). Kürzere Zeiten sind wichtig für Echtzeitanwendungen, z.\,B. bei Live-Video-Streams.
+    
+    \item[\textbf{Parameter}] 
+    Anzahl der im Modell gespeicherten Gewichtungen. Weniger Parameter bedeuten meist geringeren Speicherbedarf und schnellere Verarbeitung, können aber auch die Genauigkeit beeinflussen.
+    
+    \item[\textbf{FLOPs (Floating Point Operations)}] 
+    Maß für den Rechenaufwand pro Bild. Modelle mit niedrigeren FLOPs sind effizienter und benötigen weniger Rechenleistung – ein Vorteil bei Einsatz auf Geräten mit begrenzten Ressourcen.
+\end{description}
+
     Das auf Gesichter spezialisierte Modell YOLOv8n-face erzielt eine höhere Genauigkeit als das generische YOLOv8n. Das neuere YOLOv11n-face bietet voraussichtlich noch bessere Erkennungsraten und eine deutlich schnellere Inferenz, erfordert jedoch ggf. Anpassungen und erneutes Training für die Kompatibilität mit dem aktuellen Code. Generische Modelle wie YOLOv8n erkennen mehr Objekttypen, sind aber für die reine Gesichtserkennung weniger effizient.
 
 \paragraph{Metriken}
@@ -415,7 +434,7 @@ Die Stärken des Systems liegen eindeutig in der grundlegenden Gesichtserkennung
 
 Im Rahmen des studentischen Projekts „Kennzeichen- und Gesichtserkennung mit YOLO" wurde ein technischer Demonstrator entwickelt, der als Lehrmaterial für zukünftige Studierende der THU Summer School konzipiert ist. Dieser Demonstrator ermöglicht mittels verschiedener Python-Bibliotheken wie ultralytics YOLO, mediapipe und tesseract die Erkennung sowohl von Fahrzeugkennzeichen als auch von menschlichen Gesichtern. Das sechsköpfige Team bestehend aus Chantal Deusch, Jeremy Diem, Jan Gaschler, Serhat Gürel, Paulina Pyczot und Valentin Talmon-L'Armée setzte das Projekt in einem Zeitraum von knapp zwei Monaten um, vom 12. März 2025 bis zum 4. Mai 2025.
 
-Die Projektziele wurden zu Beginn in einem kooperativen Prozess mit dem Auftraggeber, Herrn Schäffter, definiert und hierarchisch strukturiert. Als primäre Ziele wurden sowohl funktionale als auch nicht-funktionale Anforderungen festgelegt. Auf funktionaler Ebene stand die Entwicklung eines benutzerfreundlichen Hands-On-Tutorials zur Inbetriebnahme von YOLO im Mittelpunkt, welches speziell für die THU-Summerschool konzipiert wurde. Dieses Tutorial sollte die Erkennung von Kennzeichen und Gesichtern unter kontrollierten Laborbedingungen ermöglichen und als Lehrmaterial von Studierenden für Studierende dienen. Die nicht-funktionalen Anforderungen beinhalteten eine kostengünstige Umsetzung, eine intuitive Benutzerfreundlichkeit sowie eine zuverlässige Funktionsweise des Systems.
+Die Projektziele wurden zu Beginn in einem kooperativen Prozess mit dem Auftraggeber, Herrn Schäffter, definiert und hierarchisch strukturiert. Als primäre Ziele wurden sowohl funktionale als auch nicht-funktionale Anforderungen festgelegt. Auf funktionaler Ebene stand die Entwicklung eines benutzerfreundlichen Hands-On-Tutorials zur Inbetriebnahme von YOLO im Mittelpunkt, welches speziell für die THU Summer School konzipiert wurde. Dieses Tutorial sollte die Erkennung von Kennzeichen und Gesichtern unter kontrollierten Laborbedingungen ermöglichen und als Lehrmaterial von Studierenden für Studierende dienen. Die nicht-funktionalen Anforderungen beinhalteten eine kostengünstige Umsetzung, eine intuitive Benutzerfreundlichkeit sowie eine zuverlässige Funktionsweise des Systems.
 
 Darüber hinaus wurden sekundäre Ziele definiert, welche die praktische Anwendbarkeit des Systems in realen Szenarien adressieren sollten. Im Bereich der Schrifterkennung wurde ein Anwendungsszenario für KFZ-Zutrittsschranken konzipiert, bei dem die Zuverlässigkeit unter verschiedenen Lichtverhältnissen eine besondere Herausforderung darstellte. Für die Personenerkennung wurde ein Zugangskontrollsystem für einen Supermarkt als exemplarisches Szenario entwickelt. Ein zusätzlicher Forschungsaspekt bestand in der kritischen Auseinandersetzung mit Sicherheitsrisiken durch die Exploration von Möglichkeiten zur Manipulation des eigenen Systems.
 
@@ -455,7 +474,7 @@ Ergänzend zu den digitalen Kommunikationskanälen fanden regelmäßige Präsenz
 
 Die Arbeitsweise des Teams war durch verschiedene agile Praktiken geprägt. Daily Stand-ups wurden mittwochs und freitags in Präsenz durchgeführt, an den übrigen Tagen fanden sie online via Discord statt. Diese kurzen, fokussierten Meetings dienten dem Austausch über den aktuellen Fortschritt, bevorstehende Aufgaben und potenzielle Hindernisse. Die Durchführung erfolgte bedarfsorientiert, insbesondere wenn signifikante programmiertechnische Fortschritte erzielt wurden.
 
-Zur kontinuierlichen Verbesserung der Zusammenarbeit wurden in regelmäßigen Abständen Retrospektiven durchgeführt. Dabei kamen verschiedene Methoden zum Einsatz, wie die „4L"-Methode (Liked, Learned, Lacked, Longed For) oder der „Start-Stop-Continue"-Ansatz. Die Ergebnisse dieser Retrospektiven wurden auf virtuellen Whiteboards dokumentiert und bildeten die Grundlage für Prozessverbesserungen in den folgenden Projektphasen.
+Zur kontinuierlichen Verbesserung der Zusammenarbeit wurden in regelmäßigen Abständen Retrospektiven durchgeführt. Dabei kamen verschiedene Methoden zum Einsatz, wie die „4L"-Methode (Liked, Learned, Lacked, Longed For, \cite{paula2025yolo}) oder der „Start-Stop-Continue"-Ansatz. Die Ergebnisse dieser Retrospektiven wurden auf virtuellen Whiteboards dokumentiert und bildeten die Grundlage für Prozessverbesserungen in den folgenden Projektphasen.
 
 \begin{figure}[h]
     \centering
@@ -532,7 +551,7 @@ Die Projektkommunikation erfolgte auf verschiedenen Ebenen und wurde durch eine 
 
 To-Do-Listen wurden im Discord-Channel „Fragen an Betreuer" geführt und regelmäßig aktualisiert, um eine transparente Übersicht über anstehende Aufgaben zu gewährleisten. Diese Listen dienten als Ergänzung zum formalen Backlog in Jira und ermöglichten eine schnellere und direktere Kommunikation über kurzfristige Aufgaben.
 
-Ein besonderer Fokus lag auf der Dokumentation der technischen Aspekte, insbesondere im Hinblick auf das zu erstellende Hands-On-Tutorial. Hier wurden detaillierte Anleitungen zur Einrichtung der Raspberry Pi-Umgebung, zur Installation der erforderlichen Bibliotheken und zur Nutzung der implementierten Erkennungsalgorithmen erstellt. Diese Dokumentation bildete die Grundlage für das Tutorial, das zukünftigen Studierenden der THU-Summerschool zur Verfügung gestellt werden sollte.
+Ein besonderer Fokus lag auf der Dokumentation der technischen Aspekte, insbesondere im Hinblick auf das zu erstellende Hands-On-Tutorial. Hier wurden detaillierte Anleitungen zur Einrichtung der Raspberry Pi-Umgebung, zur Installation der erforderlichen Bibliotheken und zur Nutzung der implementierten Erkennungsalgorithmen erstellt. Diese Dokumentation bildete die Grundlage für das Tutorial, das zukünftigen Studierenden der THU Summer School zur Verfügung gestellt werden sollte.
 
 Im Bereich des Datenschutzes wurden potenzielle DSGVO-Implikationen frühzeitig mit Herrn Schäffter diskutiert, um sicherzustellen, dass die entwickelten Anwendungen den gesetzlichen Anforderungen entsprechen. Insbesondere für die Gesichtserkennung wurden Konzepte erarbeitet, die eine datenschutzkonforme Verarbeitung biometrischer Daten gewährleisteten.
 
@@ -556,4 +575,4 @@ Der Wechsel zu Kanban hätte eventuell früher erfolgen können, da der administ
 
 Die Dokumentation der technischen Aspekte erfolgte teilweise erst gegen Projektende, was den Abschlussprozess intensivierte. Eine kontinuierlichere Dokumentation parallel zur Entwicklung hätte eine gleichmäßigere Arbeitsbelastung ermöglicht und potenziell zu einer höheren Dokumentationsqualität geführt. Zudem hätte eine intensivere Testphase, insbesondere für die Überprüfung des Hands-On-Tutorials durch unbeteiligte Dritte, möglicherweise weitere Verbesserungspotentiale aufgedeckt.
 
-Trotz dieser Optimierungsmöglichkeiten kann das Projektmanagement insgesamt als erfolgreich betrachtet werden. Die flexible Kombination aus SCRUM und Kanban ermöglichte es dem Team, die auftretenden Herausforderungen zu bewältigen und die primären Projektziele zu erreichen. Die klare Strukturierung in Meilensteine, die transparente Kommunikation und die systematische Versionsverwaltung trugen wesentlich zum Gelingen des Projekts bei. Die entwickelten Erkennungsalgorithmen für Kennzeichen und Gesichter sowie das erstellte Hands-On-Tutorial erfüllen die anfangs definierten Anforderungen und bieten eine solide Grundlage für zukünftige Weiterentwicklungen und Anwendungen im Rahmen der THU-Summerschool.
+Trotz dieser Optimierungsmöglichkeiten kann das Projektmanagement insgesamt als erfolgreich betrachtet werden. Die flexible Kombination aus SCRUM und Kanban ermöglichte es dem Team, die auftretenden Herausforderungen zu bewältigen und die primären Projektziele zu erreichen. Die klare Strukturierung in Meilensteine, die transparente Kommunikation und die systematische Versionsverwaltung trugen wesentlich zum Gelingen des Projekts bei. Die entwickelten Erkennungsalgorithmen für Kennzeichen und Gesichter sowie das erstellte Hands-On-Tutorial erfüllen die anfangs definierten Anforderungen und bieten eine solide Grundlage für zukünftige Weiterentwicklungen und Anwendungen im Rahmen der THU Summer School.
