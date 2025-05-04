@@ -285,6 +285,22 @@ Für die Bewertung der Gesichtspunkterkennung mit MediaPipe haben wir folgende M
 
 \textbf{Confidence Score} \\
 
+Um die ZUverlässigkeit der Gesichtserkennung zu bewerten, haben wir die Confidence Scores der MediaPipe-Gesichtserkennung und des Face Mesh Modells analysiert.
+
+In Abbildung \ref{fig:confidence_score_mediapipe} sind die Confidence Scores der Gesichtserkennung (x-Achse) und des Face Mesh Modells (y-Achse) dargestellt. Die blauen Punkte repräsentieren die Gesichter die sowohl erkennat als auch mit dem Face Mesh Modell erkannt wurden. 
+Die roten Kreuze zeigen Gesichter, die nur erkannt wurden, aber nicht mit dem Face Mesh Modell erkannt werden konnten.
+
+Obwohl beide Modelle tendenziell hohe Sicherheit in ihren Erkennungen aufweisen (> 0.95), ist die reine Gesichtserkennung deutlich robuster. Wir beobachten wiederholt Fälle, in denen das Detection-Modell hohe Confidence-Werte liefert (z.B. > 0.95), während die zugehörige Face Mesh-Erkennung entweder scheitert oder deutlich niedrigere Scores erzielt.
+
+Die Ursache hierfür liegt in den zusätzlichen Anforderungen der Face Mesh-Erkennung. Sie ist stärker von idealen Aufnahmebedingungen abhängig: Das Gesicht muss vollständig sichtbar sein, die Perspektive geeignet, und die Bildqualität muss detaillierte Analysen erlauben. 
+Störungen wie Verdeckungen oder Bewegungen beeinträchtigen die Mesh-Erkennung stärker als die reine Detektion. Zusammenfassend lässt sich festhalten, dass die Gesichtserkennung eine hohe Treffsicherheit besitzt, die Präzision der Face Mesh-Erkennung jedoch maßgeblich von der Qualität der Gesichtsinformationen im Bild beeinflusst wird.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.55\textwidth]{data/Detection_vs_Mesh_Confidence.png}
+    \caption{Confidence Score der Erkennung und Face Mesh}
+    \label{fig:confidence_score_mediapipe}
+\end{figure}
 
 \textbf{FPS / Inferenzzeit} \\
 
@@ -301,7 +317,7 @@ Zusammengefasst führt ein höherer Confidence-Wert zu einer schnelleren und sta
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.55\textwidth]{data/Vergleich_Confidence_50_vs_80.png}
-    \caption{Vergleich der Confidence-Scores.}
+    \caption{Vergleich der Performanz unterschiedlicher Confidence Scores.}
     \label{fig:vergleich_confidence}
 \end{figure}
 
