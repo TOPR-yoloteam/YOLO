@@ -389,5 +389,148 @@ Die Stärken des Systems liegen eindeutig in der grundlegenden Gesichtserkennung
 \paragraph{Möglichkeiten zur Absicherung}
 
 \subsubsection{Projektdokumentation}
-\paragraph{Vorgehensmodell und Teamorganisation}
+
+Im Rahmen des studentischen Projekts „Kennzeichen- und Gesichtserkennung mit YOLO" wurde ein technischer Demonstrator entwickelt, der als Lehrmaterial für zukünftige Studierende der THU Summer School konzipiert ist. Dieser Demonstrator ermöglicht mittels verschiedener Python-Bibliotheken wie ultralytics YOLO, mediapipe und tesseract die Erkennung sowohl von Fahrzeugkennzeichen als auch von menschlichen Gesichtern. Das sechsköpfige Team bestehend aus Chantal Deusch, Jeremy Diem, Jan Gaschler, Serhat Gürel, Paulina Pyczot und Valentin Talmon-L'Armée setzte das Projekt in einem Zeitraum von knapp zwei Monaten um, vom 12. März 2025 bis zum 4. Mai 2025.
+
+Die Projektziele wurden zu Beginn in einem kooperativen Prozess mit dem Auftraggeber, Herrn Schäffter, definiert und hierarchisch strukturiert. Als primäre Ziele wurden sowohl funktionale als auch nicht-funktionale Anforderungen festgelegt. Auf funktionaler Ebene stand die Entwicklung eines benutzerfreundlichen Hands-On-Tutorials zur Inbetriebnahme von YOLO im Mittelpunkt, welches speziell für die THU-Summerschool konzipiert wurde. Dieses Tutorial sollte die Erkennung von Kennzeichen und Gesichtern unter kontrollierten Laborbedingungen ermöglichen und als Lehrmaterial von Studierenden für Studierende dienen. Die nicht-funktionalen Anforderungen beinhalteten eine kostengünstige Umsetzung, eine intuitive Benutzerfreundlichkeit sowie eine zuverlässige Funktionsweise des Systems.
+
+Darüber hinaus wurden sekundäre Ziele definiert, welche die praktische Anwendbarkeit des Systems in realen Szenarien adressieren sollten. Im Bereich der Schrifterkennung wurde ein Anwendungsszenario für KFZ-Zutrittsschranken konzipiert, bei dem die Zuverlässigkeit unter verschiedenen Lichtverhältnissen eine besondere Herausforderung darstellte. Für die Personenerkennung wurde ein Zugangskontrollsystem für einen Supermarkt als exemplarisches Szenario entwickelt. Ein zusätzlicher Forschungsaspekt bestand in der kritischen Auseinandersetzung mit Sicherheitsrisiken durch die Exploration von Möglichkeiten zur Manipulation des eigenen Systems.
+
+\paragraph{Vorgehensmodell und Teamstruktur}
+
+\subparagraph{}{Vorgehensmodell}
+
+Für die methodische Herangehensweise entschied sich das Projektteam für eine hybride Vorgehensweise, die Elemente aus SCRUM und Kanban kombinierte. Diese Entscheidung basierte auf der Notwendigkeit, sowohl eine strukturierte Planung als auch eine flexible Reaktion auf neue Erkenntnisse und Herausforderungen zu ermöglichen. In der Anfangsphase des Projekts wurde primär nach dem SCRUM-Rahmenwerk gearbeitet. Die Sprints wurden wöchentlich organisiert, wobei jeweils montags ein neuer Sprint begann und freitags mit einer Review abgeschlossen wurde. Das Sprint Planning für die kommende Woche erfolgte direkt im Anschluss an die Review am Freitag und wurde systematisch in Jira dokumentiert.
+
+Mit fortschreitender Projektdauer, etwa ab Mitte April, zeigte sich jedoch, dass die strikte SCRUM-Methodik nicht optimal zur Dynamik des Projekts passte. Der administrative Aufwand für die SCRUM-Zeremonien band wertvolle Ressourcen, die für die technische Implementierung benötigt wurden. In einer gemeinsamen Entscheidung wurde daher ein Übergang zu einem Kanban-basierten Ansatz vollzogen. Diese Umstellung ermöglichte es dem Team, sich stärker auf die programmiertechnische Umsetzung zu konzentrieren und flexibler auf neue Erkenntnisse zu reagieren. Das Kanban-Board visualisierte den kontinuierlichen Arbeitsfluss und erleichterte die Priorisierung von Aufgaben ohne den Overhead formaler Sprint-Grenzen.
+
+Diese adaptive Herangehensweise erwies sich als besonders vorteilhaft für ein Projekt mit einem hohen Anteil an experimenteller Arbeit und Programmieraufgaben. Die Kombination der strukturgebenden Elemente von SCRUM in der Initialisierungsphase mit der Flexibilität von Kanban in der Implementierungsphase trug wesentlich zum Projekterfolg bei.
+
+
+%\begin{figure}[h]
+%    \centering
+%    % Hier würde ein Screenshot des Kanban Boards eingefügt werden
+%    \caption{Kanban Board nach der Umstellung von SCRUM (Stand: 20.04.2025)}
+%    \label{fig:kanban}
+%\end{figure}
+
+\subparagraph{}{Teamstruktur und Rollenverteilung}
+
+Die Teamgröße von sechs Personen erwies sich als ideal für die funktionale Aufteilung in zwei Teilteams, die sich jeweils auf einen der Hauptaspekte des Projekts konzentrierten. Das erste Team, bestehend aus Jan Gaschler, Chantal Deusch und Paulina Pyczot, fokussierte sich auf die Entwicklung der Gesichtserkennungskomponente. Das zweite Team, mit den Mitgliedern Valentin Talmon-L'Armée, Serhat Gürel und Jeremy Diem, übernahm die Implementierung der Kennzeichenerkennung. Diese Aufteilung ermöglichte eine parallele Bearbeitung der beiden Hauptfunktionalitäten und förderte zugleich die Spezialisierung der Teammitglieder auf spezifische Technologien und Algorithmen.
+
+Innerhalb der Gesamtstruktur wurden die klassischen SCRUM-Rollen definiert und besetzt: Paulina Pyczot übernahm die Rolle der Scrum Masterin und war somit für die Prozessoptimierung und die Beseitigung von Hindernissen verantwortlich. Valentin Talmon-L'Armée fungierte als Product Owner und vertrat die Interessen des Kunden im Team. Er priorisierte die Anforderungen und stellte sicher, dass das Produkt den Erwartungen des Auftraggebers entsprach. Alle Teammitglieder nahmen gleichzeitig die Rolle der Entwickler ein und waren aktiv an der technischen Implementierung beteiligt.
+
+Diese Rollenverteilung schuf klare Verantwortlichkeiten und Kommunikationswege, während die funktionale Aufteilung in zwei Teilteams eine effiziente Parallelisierung der Arbeit ermöglichte. Die überschaubare Teamgröße begünstigte zudem einen engen Austausch und eine schnelle Entscheidungsfindung.
+
+\subparagraph{}{Kommunikation und Arbeitsweise}
+
+Die Kommunikation im Team erfolgte über verschiedene Kanäle, die je nach Kontext und Bedarf ausgewählt wurden. Discord diente als primäre Plattform für die interne Kommunikation, insbesondere für Daily Stand-ups, die schriftliche Protokollierung von Ergebnissen und die direkte Kommunikation mit den Betreuern. In spezifischen Discord-Channels wie „Schriftliches" und „Fragen an Betreuer" wurden To-Do-Listen und Meeting-Protokolle systematisch dokumentiert, um eine transparente Informationsbasis für alle Teammitglieder zu schaffen.
+
+Microsoft Teams wurde vorrangig für die formellere Kommunikation genutzt, beispielsweise für Sprint Reviews, regelmäßige Statusberichte an Herrn Franz und den allgemeinen Austausch mit dem Kunden und den Betreuern. Zusätzlich diente Teams als zentrales Repository für wichtige Projektdokumente, die für alle Beteiligten zugänglich sein sollten.
+
+Ergänzend zu den digitalen Kommunikationskanälen fanden regelmäßige Präsenztermine an der Hochschule statt. Im Projektraum wurden Jour Fixe-Termine mit dem Kunden und den Betreuern abgehalten, gemeinsame Programmier- und Brainstorming-Sessions durchgeführt sowie Retrospektiven und – vor der Umstellung auf Kanban – Sprint-Planungen organisiert. Diese Präsenztermine förderten den direkten Austausch und die Teambildung.
+
+Die Arbeitsweise des Teams war durch verschiedene agile Praktiken geprägt. Daily Stand-ups wurden mittwochs und freitags in Präsenz durchgeführt, an den übrigen Tagen fanden sie online via Discord statt. Diese kurzen, fokussierten Meetings dienten dem Austausch über den aktuellen Fortschritt, bevorstehende Aufgaben und potenzielle Hindernisse. Die Durchführung erfolgte bedarfsorientiert, insbesondere wenn signifikante programmiertechnische Fortschritte erzielt wurden.
+
+Zur kontinuierlichen Verbesserung der Zusammenarbeit wurden in regelmäßigen Abständen Retrospektiven durchgeführt. Dabei kamen verschiedene Methoden zum Einsatz, wie die „4L"-Methode (Liked, Learned, Lacked, Longed For) oder der „Start-Stop-Continue"-Ansatz. Die Ergebnisse dieser Retrospektiven wurden auf virtuellen Whiteboards dokumentiert und bildeten die Grundlage für Prozessverbesserungen in den folgenden Projektphasen.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{data/4l.png}
+    \caption{Retrospektive mit der 4L-Methode (durchgeführt am 21.03.2025)}
+    \label{fig:da}
+\end{figure}
+
+Zu Beginn des Projekts wurde ein Backlog Refinement durchgeführt, um eine klare Priorisierung der Aufgaben zu etablieren und die Vision des Projekts zu schärfen. In der SCRUM-Phase wurden wöchentliche Sprints durchgeführt, die montags begannen und freitags endeten. Das Sprint Planning für den folgenden Sprint fand jeweils am Freitag statt und wurde detailliert in Jira dokumentiert, um eine strukturierte Übersicht über die anstehenden Aufgaben zu gewährleisten.
+
 \paragraph{Dokumentation des Projektmanagements}
+
+\subsubsection{Zeitplanung und Meilensteine}
+
+Die Projektplanung basierte auf einem detaillierten Zeitplan, der die zentralen Meilensteine und Aktivitäten umfasste. Die chronologische Strukturierung des Projekts erfolgte entlang von acht wesentlichen Meilensteinen, die einen klaren Entwicklungspfad von der initialen Teamfindung bis zum Projektabschluss definierten.
+
+Der erste Meilenstein umfasste die Phase der Teamfindung vom 6. Februar bis zum 10. März 2025, in der sich die sechs Teammitglieder zusammenfanden und erste konzeptionelle Überlegungen zum Projektumfang anstellten. Am 18. März 2025 wurde der zweite Meilenstein mit dem Abschluss der Projektplanung erreicht. In dieser Phase wurden die grundlegenden Strukturen für das Projektmanagement etabliert, Tools wie Jira und GitHub eingerichtet und erste inhaltliche Konzepte entwickelt.
+
+Der dritte Meilenstein, die Implementierung der Kennzeichenerkennung unter Laborbedingungen, erstreckte sich vom 19. bis zum 27. März 2025. Hier lag der Fokus auf der Entwicklung eines grundlegenden Verständnisses der YOLO-Architektur und der Implementierung erster Erkennungsalgorithmen für Kennzeichen. Vom 28. März bis zum 3. April 2025 folgte der vierte Meilenstein mit der Erweiterung der Kennzeichenerkennung für das spezifische Anwendungsszenario an Mautstellen.
+
+Der fünfte Meilenstein vom 4. bis zum 10. April 2025 widmete sich der Gesichtserkennung unter Laborbedingungen, gefolgt vom sechsten Meilenstein (11. bis 17. April 2025), der die Anwendung der Gesichtserkennung für Zutrittskontrollen adressierte. Der siebte Meilenstein vom 18. bis zum 25. April 2025 umfasste Untersuchungen zu Möglichkeiten der Manipulation von Gesichtserkennungssystemen und deren Absicherung.
+
+Den Abschluss bildete der achte Meilenstein vom 26. April bis zum 2. Mai 2025, der die Präsentation des Projektergebnisses sowie die Finalisierung der Projektdokumentation beinhaltete. Diese strukturierte Zeitplanung ermöglichte eine kontinuierliche Fortschrittskontrolle und die frühzeitige Identifikation potenzieller Verzögerungen.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|l|c|}
+        \hline
+        \textbf{Meilenstein} & \textbf{Beschreibung} & \textbf{Zeitraum} \\
+        \hline
+        1 & Teamfindung & 06.02.2025 - 10.03.2025 \\
+        \hline
+        2 & Projektplanung abgeschlossen & 18.03.2025 \\
+        \hline
+        3 & Kennzeichenerkennung unter Laborbedingungen & 19.03.2025 - 27.03.2025 \\
+        \hline
+        4 & Kennzeichenerkennung an Mautstellen & 28.03.2025 - 03.04.2025 \\
+        \hline
+        5 & Gesichtserkennung unter Laborbedingungen & 04.04.2025 - 10.04.2025 \\
+        \hline
+        6 & Gesichtserkennung für Zutrittskontrollen & 11.04.2025 - 17.04.2025 \\
+        \hline
+        7 & Manipulierte Gesichtserkennung & 18.04.2025 - 25.04.2025 \\
+        \hline
+        8 & Projektende mit Präsentation und Dokumentation & 26.04.2025 - 02.05.2025 \\
+        \hline
+    \end{tabular}
+    \caption{Übersicht der Projektmeilensteine}
+    \label{tab:milestones}
+\end{table}
+
+\subsubsection{Backlog-Management und Fortschrittskontrolle}
+
+Das Backlog-Management wurde mithilfe von Jira realisiert, einer professionellen Software für agiles Projektmanagement. In Jira wurden sowohl das Product Backlog als auch die Sprint Backlogs systematisch gepflegt und kontinuierlich aktualisiert. In der SCRUM-Phase wurden regulär Burndown Charts erstellt, um den Fortschritt visuell zu erfassen und potenzielle Abweichungen vom geplanten Projektverlauf frühzeitig zu erkennen.
+
+Insgesamt wurden über 90 Tickets im Jira-System erstellt und bearbeitet, die hierarchisch in acht Epic-Kategorien eingeordnet wurden, welche den definierten Meilensteinen entsprachen. Diese Struktur ermöglichte eine übersichtliche Organisation der anfallenden Aufgaben und erleichterte die Zuordnung von Verantwortlichkeiten.
+
+Nach der Umstellung von SCRUM auf Kanban wurde das Jira-Board entsprechend angepasst, um den kontinuierlichen Arbeitsfluss transparent darzustellen. Anstelle der Sprint-gebundenen Planung trat nun die visualisierte Darstellung des Aufgabenflusses durch verschiedene Bearbeitungsstadien, was eine flexiblere Priorisierung und Bearbeitung der Aufgaben ermöglichte.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{data/burndown.png}
+    \caption{Burndown Chart des letzten SCRUM-Sprints vor der Umstellung auf Kanban}
+    \label{fig:burndown}
+\end{figure}
+
+Die Fortschrittskontrolle erfolgte durch regelmäßige Statusberichte, die an den Betreuer, Herrn Franz, übermittelt wurden. Diese Berichte boten eine konzise Zusammenfassung des aktuellen Projektstands, der erreichten Meilensteine und der geplanten nächsten Schritte. Ergänzend wurden Sprint-Review-Dokumente erstellt, die den Fortschritt bei der Implementierung der Kennzeichenerkennung und Gesichtserkennung detailliert dokumentierten.
+
+Ein weiteres Element der Fortschrittskontrolle waren die Protokolle der regelmäßigen Meetings, die systematisch im Discord-Channel „Schriftliches" abgelegt wurden. Diese Protokolle dienten nicht nur der Dokumentation getroffener Entscheidungen, sondern auch als Basis für die Nachverfolgung von Aktionspunkten und offenen Fragen.
+
+\subsubsection{Projektkommunikation und Dokumentationsmanagement}
+
+Die Projektkommunikation erfolgte auf verschiedenen Ebenen und wurde durch eine strukturierte Dokumentation unterstützt. Während kein klassisches Lastenheft erstellt wurde, fanden regelmäßige Abstimmungen mit dem Kunden, Herrn Schäffter, statt, um den Projektumfang agil anzupassen. Ein Beispiel für diese agile Anpassungsfähigkeit war die Erweiterung des ursprünglich als „Personenerkennung mit YOLO" definierten Projekts um den Aspekt der Kennzeichenerkennung, um den Umfang besser an die zweimonatige Projektlaufzeit anzupassen.
+
+To-Do-Listen wurden im Discord-Channel „Fragen an Betreuer" geführt und regelmäßig aktualisiert, um eine transparente Übersicht über anstehende Aufgaben zu gewährleisten. Diese Listen dienten als Ergänzung zum formalen Backlog in Jira und ermöglichten eine schnellere und direktere Kommunikation über kurzfristige Aufgaben.
+
+Ein besonderer Fokus lag auf der Dokumentation der technischen Aspekte, insbesondere im Hinblick auf das zu erstellende Hands-On-Tutorial. Hier wurden detaillierte Anleitungen zur Einrichtung der Raspberry Pi-Umgebung, zur Installation der erforderlichen Bibliotheken und zur Nutzung der implementierten Erkennungsalgorithmen erstellt. Diese Dokumentation bildete die Grundlage für das Tutorial, das zukünftigen Studierenden der THU-Summerschool zur Verfügung gestellt werden sollte.
+
+Im Bereich des Datenschutzes wurden potenzielle DSGVO-Implikationen frühzeitig mit Herrn Schäffter diskutiert, um sicherzustellen, dass die entwickelten Anwendungen den gesetzlichen Anforderungen entsprechen. Insbesondere für die Gesichtserkennung wurden Konzepte erarbeitet, die eine datenschutzkonforme Verarbeitung biometrischer Daten gewährleisteten.
+
+\subsubsection{Versionsverwaltung und kollaboratives Arbeiten}
+
+Für die Versionsverwaltung wurde GitHub als zentrales Repository genutzt. Um eine klare Trennung zwischen Entwicklung und Endprodukt zu gewährleisten, wurde das Projekt in zwei separate Repositories aufgeteilt: Ein privates Development-Repository für die Entwicklungsarbeit und ein öffentliches Repository für das Hands-on-Tutorial, das ohne direkten Zugriff auf die implementierten Lösungen genutzt werden konnte.
+
+Die Branching-Strategie folgte einem strukturierten Ansatz, bei dem jedes Teammitglied auf einem eigenen Branch (\texttt{dev\_[Name]}) arbeitete. Diese dezentrale Arbeitsweise ermöglichte parallele Entwicklungen ohne gegenseitige Beeinträchtigungen. Funktionsfähiger Code wurde auf den \texttt{development}-Branch zusammengeführt, wobei die Integration erst nach erfolgreichen Tests erfolgte. Nur vollständig fertiggestellte und getestete Funktionen wurden mittels Pull Request auf den \texttt{main}-Branch übertragen, der stets eine stabile und produktionsreife Version des Projekts repräsentierte.
+
+Für Pull Requests wurde eine standardisierte Checkliste implementiert, die eine konsistente Qualitätssicherung gewährleistete. Diese Checkliste umfasste unter anderem die detaillierte Beschreibung der Änderung, die Kategorisierung der Art der Änderung (neue Funktion, Bugfix, Breaking Change, Dokumentationsupdate), eine Auflistung der durchgeführten Tests, die Bestätigung der Einhaltung der Stilrichtlinien, den Nachweis eines Self-Reviews, die Kommentierung komplexer Codeabschnitte, die Anpassung der zugehörigen Dokumentation, die Vermeidung neuer Warnungen, das Hinzufügen von Tests für neue Funktionen sowie die erfolgreiche lokale Ausführung aller Tests. Diese umfassende Checkliste stellte sicher, dass nur qualitativ hochwertiger und gut dokumentierter Code in das Hauptrepository integriert wurde.
+
+Das kollaborative Arbeiten wurde durch diese strukturierte Versionsverwaltung erheblich erleichtert. Die klare Trennung der Arbeitsbereiche durch individuelle Branches verhinderte Konflikte bei der gleichzeitigen Bearbeitung von Dateien, während die zentralisierte Integration über den \texttt{development}-Branch eine kontinuierliche Integration der Einzelbeiträge zu einem kohärenten Gesamtsystem ermöglichte.
+
+\subsubsection{Reflexion und Verbesserungspotential}
+
+Die Entscheidung, von SCRUM zu Kanban zu wechseln, erwies sich im Projektverlauf als vorteilhaft und angemessen. Die anfängliche SCRUM-Struktur bot einen soliden Rahmen für die Projektinitialisierung und -planung, während Kanban in der Umsetzungsphase die erforderliche Flexibilität bereitstellte. Diese Anpassungsfähigkeit war besonders wertvoll angesichts des experimentellen Charakters des Projekts und der Tatsache, dass alle Teammitglieder parallel zu ihren regulären Studienverpflichtungen am Projekt arbeiteten.
+
+In der Retrospektive lassen sich dennoch verschiedene Bereiche identifizieren, in denen Verbesserungspotential bestand. Eine präzisere Einschätzung des Arbeitsaufwands zu Beginn des Projekts hätte möglicherweise zu einer realistischeren Zeitplanung geführt und damit einige der zeitlichen Herausforderungen in den späteren Projektphasen reduziert. Die anfängliche Planung erwies sich teilweise als zu optimistisch, insbesondere hinsichtlich der Komplexität der Implementierung der Gesichtserkennung.
+
+Der Wechsel zu Kanban hätte eventuell früher erfolgen können, da der administrative Aufwand für die SCRUM-Methodik teilweise Ressourcen band, die für die technische Umsetzung hätten genutzt werden können. Eine frühere Erkenntnis der besseren Eignung des Kanban-Ansatzes für dieses spezifische Projekt hätte möglicherweise zu einer effizienteren Ressourcennutzung geführt.
+
+Die Dokumentation der technischen Aspekte erfolgte teilweise erst gegen Projektende, was den Abschlussprozess intensivierte. Eine kontinuierlichere Dokumentation parallel zur Entwicklung hätte eine gleichmäßigere Arbeitsbelastung ermöglicht und potenziell zu einer höheren Dokumentationsqualität geführt. Zudem hätte eine intensivere Testphase, insbesondere für die Überprüfung des Hands-On-Tutorials durch unbeteiligte Dritte, möglicherweise weitere Verbesserungspotentiale aufgedeckt.
+
+Trotz dieser Optimierungsmöglichkeiten kann das Projektmanagement insgesamt als erfolgreich betrachtet werden. Die flexible Kombination aus SCRUM und Kanban ermöglichte es dem Team, die auftretenden Herausforderungen zu bewältigen und die primären Projektziele zu erreichen. Die klare Strukturierung in Meilensteine, die transparente Kommunikation und die systematische Versionsverwaltung trugen wesentlich zum Gelingen des Projekts bei. Die entwickelten Erkennungsalgorithmen für Kennzeichen und Gesichter sowie das erstellte Hands-On-Tutorial erfüllen die anfangs definierten Anforderungen und bieten eine solide Grundlage für zukünftige Weiterentwicklungen und Anwendungen im Rahmen der THU-Summerschool.
