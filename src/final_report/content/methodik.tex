@@ -356,14 +356,23 @@ Zur Auswertung können folgende Attribute der \texttt{ultralytics}-Bibliothek ge
 \end{itemize}
 
 \paragraph{Anwendungsbeispiel: Zutrittskontrollen}
-Das System ermöglicht eine zuverlässige Gesichtserkennung für Zutrittskontrollsysteme mit folgenden Eigenschaften:
+
+Das vorgestellte System, das YOLO zur Detektion und die \texttt{face\_recognition} Bibliothek zur Identifikation nutzt, bietet eine solidere Grundlage für Zutrittskontrollanwendungen als der reine MediaPipe-Ansatz, weist aber dennoch Einschränkungen für den produktiven Einsatz auf.
+
+Die Stärke dieses Ansatzes liegt in der Verwendung von Gesichts-Embeddings (128-dimensionale Vektoren), die von der \texttt{face\_recognition} Bibliothek generiert werden. Diese Embeddings kodieren tiefere, robustere Merkmale des Gesichts als die reinen Landmarken-Positionen von MediaPipe. Dadurch ist das System weniger anfällig für Variationen in Mimik, Kopfhaltung oder leichten Beleuchtungsänderungen. Der Vergleich über die euklidische Distanz im Embedding-Raum ist ein etablierter Standard für die biometrische Identifikation. Das System kann bekannte Personen zuverlässig wiedererkennen, solange die Qualität der gespeicherten Referenzbilder und der Live-Aufnahme ausreichend ist.
+
+Die primäre Schwachstelle, ähnlich wie bei MediaPipe, ist das Fehlen einer expliziten Lebenderkennung (Liveness Detection). Das System kann nicht unterscheiden, ob es ein echtes Gesicht oder nur ein Foto oder Video einer Person sieht. Ein einfacher Täuschungsversuch (Presentation Attack) durch Vorhalten eines Bildes könnte das System überlisten. Für sicherheitskritische Zutrittskontrollen ist dies ein erhebliches Risiko.
+
+Weitere Limitierungen sind:
 \begin{itemize}
-    \item Echtzeit-Erkennung mit einer Latenz von unter 250\,ms pro Bild.
-    \item Visuelles Feedback durch Markierung und Beschriftung erkannter Gesichter im Videostream.
-    \item Dynamisches Anlernen neuer Nutzer durch interaktive Eingabe.
-    \item Speicherung der Gesichtsdaten in einem lokalen Verzeichnis; Erweiterung durch SQLite möglich.
-    \item Erweiterbar für Multi-Faktor-Authentifizierung (z.\,B. RFID + Gesicht).
+    \item \textbf{Abhängigkeit von Bildqualität:} Die Qualität der Gesichtserkennung und -kodierung hängt stark von der Auflösung, Schärfe und Beleuchtung des Bildes ab. Schlechte Lichtverhältnisse oder Bewegungsunschärfe können die Genauigkeit der Embeddings beeinträchtigen.
+    \item \textbf{Skalierbarkeit der Speicherung:} Das Speichern von einzelnen Bilddateien pro Person ist für eine kleine Anzahl von Nutzern praktikabel, skaliert aber schlecht für Systeme mit vielen autorisierten Personen. Eine Datenbanklösung zur Verwaltung der Embeddings wäre hier effizienter.
+    \item \textbf{Initiales Anlernen:} Das System erfordert, dass für jede Person mindestens ein gutes Referenzbild manuell gespeichert wird. Variationen (z.B. mit/ohne Brille) müssen eventuell durch mehrere Bilder abgedeckt werden.
 \end{itemize}
+
+Im Vergleich zum MediaPipe-Ansatz ist die YOLO/\texttt{face\_recognition}-Kombination für die reine Identifikation von Personen besser geeignet, da sie auf robusteren biometrischen Merkmalen basiert. Für eine tatsächliche Zutrittskontrolle müsste das System jedoch zwingend um eine Lebenderkennung erweitert werden. Zusätzliche Maßnahmen wie die Analyse von 3D-Informationen (falls Tiefenkameras verfügbar sind) oder die Integration von Infrarotbildern könnten die Sicherheit weiter erhöhen.
+
+Zusammenfassend lässt sich sagen, dass das YOLO-basierte System eine gute Demonstrationsplattform für die Grundlagen der biometrischen Gesichtserkennung darstellt, aber für den realen Einsatz in Zutrittskontrollen signifikante Erweiterungen im Bereich Sicherheit und Skalierbarkeit benötigt.
 
 \textbf{Ergebnisse:} In kontrollierter Umgebung erreicht das System eine Erkennungsrate von ca.~93\,\%. Bei schwierigen Lichtverhältnissen sinkt die Rate auf etwa 78\,\%. Für produktive Anwendungen empfiehlt sich die Ergänzung durch IR-Kameras und Liveness Detection.
 
@@ -376,7 +385,7 @@ Das vorgestellte System kombiniert die Geschwindigkeit und Präzision moderner Y
 
 Für die Gesichtspunkterkennung nutzen wir das FaceMesh Modell von Mediapipe, das 468 3D-Gesichtspunkte in Echtzeit erfasst. Diese dreidimensionalen Koordinaten ermöglichen vielfältige Anwendungen in Gesichtserkennung, Emotionsanalyse und Augmented Reality.
 
-Der vollständige Code, der die hier beschriebene Gesichtspunkt-Erkennung mit MediaPipe implementiert, ist auf GitHub \cite{github_yolo} verfügbar.
+(?) Der vollständige Code, der die hier beschriebene Gesichtspunkt-Erkennung mit MediaPipe implementiert, ist im Anhang und/oder auf GitHub verfügbar.
 Der ganze Code ist in Python geschrieben.
 
 Zunächst müssen wir notwendigen die Bibliotheken importieren. Diese sind in unserem Fall die OpenCV und MediaPipe-Bibliotheken.
@@ -438,9 +447,6 @@ Dieser Code bildet die Grundlage für unsere Gesichtswiedererkennung.
 
 Unser System zur Echtzeit-Gesichtserkennung nutzt MediaPipe FaceMesh, um Gesichter in Videostreams präzise zu erkennen.
 Seine Funktionalität umfasst das Erlernen und Speichern neuer Gesichter, das Wiedererkennen bekannter Personen und die Fähigkeit zum kontinuierlichen Dazulernen, wodurch sich die Erkennungsleistung stetig verbessert.
-
-Der vollständige Code, der die hier beschriebene Gesichtswiedererkennung mit den Gesichtspunkten mit MediaPipe implementiert, ist auf GitHub \cite{github_yolo} verfügbar.
-Der ganze Code ist in Python geschrieben.
 
 Im Kern unseres Programms steht die Initialisierung, in der das MediaPipe FaceMesh-Modul eingerichtet und die Kamera gestartet wird, wie es in Abschnitt 4.3.3.1 beschrieben ist.
 Zudem werden Speicherstrukturen für die Namen bekannter Gesichter und deren charakteristische Gesichtspunkte (Landmarks) vorbereitet.
