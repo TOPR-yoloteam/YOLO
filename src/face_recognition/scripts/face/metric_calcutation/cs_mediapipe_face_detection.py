@@ -74,6 +74,11 @@ with mp_face_detection.FaceDetection(min_detection_confidence=min_detection_conf
 
         cv2.imshow('MediaPipe Face Mesh', frame)
 
+        # Add frame limit check
+        if frame_count >= 500:
+            print("\nReached 500 frames, stopping...")
+            break
+
         if cv2.waitKey(5) & 0xFF == 27:  # ESC drücken zum Beenden
             break
 
@@ -93,6 +98,11 @@ if detection_scores:
     print(f"Median: {np.median(detection_scores):.3f}")
     print(f"Min: {np.min(detection_scores):.3f}")
     print(f"Max: {np.max(detection_scores):.3f}")
+    
+    # List format for all detection scores
+    detection_list = [f"{score:.3f}" for score in detection_scores]
+    print("\nDetection Scores List (all frames):")
+    print(f"[{', '.join(detection_list)}]")
 
 if mesh_scores:
     print("\nFace Mesh Scores:")
@@ -100,6 +110,19 @@ if mesh_scores:
     print(f"Median: {np.median(mesh_scores):.3f}")
     print(f"Min: {np.min(mesh_scores):.3f}")
     print(f"Max: {np.max(mesh_scores):.3f}")
+    
+    # List format for all mesh scores
+    mesh_list = [f"{score:.3f}" for score in mesh_scores]
+    print("\nMesh Scores List (all frames):")
+    print(f"[{', '.join(mesh_list)}]")
+
+# Speichern aller Frames, nicht nur jeden 5.
+with open('confidence_scores.txt', 'w') as f:
+    f.write("Frame,Detection,Mesh\n")
+    for i in range(max(len(detection_scores), len(mesh_scores))):
+        det_score = detection_scores[i] if i < len(detection_scores) else "N/A"
+        mesh_score = mesh_scores[i] if i < len(mesh_scores) else "N/A"
+        f.write(f"{i+1},{det_score},{mesh_score}\n")
 
 cap.release()
 cv2.destroyAllWindows()
