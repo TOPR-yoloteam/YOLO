@@ -11,7 +11,10 @@ Innerhalb der Deep-Learning-basierten Objekterkennung existieren zwei Hauptstrat
     \item \textbf{One-Stage Detectors:} Hierbei wird die Objekterkennung als direktes Regressionsproblem formuliert. Bounding-Box-Koordinaten und Klassenwahrscheinlichkeiten werden in einem einzigen Durchlauf vorhergesagt. Bekannte Vertreter sind SSD (\textit{Single Shot MultiBox Detector}) und insbesondere YOLO (\textit{You Only Look Once}), die sich durch hohe Verarbeitungsgeschwindigkeit für Echtzeitanwendungen auszeichnen.
 \end{enumerate}
 
-\subsubsection{Bildverarbeitung und Computer Vision mit OpenCV} 
+\subsubsection{Bildverarbeitung und Computer Vision mit OpenCV}
+
+OpenCV (Open Source Computer Vision Library) ist eine weit verbreitete Open-Source-Bibliothek, die eine umfangreiche Sammlung von Algorithmen für die Bildverarbeitung und Computer Vision bereitstellt \cite{culjak2012opencv}. Sie wurde ursprünglich von Intel entwickelt und wird heute von einer großen Community gepflegt und weiterentwickelt. OpenCV bietet Funktionen für Aufgaben wie Objekterkennung, Gesichtserkennung, Merkmalsextraktion, Kamerakalibrierung und vieles mehr. Die Bibliothek ist in C++ implementiert, bietet aber auch Schnittstellen für Python, Java und andere Sprachen, was sie für eine breite Palette von Anwendungen zugänglich macht.
+
 OpenCV ist eine frei verfügbare Softwarebibliothek, die viele Verfahren zur Bildverarbeitung und für Aufgaben der Computer Vision enthält. Sie ist Open Source und wird unter der Apache-2.0-Lizenz bereitgestellt. OpenCV kann mit verschiedenen Programmiersprachen wie C, C++, Python und Java verwendet werden. Die Bibliothek unterstützt eine Vielzahl plattformübergreifender Betriebssysteme und nutzt sowohl die CPU als auch die GPU, um eine besonders schnelle Bildverarbeitung zu ermöglichen. Entwickelt wurde OpenCV ursprünglich von Intel, das auch heute noch an der Weiterentwicklung beteiligt ist.
 
 OpenCV spielt in vielen Bereichen eine zentrale Rolle – von der Steuerung autonomer Fahrzeuge bis hin zur Gesichtserkennung in mobilen Anwendungen. Besonders durch seine Fähigkeit, komplexe visuelle Daten in Echtzeit zu verarbeiten, ist die Bibliothek ein unverzichtbares Werkzeug in der Forschung und Entwicklung künstlicher Intelligenz, insbesondere im Bereich des maschinellen Lernens und Deep Learnings. Die von OpenCV bereitgestellten Werkzeuge ermöglichen die Entwicklung fortschrittlicher Vision-Anwendungen, die früher als schwer umsetzbar oder nur mit großem Aufwand realisierbar galten \cite{ultralytics_cv_2025}.
@@ -94,6 +97,8 @@ Die Gesichtserkennung und -analyse in MediaPipe erfolgt in mehreren, aufeinander
     \item \textbf{Refinement und Stabilisierung}: Um zeitliche Konsistenz bei Videoanalysen zu gewährleisten, verwendet MediaPipe Tracking-Algorithmen, die die Landmarken über aufeinanderfolgende Frames stabilisieren. Dies reduziert Flackern und erhöht die Genauigkeit der Bewegungserfassung.
 \end{enumerate}
 
+Diese Pipeline, die Detektion, Ausrichtung, Landmarken-Prädiktion und Stabilisierung kombiniert, ermöglicht eine robuste und präzise Gesichtsanalyse in Echtzeit \cite{mediapipe.docs}.
+
 Die 468 Landmarken des Face Mesh erfassen präzise die Geometrie des gesamten Gesichts, einschließlich feiner Details wie:
 \begin{itemize}
     \item Augenkontur und Iris-Position für Eye-Tracking
@@ -102,36 +107,19 @@ Die 468 Landmarken des Face Mesh erfassen präzise die Geometrie des gesamten Ge
     \item Wangenknochen und Kinnlinie für Gesichtsstrukturanalyse
     \item Nasenkontur für die zentrale Ausrichtung
 \end{itemize}
+Diese detaillierte Erfassung ist eine Kernfunktion des MediaPipe Face Mesh Moduls \cite{mediapipe.docs}.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.5\textwidth]{data/FaceMesh_Mediapipe.png}
-    \caption{MediaPipe Face Mesh mit 468 Landmarken, die verschiedene Gesichtsbereiche präzise erfassen}
+    \caption{MediaPipe Face Mesh mit 468 Landmarken, die verschiedene Gesichtsbereiche präzise erfassen. Quelle: \cite{mediapipe.docs}}
     \label{fig:mediapipe_face_mesh}
 \end{figure}
-
-Die Landmarken sind in semantisch sinnvolle Gruppen unterteilt, was die Erkennung spezifischer Gesichtsmerkmale und -ausdrücke erleichtert. Zur Laufzeit kann die Mesh-Topologie verwendet werden, um die Landmarken in ein dreidimensionales Polygonnetz zu verbinden, was besonders für Augmented-Reality-Anwendungen oder für die 3D-Gesichtsrekonstruktion nützlich ist.
-
-\paragraph{Vortrainierte Lösungen}
-MediaPipe bietet vortrainierte Lösungen für gängige Wahrnehmungsaufgaben, darunter:
-
-\begin{itemize}
-    \item \textbf{Face Detection:} Schnelle Gesichtserkennung.
-    \item \textbf{Face Mesh:} Detaillierte Erkennung von 468 3D-Gesichtslandmarken.
-    \item \textbf{Iris Tracking:} Präzise Lokalisierung der Iris.
-    \item \textbf{Hands:} Erkennung von Handposen und -landmarken.
-    \item \textbf{Pose:} Erkennung von Körperposen und -landmarken.
-\end{itemize}
-
-Diese Lösungen sind für verschiedene Plattformen (Android, iOS, Web, Desktop) optimiert und oft in Echtzeit einsetzbar. Sie kapseln die Komplexität der zugrundeliegenden Modelle und bieten einfache APIs \cite{mediapipe_solutions_guide}.
-
-\paragraph{Einsatz im Projektkontext}
-Im Projekt wird MediaPipe für die detaillierte Analyse von Gesichtsmerkmalen genutzt, z.B. für Landmarkenextraktion zur biometrischen Erkennung oder Eye Tracking. Dies ermöglicht präzise und effiziente Erfassung relevanter Merkmale, z.B. für Zutrittskontrollsysteme oder Müdigkeitserkennung. Die Kombination aus schneller Detektion (durch YOLO) und detaillierter Analyse (durch MediaPipe) ergibt eine leistungsfähige Pipeline für Echtzeitanwendungen im Bereich der Gesichtserkennung und -analyse.
 
 \subsubsection{MediaPipe-Architektur und Face Mesh}
 MediaPipe ist eine Open-Source-Plattform von Google zur Erstellung plattformübergreifender Pipelines für multimodale Daten. Die Architektur basiert auf modularen Graphen, in denen einzelne Calculatoren Datenvorverarbeitung, ML-Modelle und Nachverarbeitungsschritte verknüpfen \cite{mediapipe_solutions_guide}.
 
-Das Face Mesh-Modul kombiniert zunächst einen schnellen BlazeFace-Detektor mit einem darauf aufsetzenden Landmarken-Vorhersagemodell und liefert in Echtzeit bis zu 468 3D-Landmarken pro Gesicht. Die Topologie der Landmarken (siehe Abbildung~\ref{fig:mesh_topology}) beschreibt die Kantenverbindungen zwischen den Punkten und ermöglicht eine präzise meshing-Repräsentation.
+Das Face Mesh-Modul kombiniert zunächst einen schnellen BlazeFace-Detektor mit einem darauf aufsetzenden Landmarken-Vorhersagemodell und liefert in Echtzeit bis zu 468 3D-Landmarken pro Gesicht \cite{mediapipe.docs}. Die Topologie der Landmarken (siehe Abbildung~\ref{fig:mesh_topology}) beschreibt die Kantenverbindungen zwischen den Punkten und ermöglicht eine präzise meshing-Repräsentation.
 
 \begin{figure}[htbp]
     \centering
@@ -168,7 +156,7 @@ Das Herzstück ist ein einzelnes Convolutional Neural Network (CNN), das diese V
 Da oft mehrere Zellen oder Boxen dasselbe Objekt erkennen, liefert YOLO zunächst viele überlappende Boxen. Um nur die relevanteste Box pro Objekt zu behalten, wird ein „Aufräumschritt“ namens Non-Max Suppression (NMS) durchgeführt. Dabei werden Boxen mit geringer Konfidenz entfernt und von den verbleibenden, überlappenden Boxen wird nur die mit der höchsten Konfidenz behalten, während die anderen verworfen werden.
 
 \textbf{Versionen:} \\
-YOLO wird ständig weiterentwickelt. In diesem Projekt kam hauptsächlich YOLOv8 zum Einsatz. Diese Version stellt einen aktuellen Stand der Technik dar und bietet eine gute Balance aus Erkennungsgenauigkeit und hoher Geschwindigkeit, was für die Analyse von Videoströmen vorteilhaft ist. Sie profitiert von den Architekturoptimierungen und Trainingstechniken früherer Versionen und ist oft einfacher zu verwenden. Die Entwicklung schreitet kontinuierlich voran, wie neuere, von Ultralytics dokumentierte Varianten wie YOLOv11 zeigen, was die Dynamik in diesem Bereich unterstreicht.
+YOLO wird ständig weiterentwickelt. In diesem Projekt kam hauptsächlich YOLOv8 zum Einsatz. Diese Version stellt einen aktuellen Stand der Technik dar und bietet eine gute Balance aus Erkennungsgenauigkeit und hoher Geschwindigkeit, was für die Analyse von Videoströmen vorteilhaft ist. Sie profitiert von den Architekturoptimierungen und Trainingstechniken früherer Versionen und ist oft einfacher zu verwenden. Die Entwicklung schreitet kontinuierlich voran, wie neuere, von Ultralytics dokumentierte Varianten wie YOLOv11 zeigen, was die Dynamik in diesem Bereich unterstreicht \cite{ultralytics_cv_2025}.
 
 \subsection{OCR für Texterkennung}
 
