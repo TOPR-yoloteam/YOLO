@@ -322,58 +322,45 @@ Diese Methode extrahiert den Bildbereich des zu lernenden Gesichts, speichert ih
 
 
 \paragraph{Vergleich der YOLO-Modelle}
-\begin{table}[h]
+\begin{table}[H]
+    \small
+    \setlength{\tabcolsep}{6pt} % Weniger Abstand zwischen Spalten
+    \renewcommand{\arraystretch}{1.2} % Etwas mehr Zeilenhöhe
     \centering
-    \begin{tabular}{|l|c|c|c|c|l|}
+    \begin{tabular}{|l|c|c|c|c|p{3.8cm}|}
     \hline
-    \textbf{Modell} & \textbf{mAP (face)} & \textbf{Inferenzzeit (ms)} & \textbf{Parameter} & \textbf{FLOPs} & \textbf{Besonderheiten} \\
+    \textbf{Modell} & \textbf{mAP} & \textbf{Zeit (ms)} & \textbf{Parameter} & \textbf{FLOPs} & \textbf{Besonderheiten} \\
     \hline
-    YOLOv8n-face   & 39{,}2\%   & 80{,}4   & 3{,}2 Mio. & 8{,}7 Mrd. & Auf Gesichtserkennung spezialisiert \\
-    YOLOv8n        & 37{,}3\%   & 80{,}4   & 3{,}2 Mio. & 8{,}7 Mrd. & Generelles Objekterkennungsmodell   \\
-    YOLOv11n-face* & 41{,}5\%*  & 56{,}1   & 2{,}6 Mio. & 6{,}5 Mrd. & Verbesserte Architektur, schneller  \\
+    YOLOv8n-face   & 39{,}2\%  & 80{,}4  & 3{,}2 Mio. & 8{,}7 Mrd. & Auf Gesichtserkennung spezialisiert \\
+    YOLOv8n        & 37{,}3\%  & 80{,}4  & 3{,}2 Mio. & 8{,}7 Mrd. & Generelles Objekterkennungsmodell \\
+    YOLOv11n-face* & 41{,}5\%* & 56{,}1  & 2{,}6 Mio. & 6{,}5 Mrd. & Verbesserte Architektur, schneller und effizienter \\
     \hline
     \end{tabular}
-    \caption{Vergleich der wichtigsten YOLO-Modelle für die Gesichtserkennung. *Werte für YOLOv11n-face sind geschätzt, basierend auf aktuellen Trends in der YOLO-Architektur.}
+    \caption{Vergleich ausgewählter YOLO-Modelle für die Gesichtserkennung. *Werte für YOLOv11n-face geschätzt.}
     \end{table}
     
-    Das auf Gesichter spezialisierte Modell YOLOv8n-face erzielt eine höhere Genauigkeit als das generische YOLOv8n. Das neuere YOLOv11n-face bietet voraussichtlich noch bessere Erkennungsraten und eine deutlich schnellere Inferenz, erfordert jedoch ggf. Anpassungen und erneutes Training für die Kompatibilität mit dem aktuellen Code. Generische Modelle wie YOLOv8n erkennen mehr Objekttypen, sind aber für die reine Gesichtserkennung weniger effizient.
 
-\paragraph{Metriken}
-Für die Bewertung der Gesichtserkennung sind folgende Metriken relevant:
-\begin{itemize}
-    \item \textbf{Precision (Genauigkeit):} Anteil der korrekt erkannten Gesichter an allen als erkannt gemeldeten Gesichtern.
-    \item \textbf{Recall (Sensitivität):} Anteil der korrekt erkannten Gesichter an allen tatsächlich vorhandenen Gesichtern.
-    \item \textbf{F1-Score:} Harmonisches Mittel aus Precision und Recall.
-    \item \textbf{Inferenzgeschwindigkeit:} Anzahl der Bilder pro Sekunde (FPS) bzw. durchschnittliche Latenz pro Bild.
-\end{itemize}
+\subsection*{Erklärung der Kennzahlen}
 
-\paragraph{Python-Code zur Visualisierung}
-%Python Diagramm
+\begin{description}
+\item[\textbf{mAP (mean Average Precision)}] 
+Gibt an, wie genau ein Modell Objekte (hier: Gesichter) erkennen kann. Ein höherer mAP-Wert steht für präzisere Lokalisierung und Klassifikation. Bei kleinen Modellen gelten Werte ab etwa 40\,\% als solide.
 
-Zur Auswertung können folgende Attribute der \texttt{ultralytics}-Bibliothek genutzt werden:
-\begin{itemize}
-    \item \texttt{results.box.map50} für mAP@0.5 (mean Average Precision)
-    \item \texttt{results.speed} für Inferenzzeit (ms pro Bild)
-\end{itemize}
+\item[\textbf{Inferenzzeit (ms)}] 
+Die durchschnittliche Zeit, die das Modell benötigt, um ein einzelnes Bild zu verarbeiten (Vorwärtsdurchlauf). Kürzere Zeiten sind wichtig für Echtzeitanwendungen, z.\,B. bei Live-Video-Streams.
 
-\paragraph{Anwendungsbeispiel: Zutrittskontrollen}
-Das System ermöglicht eine zuverlässige Gesichtserkennung für Zutrittskontrollsysteme mit folgenden Eigenschaften:
-\begin{itemize}
-    \item Echtzeit-Erkennung mit einer Latenz von unter 250\,ms pro Bild.
-    \item Visuelles Feedback durch Markierung und Beschriftung erkannter Gesichter im Videostream.
-    \item Dynamisches Anlernen neuer Nutzer durch interaktive Eingabe.
-    \item Speicherung der Gesichtsdaten in einem lokalen Verzeichnis; Erweiterung durch SQLite möglich.
-    \item Erweiterbar für Multi-Faktor-Authentifizierung (z.\,B. RFID + Gesicht).
-\end{itemize}
+\item[\textbf{Parameter}] 
+Anzahl der im Modell gespeicherten Gewichtungen. Weniger Parameter bedeuten meist geringeren Speicherbedarf und schnellere Verarbeitung, können aber auch die Genauigkeit beeinflussen.
 
-\textbf{Ergebnisse:} In kontrollierter Umgebung erreicht das System eine Erkennungsrate von ca.~93\,\%. Bei schwierigen Lichtverhältnissen sinkt die Rate auf etwa 78\,\%. Für produktive Anwendungen empfiehlt sich die Ergänzung durch IR-Kameras und Liveness Detection.
+\item[\textbf{FLOPs (Floating Point Operations)}] 
+Maß für den Rechenaufwand pro Bild. Modelle mit niedrigeren FLOPs sind effizienter und benötigen weniger Rechenleistung – ein Vorteil bei Einsatz auf Geräten mit begrenzten Ressourcen.
+\end{description}
 
-\begin{quote}
-Das vorgestellte System kombiniert die Geschwindigkeit und Präzision moderner YOLO-Modelle mit der Flexibilität des Face-Recognition-Frameworks und ist damit für den Einsatz in sicherheitskritischen Zutrittskontrollen geeignet.
-\end{quote}
+Das auf Gesichter spezialisierte Modell YOLOv8n-face erzielt eine höhere Genauigkeit als das generische YOLOv8n. Das neuere YOLOv11n-face bietet voraussichtlich noch bessere Erkennungsraten und eine deutlich schnellere Inferenz, erfordert jedoch ggf. Anpassungen und erneutes Training für die Kompatibilität mit dem aktuellen Code. Generische Modelle wie YOLOv8n erkennen mehr Objekttypen, sind aber für die reine Gesichtserkennung weniger effizient.
 
 \subsubsection{MediaPipe}
 \paragraph{Gesichtspunkterkennung: Code} 
+
 
 Für die Gesichtspunkterkennung nutzen wir das FaceMesh Modell von Mediapipe, das 468 3D-Gesichtspunkte in Echtzeit erfasst. Diese dreidimensionalen Koordinaten ermöglichen vielfältige Anwendungen in Gesichtserkennung, Emotionsanalyse und Augmented Reality.
 
