@@ -180,8 +180,9 @@ Das vorgestellte System kombiniert die Geschwindigkeit und Präzision moderner Y
 \end{quote}
 
 \subsubsection{MediaPipe}
-\paragraph{Gesichtspunkterkennung: Code}
-Für die Gesichtspunkterkennung haben wir uns für das Face Mesh Modell von Mediapipe entschieden. Bei diesem Modell sieht man alle 468 3D-Gesichtspunkte in Echtzeit. Die Bereitstellung der Punkte in 3D-Koordinaten eröffnet vielfältige Anwendungsmöglichkeiten, von der Gesichtswiedererkennung über die Emotionsanalyse bis hin zu Augmented Reality-Erlebnissen.
+\paragraph{Gesichtspunkterkennung: Code} 
+
+Für die Gesichtspunkterkennung nutzen wir das FaceMesh Modell von Mediapipe, das 468 3D-Gesichtspunkte in Echtzeit erfasst. Diese dreidimensionalen Koordinaten ermöglichen vielfältige Anwendungen in Gesichtserkennung, Emotionsanalyse und Augmented Reality.
 
 (?) Der vollständige Code, der die hier beschriebene Gesichtspunkt-Erkennung mit MediaPipe implementiert, ist im Anhang und/oder auf GitHub verfügbar.
 Der ganze Code ist in Python geschrieben.
@@ -189,19 +190,19 @@ Der ganze Code ist in Python geschrieben.
 Zunächst müssen wir notwendigen die Bibliotheken importieren. Diese sind in unserem Fall die OpenCV und MediaPipe-Bibliotheken.
 Danach initialisieren wir die MediaPipe-Instanz. Dies geschieht mit dem folgenden Code:
 \begin{lstlisting}
-    # MediaPipe Face Mesh Setup
+    # MediaPipe FaceMesh Setup
     mp_face_mesh = mp.solutions.face_mesh
     face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=5, min_detection_confidence=0.8)
 \end{lstlisting}
 
 \textbf{Parameter-Erläuterung:}
 \begin{itemize}
-    \item \texttt{static\_image\_mode=False}: Dieser Parameter ist entscheiden, wenn man Videostreams oder Live-Kameraaufnahmen verarbeiten möchte. Er signalisiert dem Modell, dass es sich um eine Sequenz von Bildern handelt und optimiert die Verarbeitung entsprechend.
-    \item \texttt{max\_num\_faces=5}: Damit legt man die maximale Anzahl von Gesichtern fest, die gleichzeitig im Bild erkannt werden sind. In userem Fall sind es maximal 5 Gesichter gleichzeitig.
-    \item \texttt{min\_detection\_confidence=0.8}: Dieser Wert bestimmt die Mindestsicherheit (in Prozent) für eine Gesichtserkennung. Ein höherer Wert führt zu präziseren Erkennungen, kann aber dazu führen, dass Gesichter bei ungünstigen Bedingungen (z.B. schlechte Beleuchtung, teilverdeckte Gesichter) nicht erkannt werden. Bei uns ist dieser Wert 80\%, da man da auch schon bei diesem Wert eine gute Erkennung hat.
+    \item \texttt{static\_image\_mode=False}: Entscheidend für die Verarbeitung von Videostreams und Live-Kameraaufnahmen, signalisiert dem Modell eine Bildsequenz.
+    \item \texttt{max\_num\_faces=5}: Begrenzt die Erkennung auf maximal 5 Gesichter gleichzeitig.
+    \item \texttt{min\_detection\_confidence=0.8}: Setzt die Erkennungsschwelle auf 80\% für präzise Resultate bei guter Balance zwischen Genauigkeit und Robustheit.
 \end{itemize}
 
-Um die erkannten Gesichtspunkte und deren Verbindungen visuell darzustellen, initialisieren wir die Zeichenwerkzeuge von MediaPipe. drawing\_spec definiert das Aussehen der Punkte und Linien (z.B. Farbe, Dicke).
+Um die erkannten Gesichtspunkte und deren Verbindungen visuell darzustellen, initialisieren wir die Zeichenwerkzeuge von MediaPipe. \texttt{drawing\_spec} definiert das Aussehen der Punkte und Linien (z.B. Farbe, Dicke).
 
 Im nächsten Schritt wird die Webcam geöffnet, um Videobilder aufzunehmen. Alternativ könnte man hier auch den Pfad zu einer Bild- oder Videodatei angeben. 
 
@@ -230,9 +231,9 @@ Sobald ein oder mehrere Gesichter im Bild erkannt wurden, zeichnen wir die 468 G
 \end{lstlisting}
 \textbf{Parameter-Erläuterung}:
 \begin{itemize}
-    \item \texttt{image=frame}: Das Originalbild (im BGR-Format), auf das die Landmarken gezeichnet werden sollen.
+    \item \texttt{image=frame}: Das Originalbild (im BGR-Format) für die Visualisierung der Landmarken.
     \item \texttt{landmark\_list=face\_landmarks}: Die Liste der erkannten Gesichtspunkte für ein einzelnes Gesicht.
-    \item \texttt{connections=mp\_face\_mesh.FACEMESH\_TESSELATION}: Die vordefinierten Verbindungen zwischen den Gesichtspunkten, die das Face Mesh Modell verwendet (z.B. um Augenbrauen, Lippen, Gesichtskonturen darzustellen).
+    \item \texttt{connections=mp\_face\_mesh.FACEMESH\_TESSELATION}: Die vordefinierten Verbindungen zwischen den Gesichtspunkten, die das FaceMesh Modell verwendet (z.B. um Augenbrauen, Lippen, Gesichtskonturen darzustellen).
     \item \texttt{landmark\_drawing\_spec=drawing\_spec}: Die zuvor definierten Zeichenstil-Spezifikationen für die einzelnen Punkte.
     \item \texttt{connection\_drawing\_spec=drawing\_spec}: Die zuvor definierten Zeichenstil-Spezifikationen für die Verbindungslinien.
 \end{itemize}
@@ -241,27 +242,41 @@ Schließlich wird das mit den eingezeichneten Gesichtspunkten versehene Bild ang
 
 Dieser Code bildet die Grundlage für unsere Gesichtswiedererkennung.
 
-\paragraph{Gesichtswiedererkennung mit Gesichtspunkten: Code}
+\paragraph{Gesichtswiedererkennung mit Gesichtspunkten: Code} 
 
-Unser System zur Echtzeit-Gesichtserkennung nutzt MediaPipe Face Mesh, um Gesichter in Videostreams präzise zu erkennen.
+Unser System zur Echtzeit-Gesichtserkennung nutzt MediaPipe FaceMesh, um Gesichter in Videostreams präzise zu erkennen.
 Seine Funktionalität umfasst das Erlernen und Speichern neuer Gesichter, das Wiedererkennen bekannter Personen und die Fähigkeit zum kontinuierlichen Dazulernen, wodurch sich die Erkennungsleistung stetig verbessert.
 
-Im Kern des Systems steht die Initialisierung, in der das MediaPipe Face Mesh-Modul eingerichtet und die Kamera gestartet wird.
+Im Kern unseres Programms steht die Initialisierung, in der das MediaPipe FaceMesh-Modul eingerichtet und die Kamera gestartet wird, wie es in Abschnitt 4.3.3.1 beschrieben ist.
 Zudem werden Speicherstrukturen für die Namen bekannter Gesichter und deren charakteristische Gesichtspunkte (Landmarks) vorbereitet.
 
-Die eigentliche Gesichtserkennung erfolgt durch die Funktion extract\_face\_landmarks. Diese nutzt MediaPipe, um detaillierte Gesichtsmerkmale zu extrahieren, wobei ein besonderer Fokus auf 50 Schlüsselpunkte in den Bereichen Augen, Nase, Mund und Augenbrauen liegt.
-Um eine konsistente Erkennung zu gewährleisten, werden die Koordinaten dieser Punkte normalisiert.
+Die eigentliche Gesichtserkennung erfolgt durch die Funktion \texttt{extract\_face\_landmarks}. Diese nutzt MediaPipe, um detaillierte Gesichtsmerkmale zu extrahieren, wobei ein besonderer Fokus auf 50 Schlüsselpunkte in den Bereichen Augen, Nase, Mund und Augenbrauen liegt.
+Um eine konsistente Erkennung zu gewährleisten, werden die Koordinaten dieser Punkte normalisiert. Das heißt, dass sie relativ zur Gesichtsgröße und -position skaliert werden, um Verzerrungen durch unterschiedliche Perspektiven und Entfernungen zu minimieren.
 
-Für den Gesichtsvergleich kommt die Methode recognize\_face zum Einsatz. Sie vergleicht neu erkannte Gesichtsmerkmale mit den gespeicherten Daten.
-Dabei werden gewichtete Abstände zwischen den Punkten berechnet, wobei einzelnen Gesichtsregionen – insbesondere den Augen – höhere Bedeutung zugewiesen wird, was die Genauigkeit der Erkennung erhöht.
+Für den Gesichtsvergleich kommt die Methode \texttt{detect\_and\_recognize\_faces} zum Einsatz. Sie vergleicht neu erkannte Gesichtsmerkmale mit den gespeicherten Daten.
+Dabei werden gewichtete Abstände zwischen den Punkten berechnet, wobei einzelnen Gesichtsregionen, insbesondere den Augen höhere Bedeutung zugewiesen wird, was die Genauigkeit der Erkennung erhöht.
+\begin{lstlisting}
+    # Continuous learning: Improved strategy for continuous learning
+            # Only learn when recognition is relatively certain, but not perfect
+            if is_known_face:
+                # Low confidence: Try to learn
+                if 0.6 < confidence < 0.95:
+                    self.add_landmark_to_person(name, landmarks)
+                # Very low confidence: Only learn occasionally (reduces false associations)
+                elif 0.4 < confidence <= 0.6:
+                    # Only learn in 30% of cases to reduce errors
+                    if np.random.random() < 0.3:
+                        self.add_landmark_to_person(name, landmarks)
+\end{lstlisting}
+(noch erklären, was genau hier passiert)
 
-Der Lernprozess des Systems ist zweigeteilt. Zum einen können Benutzer aktiv ein neues Gesicht speichern, indem sie auf einen "Learn Face"-Button klicken oder eine bestimmte Taste drücken.
-Zum anderen verfügt das System über ein kontinuierliches Lernen: es ergänzt automatisch neue Gesichtsdaten, sofern diese genügend unterschiedlich zu bestehenden Samples sind.
+Der Lernprozess unseres Programms ist zweigeteilt. Zum einen können Benutzer aktiv ein neues Gesicht speichern, indem sie auf einen "Learn Face"-Button klicken oder eine bestimmte Taste drücken.
+Zum anderen verfügt unser Programm über ein kontinuierliches Lernen. Dabei ergänzt es automatisch neue Gesichtsdaten, sofern diese genügend unterschiedlich zu bestehenden Samples sind.
 Eine Diversitätsprüfung stellt sicher, dass keine redundanten Daten gespeichert werden.
 
-Die Hauptschleife des Systems verarbeitet kontinuierlich neue Kamerabilder. Darin werden Gesichter erkannt, Landmark-Daten extrahiert, Vergleiche durchgeführt, Ergebnisse angezeigt und Benutzereingaben verarbeitet.
+Die Hauptschleife unseres Programms verarbeitet kontinuierlich neue Kamerabilder. Darin werden Gesichter erkannt, Landmark-Daten extrahiert, Vergleiche durchgeführt, Ergebnisse angezeigt und Benutzereingaben verarbeitet.
 
-Besondere Features des Systems tragen wesentlich zur hohen Leistungsfähigkeit bei:
+Besondere Features unseres Programms tragen wesentlich zur hohen Leistungsfähigkeit bei:
 \begin{itemize}
     \item Gewichtete Erkennung steigert die Genauigkeit.
     \item Kontinuierliches Lernen verbessert die Erkennung über die Zeit
@@ -283,44 +298,50 @@ Für die Bewertung der Gesichtspunkterkennung mit MediaPipe haben wir folgende M
     \item \textbf{FPS / Inferenzzeit:} Anzahl der Bilder pro Sekunde (FPS) bzw. durchschnittliche Latenz pro Bild.
 \end{itemize}
 
-\textbf{Confidence Score} \\
+\subparagraph{Confidence Score} 
 
-Um die ZUverlässigkeit der Gesichtserkennung zu bewerten, haben wir die Confidence Scores der MediaPipe-Gesichtserkennung und des Face Mesh Modells analysiert.
+Um die Zuverlässigkeit der Gesichtserkennung zu bewerten, haben wir die Confidence Scores der MediaPipe-Gesichtserkennung und des FaceMesh Modells analysiert.
 
-In Abbildung \ref{fig:confidence_score_mediapipe} sind die Confidence Scores der Gesichtserkennung (x-Achse) und des Face Mesh Modells (y-Achse) dargestellt. Die blauen Punkte repräsentieren die Gesichter die sowohl erkennat als auch mit dem Face Mesh Modell erkannt wurden. 
-Die roten Kreuze zeigen Gesichter, die nur erkannt wurden, aber nicht mit dem Face Mesh Modell erkannt werden konnten.
-
-Obwohl beide Modelle tendenziell hohe Sicherheit in ihren Erkennungen aufweisen (> 0.95), ist die reine Gesichtserkennung deutlich robuster. Wir beobachten wiederholt Fälle, in denen das Detection-Modell hohe Confidence-Werte liefert (z.B. > 0.95), während die zugehörige Face Mesh-Erkennung entweder scheitert oder deutlich niedrigere Scores erzielt.
-
-Die Ursache hierfür liegt in den zusätzlichen Anforderungen der Face Mesh-Erkennung. Sie ist stärker von idealen Aufnahmebedingungen abhängig: Das Gesicht muss vollständig sichtbar sein, die Perspektive geeignet, und die Bildqualität muss detaillierte Analysen erlauben. 
-Störungen wie Verdeckungen oder Bewegungen beeinträchtigen die Mesh-Erkennung stärker als die reine Detektion. Zusammenfassend lässt sich festhalten, dass die Gesichtserkennung eine hohe Treffsicherheit besitzt, die Präzision der Face Mesh-Erkennung jedoch maßgeblich von der Qualität der Gesichtsinformationen im Bild beeinflusst wird.
+In Abbildung \ref{fig:confidence_score_mediapipe} sind die Confidence Scores der Gesichtserkennung (x-Achse) und des FaceMesh Modells (y-Achse) dargestellt. Die blauen Punkte repräsentieren die Gesichter die sowohl erkannt als auch mit dem FaceMesh Modell erkannt wurden. 
+Die roten Kreuze zeigen Gesichter, die nur erkannt wurden, aber nicht mit dem FaceMesh Modell erkannt werden konnten.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.55\textwidth]{data/Detection_vs_Mesh_Confidence.png}
-    \caption{Confidence Score der Erkennung und Face Mesh}
+    \caption{Confidence Score der Erkennung und FaceMesh}
     \label{fig:confidence_score_mediapipe}
 \end{figure}
 
-\textbf{FPS / Inferenzzeit} \\
+Obwohl beide Modelle tendenziell hohe Sicherheit in ihren Erkennungen aufweisen (> 0.95), ist die reine Gesichtserkennung deutlich robuster. Wir beobachten wiederholt Fälle, in denen das Detection-Modell hohe Confidence-Werte liefert (z.B. > 0.95), während die zugehörige FaceMesh-Erkennung entweder scheitert oder deutlich niedrigere Scores erzielt.
+
+Die Ursache hierfür liegt in den zusätzlichen Anforderungen der FaceMesh-Erkennung. Sie ist stärker von idealen Aufnahmebedingungen abhängig. Das Gesicht muss vollständig sichtbar sein, die Perspektive geeignet, und die Bildqualität muss detaillierte Analysen erlauben. 
+Störungen wie Verdeckungen oder Bewegungen beeinträchtigen die Mesh-Erkennung stärker als die reine Detektion. Zusammenfassend lässt sich festhalten, dass die Gesichtserkennung eine hohe Treffsicherheit besitzt, die Präzision der FaceMesh-Erkennung jedoch maßgeblich von der Qualität der Gesichtsinformationen im Bild beeinflusst wird.
+
+\subparagraph{FPS / Inferenzzeit} 
 
 Die Aufgabenstellung umfasste die Analyse und Bewertung der MediaPipe-Gesichtserkennung und -wiedererkennung hinsichtlich Inferenzgeschwindigkeit, Verarbeitungszeit und Stabilität.
 
 Für die Gesichtserkennung wurden FPS, Verarbeitungszeit und Stabilität bei Confidence-Werten von 50\% und 80\% gemessen und verglichen. Die Gesichtserkennung erfolgte mit MediaPipe FaceMesh auf einer Webcam-Auflösung von 640×480 Pixeln über 60 Sekunden, wobei alle 5 Sekunden Messwerte erfasst wurden.
 
-Die Ergebnisse (siehe Abbildung \ref{fig:vergleich_confidence}) zeigen, dass eine Erhöhung des Confidence-Werts von 50\% auf 80\% die Inferenzgeschwindigkeit signifikant verbessert: Die durchschnittlichen FPS stiegen von 16,83 auf 19,48 (+15,7\%), und die Verarbeitungszeit pro Frame sank von 15,18ms auf 12,02ms (-20,8\%). Ursache ist, dass bei höherer Confidence weniger unsichere Erkennungen verarbeitet werden müssen.
+\begin{figure}
+[ht]
+    \centering
+    \includegraphics[width=0.55\textwidth]{data/Vergleich_Confidence_50_vs_80.png}
+    \caption{Performance bei 50\% vs. 80\% Confidence}
+    \label{fig:vergleich_confidence}
+\end{figure}
+
+Die Ergebnisse (siehe Abbildung \ref{fig:vergleich_confidence}) zeigen:
+\begin{itemize}
+    \item Die durchschnittliche Bildrate (FPS) steigt bei einem zunehmenden Confidence-Wert von 50\% auf 80\% von 16,83 FPS auf 219,48 FPS.
+    \item Die durchschnittliche Verarbeitungszeit pro Frame sinkt bei einer Erhöhung des Confidence-Werts von 50\% auf 80\% von 15,18 ms auf 12,02 ms.
+    \item Die Stabilität der Erkennung steigt leicht an, von 98,64\% bei 50\% auf 99,23\% bei 80\% Confidence.
+\end{itemize}
+Somit kann man festhalten, dass die Erhöhung des Confidence-Werts von 50\% auf 80\% zu einer signifikanten Verbesserung der Inferenzgeschwindigkeit führt. Ursache dafür ist, dass bei höherer Confidence weniger unsichere Erkennungen verarbeitet werden müssen.
 
 Der FPS-Verlauf über die Zeit (Abbildung \ref{fig:fps_ueber_zeit}) bestätigt diese Tendenz, zeigt aber auch natürliche Schwankungen aufgrund variierender Bildinhalte (z.B. Bewegungen oder Mimik).
 
 Zusammengefasst führt ein höherer Confidence-Wert zu einer schnelleren und stabileren Erkennung, birgt jedoch das Risiko, dass echte Gesichter unter schwierigen Bedingungen übersehen werden. Die Wahl des optimalen Confidence-Werts stellt somit einen Kompromiss zwischen Geschwindigkeit und Erkennungsempfindlichkeit dar.
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.55\textwidth]{data/Vergleich_Confidence_50_vs_80.png}
-    \caption{Vergleich der Performanz unterschiedlicher Confidence Scores.}
-    \label{fig:vergleich_confidence}
-\end{figure}
-
 
 \begin{figure}[ht]
     \centering
@@ -329,8 +350,7 @@ Zusammengefasst führt ein höherer Confidence-Wert zu einer schnelleren und sta
     \label{fig:fps_ueber_zeit}
 \end{figure}
 
-
-Im Anschluss an die Analyse der reinen Gesichtserkennung mit MediaPipe FaceMesh wurde die Performance des erweiterten Systems zur Gesichtserkennung und Wiedererkennung gemessen und ausgewertet.
+Im Anschluss an die Analyse der reinen Gesichtserkennung mit MediaPipe FaceMesh wurde die Performance des erweiterten Systems zur Wiedererkennung gemessen und ausgewertet.
 
 Die Ergebnisse sind in Abbildung \ref{fig:fps_recognition_mediapipe} dargestellt.
 
@@ -341,18 +361,17 @@ Die wichtigsten Ergebnisse sind:
     \item Die Stabilität lag im Mittel bei 98,64\%, was auf eine gleichmäßige und zuverlässige Verarbeitung hinweist.
 \end{itemize}
 
-Verglichen mit der reinen Gesichtserkennung zeigt sich, dass die Integration der Wiedererkennungslogik (Vergleich von Landmark-Distanzen) zwar die durchschnittliche Verarbeitungsgeschwindigkeit leicht reduziert, jedoch weiterhin ausreichend Echtzeitfähigkeit und hohe Stabilität gewährleistet. 
-Während bei der reinen Erkennung eine Erhöhung des Confidence-Werts zu einer Steigerung der Geschwindigkeit führte, hängt die Performance der Wiedererkennung primär von der Effizienz der Landmarkverarbeitung und der Distanzberechnung ab.
-
-Das System zeigt eine für viele praktische Anwendungen ausreichende Performance. Die Gesichtserkennung und -wiedererkennung mit MediaPipe FaceMesh kann bei moderater Rechenlast stabil und in Echtzeit arbeiten. 
-Für sicherheitskritische Zutrittskontrollen wäre jedoch eine weiter optimierte Erkennungs- und Vergleichslogik (z.B. robustere Feature-Extraktion und Klassifikation) erforderlich, da die reine Landmark-Vergleichsmethode bei schwierigen Bedingungen (z.B. starke Mimikänderungen, Lichtwechsel) anfällig bleibt
-
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.55\textwidth]{data/FPS_and_Processing_Time.png}
     \caption{FPS und Verarbeitungszeit bei Wiedererkennung.}
     \label{fig:fps_recognition_mediapipe}
 \end{figure}
+
+Verglichen mit der reinen Gesichtserkennung zeigt sich, dass die Integration der Wiedererkennungslogik (Vergleich von Landmark-Distanzen) zwar die durchschnittliche Verarbeitungsgeschwindigkeit leicht reduziert, jedoch weiterhin ausreichend Echtzeitfähigkeit und hohe Stabilität gewährleistet. 
+Während bei der reinen Erkennung eine Erhöhung des Confidence-Werts zu einer Steigerung der Geschwindigkeit führte, hängt die Performance der Wiedererkennung primär von der Effizienz der Landmarkverarbeitung und der Distanzberechnung ab.
+
+Unser Programm zeigt eine für viele praktische Anwendungen ausreichende Performance. Die Gesichtserkennung und -wiedererkennung mit MediaPipe FaceMesh kann bei moderater Rechenlast stabil und in Echtzeit arbeiten. 
 
 
 \paragraph{Anwendungsbeispiel: Zutrittskontrollen}
@@ -361,7 +380,7 @@ Mediapipe bietet zwar grundlegende Funktionen zur Gesichtserkennung, weist jedoc
 Während unser System Gesichter erkennen und deren Merkmale (Landmarks) identifizieren kann, ist es primär für die Erkennung der Gesichtsstruktur konzipiert und nicht für die biometrische Identifikation.
 
 Ein wesentliches Problem ist die langsame Anpassungsfähigkeit. Bei schnellen Bewegungen kann unser System die Wiedererkennung verlieren, wodurch Nutzer gezwungen sind, eine Position zu finden, in der sie erneut erkannt werden. 
-Die verwendete Landmark-Distanz-Methode erweist sich als besonders empfindlich: Selbst kleine Veränderungen im Gesichtsausdruck, bei Lichtverhältnissen oder der Perspektive können die Lage der Gesichtspunkte signifikant beeinflussen und damit die Wiedererkennung erschweren.
+Die verwendete Landmark-Distanz-Methode erweist sich als besonders empfindlich: Veränderungen im Gesichtsausdruck, bei Lichtverhältnissen oder der Perspektive können die Lage der Gesichtspunkte signifikant beeinflussen und damit die Wiedererkennung erschweren.
 
 Zudem fehlen wichtige Sicherheitsfunktionen. Es gibt keinen Schutz gegen einfache Täuschungsversuche, beispielsweise könnte jemand ein Foto hochhalten und das System würde dies als echtes Gesicht erkennen. 
 Dies macht die Technologie deutlich weniger robust als moderne Face-Recognition-Methoden. Auch die Verwaltung mehrerer Nutzerprofile würde bei diesem einfachen Ansatz schnell komplex und fehleranfällig werden.
