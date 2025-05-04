@@ -128,11 +128,17 @@ Diese Lösungen sind für verschiedene Plattformen (Android, iOS, Web, Desktop) 
 \paragraph{Einsatz im Projektkontext}
 Im Projekt wird MediaPipe für die detaillierte Analyse von Gesichtsmerkmalen genutzt, z.B. für Landmarkenextraktion zur biometrischen Erkennung oder Eye Tracking. Dies ermöglicht präzise und effiziente Erfassung relevanter Merkmale, z.B. für Zutrittskontrollsysteme oder Müdigkeitserkennung. Die Kombination aus schneller Detektion (durch YOLO) und detaillierter Analyse (durch MediaPipe) ergibt eine leistungsfähige Pipeline für Echtzeitanwendungen im Bereich der Gesichtserkennung und -analyse.
 
-\subsubsection{Kombination von Ansätzen}
+\subsubsection{MediaPipe-Architektur und Face Mesh}
+MediaPipe ist eine Open-Source-Plattform von Google zur Erstellung plattformübergreifender Pipelines für multimodale Daten. Die Architektur basiert auf modularen Graphen, in denen einzelne Calculatoren Datenvorverarbeitung, ML-Modelle und Nachverarbeitungsschritte verknüpfen.
 
-Häufig werden verschiedene Ansätze kombiniert. Ein schneller Detektor wie YOLO kann die grobe Position eines Gesichts bestimmen. Anschließend extrahieren spezialisierte Modelle wie MediaPipe detaillierte Landmarken innerhalb der detektierten Region. Dieser hybride Ansatz vereint Geschwindigkeit und Detailgenauigkeit.
+Das Face Mesh-Modul kombiniert zunächst einen schnellen BlazeFace-Detektor mit einem darauf aufsetzenden Landmarken-Vorhersagemodell und liefert in Echtzeit bis zu 468 3D-Landmarken pro Gesicht. Die Topologie der Landmarken (siehe Abbildung~\ref{fig:mesh_topology}) beschreibt die Kantenverbindungen zwischen den Punkten und ermöglicht eine präzise meshing-Repräsentation.
 
-Für die Anforderungen dieses Projekts – schnelle und zuverlässige Erkennung von Kennzeichen und Gesichtern sowie die detaillierte Analyse von Gesichtsmerkmalen – sind sowohl die YOLO-Architektur als auch das MediaPipe-Framework relevante Technologien.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{data/mesh_topology.png}
+    \caption{MediaPipe Face Mesh Topologie mit 468 Landmarken und Kantenverbindungen. Quelle: \cite{mediapipe_mesh_topology}}
+    \label{fig:mesh_topology}
+\end{figure}
 
 \subsection{Funktionsweise von YOLO}
 
@@ -172,30 +178,30 @@ Optical Character Recognition (OCR) bezeichnet den Prozess der Umwandlung von Bi
 Ein OCR-System durchläuft typischerweise mehrere Stufen:
 
 \begin{enumerate}
-    \item \textbf{Vorverarbeitung (Preprocessing):} Verbesserung der Bildqualität zur Optimierung der Erkennung. Dies kann Schritte wie Binarisierung (Umwandlung in Schwarz-Weiß), Rauschunterdrückung, Schräglagenkorrektur (Deskewing) und Kontrastanpassung umfassen [Quelle benötigt].
+    \item \textbf{Vorverarbeitung (Preprocessing):} Verbesserung der Bildqualität zur Optimierung der Erkennung. Dies kann Schritte wie Binarisierung (Umwandlung in Schwarz-Weiß), Rauschunterdrückung, Schräglagenkorrektur (Deskewing) und Kontrastanpassung umfassen.
 
     \item \textbf{Layout-Analyse (oder Segmentierung):} Identifizierung von Textbereichen und deren Struktur. Bei strukturierten Dokumenten wie Kennzeichen kann dies die Segmentierung einzelner Zeichen oder Zeichengruppen umfassen. Bei allgemeineren Texten geht es darum, Absätze, Spalten und Zeilen zu erkennen.
 
-    \item \textbf{Zeichenerkennung (Character Recognition):} Dies ist der Kernschritt, bei dem die segmentierten Zeichen oder Wörter klassifiziert werden. Traditionelle Methoden nutzten Merkmalsextraktion (z.B. topologische Merkmale, Momente) und Klassifikatoren (z.B. SVMs, k-NN). Moderne Ansätze verwenden überwiegend tiefe neuronale Netze, insbesondere CNNs und Recurrent Neural Networks (RNNs), oft in Kombination (CRNN - Convolutional Recurrent Neural Network) [Quelle benötigt - CRNN Paper]. RNNs, speziell LSTMs (Long Short-Term Memory), sind gut geeignet, um sequentielle Informationen in Wörtern oder Zeichenketten zu verarbeiten. Attention-Mechanismen können zusätzlich helfen, relevante Bildbereiche für jedes Zeichen zu fokussieren [Quelle benötigt].
+    \item \textbf{Zeichenerkennung (Character Recognition):} Dies ist der Kernschritt, bei dem die segmentierten Zeichen oder Wörter klassifiziert werden. Traditionelle Methoden nutzten Merkmalsextraktion (z.B. topologische Merkmale, Momente) und Klassifikatoren (z.B. SVMs, k-NN). Moderne Ansätze verwenden überwiegend tiefe neuronale Netze, insbesondere CNNs und Recurrent Neural Networks (RNNs), oft in Kombination (CRNN - Convolutional Recurrent Neural Network). RNNs, speziell LSTMs (Long Short-Term Memory), sind gut geeignet, um sequentielle Informationen in Wörtern oder Zeichenketten zu verarbeiten. Attention-Mechanismen können zusätzlich helfen, relevante Bildbereiche für jedes Zeichen zu fokussieren.
 
     \item \textbf{Nachverarbeitung (Postprocessing):} Korrektur von Erkennungsfehlern unter Verwendung von Sprachmodellen, Wörterbüchern oder kontextuellen Informationen. Bei Kennzeichen kann dies die Überprüfung auf gültige Formate oder die Nutzung von Prüfsummen (falls vorhanden) beinhalten.
 \end{enumerate}
 
 \subsubsection{Methoden und Werkzeuge}
-Es existieren verschiedene OCR-Engines und Bibliotheken. Eine der bekanntesten Open-Source-Lösungen ist Tesseract OCR, ursprünglich von HP entwickelt und nun von Google weitergeführt. Tesseract verwendet seit Version 4 LSTM-basierte neuronale Netze und bietet eine gute Erkennungsleistung für viele Sprachen und Schriftarten [Quelle: Tesseract Dokumentation/GitHub]. Daneben gibt es kommerzielle Lösungen und spezialisierte Bibliotheken, die oft für spezifische Anwendungsfälle wie die Kennzeichenerkennung optimiert sind.
+Es existieren verschiedene OCR-Engines und Bibliotheken. Eine der bekanntesten Open-Source-Lösungen ist Tesseract OCR, ursprünglich von HP entwickelt und nun von Google weitergeführt. Tesseract verwendet seit Version 4 LSTM-basierte neuronale Netze und bietet eine gute Erkennungsleistung für viele Sprachen und Schriftarten. Daneben gibt es kommerzielle Lösungen und spezialisierte Bibliotheken, die oft für spezifische Anwendungsfälle wie die Kennzeichenerkennung optimiert sind.
 
 \subsubsection{Anwendung bei der Kennzeichenerkennung (ANPR/LPR)}
 Automatic Number Plate Recognition (ANPR) oder License Plate Recognition (LPR) ist ein spezialisierter Anwendungsfall von OCR. Die typische Pipeline sieht oft wie folgt aus:
 
 \begin{enumerate}
-    \item \textbf{Kennzeichen-Detektion:} Zunächst wird der Bereich des Kennzeichens im Bild lokalisiert. Hierfür eignen sich Objekterkennungsmodelle wie YOLO (siehe Abschnitt 2.2) hervorragend, die darauf trainiert werden, Kennzeichen als Objektklasse zu erkennen [Quelle benötigt].
+    \item \textbf{Kennzeichen-Detektion:} Zunächst wird der Bereich des Kennzeichens im Bild lokalisiert. Hierfür eignen sich Objekterkennungsmodelle wie YOLO (siehe Abschnitt 2.2) hervorragend, die darauf trainiert werden, Kennzeichen als Objektklasse zu erkennen.
 
     \item \textbf{Zeichensegmentierung:} Innerhalb des detektierten Kennzeichenbereichs werden die einzelnen Zeichen isoliert. Dies kann durch traditionelle Bildverarbeitungsalgorithmen (z.B. Konturanalyse, Projektionsprofile) oder durch spezialisierte neuronale Netze erfolgen.
 
     \item \textbf{Zeichenerkennung:} Jedes segmentierte Zeichen wird durch ein OCR-Modul klassifiziert.
 \end{enumerate}
 
-Alternativ können End-to-End-Ansätze verwendet werden, die Detektion und Erkennung in einem einzigen Netzwerk kombinieren oder direkt die gesamte Zeichenkette ohne explizite Segmentierung erkennen [Quelle benötigt].
+Alternativ können End-to-End-Ansätze verwendet werden, die Detektion und Erkennung in einem einzigen Netzwerk kombinieren oder direkt die gesamte Zeichenkette ohne explizite Segmentierung erkennen.
 
 \subsubsection{Herausforderungen}
 Die OCR von Kennzeichen unterliegt spezifischen Herausforderungen wie:
@@ -204,7 +210,7 @@ Die OCR von Kennzeichen unterliegt spezifischen Herausforderungen wie:
     \item unterschiedlichen Kameraperspektiven und -abständen,
     \item Verschmutzung oder Beschädigung der Kennzeichen,
     \item verschiedenen Kennzeichenlayouts und Schriftarten (je nach Land/Region),
-    \item Bewegungsunschärfe [Quelle benötigt]
+    \item Bewegungsunschärfe
 \end{itemize}
 
 Die Robustheit des OCR-Systems gegenüber diesen Faktoren ist entscheidend für die praktische Anwendbarkeit.
