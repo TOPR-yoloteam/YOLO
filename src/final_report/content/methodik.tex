@@ -132,8 +132,6 @@ Das implementierte System realisiert eine Echtzeit-Gesichtserkennung mittels ein
 
 Das System zur Gesichtserkennung mittels YOLO kombiniert die Objektdetektion durch das YOLOv8n-face Modell mit den spezifischeren Funktionen der \texttt{face\_recognition} Bibliothek zur Merkmalsextraktion und zum Abgleich. Der Fokus liegt hierbei auf der schnellen Detektion von Gesichtern im Videostrom, gefolgt von einer genaueren Analyse zur Identifikation.
 
-Der vollständige Code ist in der Datei \texttt{face\_recognition\_yolo.py} zu finden und auf GitHub\cite{github_yolo} verfügbar. Zuerst werden die notwendigen Bibliotheken importiert, darunter \texttt{os}, \texttt{cv2}, \texttt{numpy}, \texttt{time}, \texttt{ultralytics} (für YOLO), \texttt{face\_recognition} und \texttt{datetime}.
-
 Die Initialisierung des Systems erfolgt in der \texttt{\_\_init\_\_} Methode der Klasse \texttt{FaceRecognitionSystem}. Hier werden Pfade definiert, das YOLO-Modell geladen und die Kamera initialisiert.
 
 \begin{lstlisting}[language=Python, caption={Initialisierung des YOLO-Modells und der Kamera}, label={lst:yolo_init}, inputencoding=utf8]

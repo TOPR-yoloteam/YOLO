@@ -212,3 +212,6 @@ src/face_recognition/scripts/face/landmarks_data/face_landmarks.pkl
 src/final_report/main.synctex(busy)
 src\final_report\main.bbl-SAVE-ERROR
 src\final_report\main.bbl
+main.blg
+.gitignore
+main.bbl
