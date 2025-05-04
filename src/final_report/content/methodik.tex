@@ -367,8 +367,6 @@ Für die Bewertung der Gesichtserkennung sind folgende Metriken relevant:
 
 Für die Bewertung der Gesichtserkennung mit \texttt{YOLOv8n-face} wurde die Verteilung der \texttt{detection\_scores} analysiert. Diese liegt im Mittel bei etwa $\mu = 0{,}937$ mit einer relativ geringen Varianz. Die Konfidenzwerte bleiben in der Regel über $0{,}85$, mit vereinzelten Ausreißern darunter. Auf Basis dieser Analyse wurde ein \textbf{Confidence Threshold von 0{,}90} gewählt, um eine gute Balance zwischen Erkennungsrate und Präzision zu erreichen. Werte unterhalb dieser Schwelle führten häufiger zu fehlerhaften oder instabilen Erkennungen.
 
-Zusätzlich wurde der \texttt{Mesh Confidence Score} betrachtet, der durchgehend sehr hoch ($\approx 0{,}96{-}0{,}98$) ausfiel. Daraus lässt sich schließen, dass die erkannten Gesichter nicht nur zuverlässig detektiert, sondern auch präzise vermesht wurden.
-
 Frames per Second (FPS). Die \textbf{FPS} gibt an, wie viele Bilder pro Sekunde das System verarbeiten kann. In unserem Fall dient dieser Wert als Kennzahl für die Echtzeittauglichkeit des Systems. Je höher der FPS-Wert, desto flüssiger läuft die Gesichtserkennung bei Videoeingaben. Bei zu niedrigen FPS kann die Erkennung verzögert oder ruckelig erscheinen, was insbesondere bei Überwachungs- oder Interaktionssystemen problematisch wäre. Ein Wert von \textbf{15–30 FPS} gilt als untere Grenze für akzeptable Echtzeitleistung, wobei unser System je nach Konfiguration und Optimierung diese Marke im Mittel erreicht oder übertrifft (siehe Abb. \ref{fig:fps-diagramm}).
 
 \begin{figure}[ht]
@@ -377,8 +375,6 @@ Frames per Second (FPS). Die \textbf{FPS} gibt an, wie viele Bilder pro Sekunde 
     \caption{Verlauf der FPS während der Gesichtserkennung}
     \label{fig:fps-diagramm}
 \end{figure}
-
-
 
 \paragraph{Anwendungsbeispiel: Zutrittskontrollen}
 Das System ermöglicht eine zuverlässige Gesichtserkennung für Zutrittskontrollsysteme mit folgenden Eigenschaften:
@@ -562,9 +558,9 @@ Für die Gesichtserkennung wurden FPS, Verarbeitungszeit und Stabilität bei Con
 
 Die Ergebnisse (siehe Abbildung \ref{fig:vergleich_confidence}) zeigen:
 \begin{itemize}
-    \item Die durchschnittliche Bildrate (FPS) steigt bei einem zunehmenden Confidence-Wert von 50\% auf 80\% von 16,83 FPS auf 219,48 FPS.
+    \item Die durchschnittliche Bildrate (FPS) steigt bei einem zunehmenden Confidence-Wert von 50\% auf 80\% von 16,8 FPS auf 20,6 FPS.
     \item Die durchschnittliche Verarbeitungszeit pro Frame sinkt bei einer Erhöhung des Confidence-Werts von 50\% auf 80\% von 15,18 ms auf 12,02 ms.
-    \item Die Stabilität der Erkennung steigt leicht an, von 98,64\% bei 50\% auf 99,23\% bei 80\% Confidence.
+    \item Die Stabilität der Erkennung steigt leicht an, von 97,7\% bei 50\% auf 98,3\% bei 80\% Confidence.
 \end{itemize}
 Somit kann man festhalten, dass die Erhöhung des Confidence-Werts von 50\% auf 80\% zu einer signifikanten Verbesserung der Inferenzgeschwindigkeit führt. Ursache dafür ist, dass bei höherer Confidence weniger unsichere Erkennungen verarbeitet werden müssen.
 
@@ -629,6 +625,12 @@ Die Stärken des Systems liegen eindeutig in der grundlegenden Gesichtserkennung
 
 \subsubsection{Vergleich von YOLO und MediaPipe}
 \paragraph{Confidence Score}
+
+Die \texttt{detection\_scores} von \texttt{YOLOv8n-face} lagen im Mittel bei $\mu = 0{,}937$ mit geringer Varianz. Meist über $0{,}85$, wurde ein \textbf{Threshold von 0{,}90} gewählt, da darunter vermehrt fehlerhafte Erkennungen auftraten.
+
+\texttt{MediaPipe} lieferte in ruhigen Szenen meist Konfidenzen über $95\,\%$, bei schnellen Bewegungen jedoch deutlich niedrigere Werte. Während YOLO robuster gegenüber Bewegung ist, zeigt MediaPipe bei stabilen Bedingungen höhere Genauigkeit.
+
+
 \paragraph{FPS / Inference Time}
 
 In der durchgeführten Untersuchung zur Gesichtserkennung wurden die beiden Ansätze YOLOv8-face und MediaPipe hinsichtlich ihrer Geschwindigkeit (FPS – Frames per Second) und Stabilität verglichen.
