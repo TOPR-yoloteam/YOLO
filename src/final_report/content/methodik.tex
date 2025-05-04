@@ -430,6 +430,41 @@ Die Stärken des Systems liegen eindeutig in der grundlegenden Gesichtserkennung
 \paragraph{Confidence Score}
 \paragraph{FPS / Inference Time}
 
+In der durchgeführten Untersuchung zur Gesichtserkennung wurden die beiden Ansätze YOLOv8-face und MediaPipe hinsichtlich ihrer Geschwindigkeit (FPS – Frames per Second) und Stabilität verglichen.
+Die Ergebnisse sind in Abbildung \ref{fig:fps_comparison} zusammengefasst.
+
+YOLOv8-face erreicht eine durchschnittliche Bildverarbeitungsrate von etwa 5 bis 6 FPS. Die Stabilität der Gesichtserkennung liegt zwischen 90\% und 99\%, schwankt jedoch stärker im Vergleich zu MediaPipe.
+MediaPipe zeigt eine deutlich höhere Bildverarbeitungsrate mit durchschnittlich 20 bis 22 FPS. Die Stabilität bleibt konstant auf einem sehr hohen Niveau zwischen 97\% und 99\%.
+
+Die Ergebnisse zeigen, dass MediaPipe wesentlich schneller arbeitet als YOLOv8-face. Ein höherer FPS-Wert bedeutet, dass MediaPipe mehr Bilder pro Sekunde verarbeiten kann, was für Anwendungen mit Echtzeitanforderungen, wie etwa Videokonferenzen oder mobile Gesichtserkennung, entscheidend ist.
+Bezüglich der Stabilität sind beide Systeme sehr zuverlässig. MediaPipe zeigt jedoch eine gleichmäßigere Leistung, während YOLOv8-face gelegentlich größere Schwankungen aufweist.
+
+Die Unterschiede lassen sich auf die jeweilige Architektur der Systeme zurückführen. YOLOv8 basiert auf tiefen neuronalen Netzen und benötigt dadurch mehr Rechenleistung, bietet jedoch eine hohe Genauigkeit und Flexibilität, insbesondere in komplexeren Erkennungsszenarien. 
+MediaPipe hingegen verwendet hochoptimierte Algorithmen, die speziell für Echtzeitanwendungen auf mobilen oder ressourcenschwächeren Geräten entwickelt wurden. Dadurch kann MediaPipe eine hohe Geschwindigkeit bei gleichzeitig hoher Erkennungsstabilität erreichen.
+
+Für Echtzeitanwendungen, bei denen Geschwindigkeit und konstante Erkennungsqualität im Vordergrund stehen, ist MediaPipe die bessere Wahl. 
+Wenn jedoch die Genauigkeit oder Flexibilität der Erkennung wichtiger ist und eine leistungsstarke Hardware zur Verfügung steht, kann YOLOv8-face von Vorteil sein.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{data/fps_yolo_detection.png}
+        \caption{FPS und Stabilität YOLOv8-face}
+        \label{fig:fps_yolo_detection}
+    \end{subfigure}
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{data/fps_mediapipe_detection.png}
+        \caption{FPS und Stabilität MediaPipe FaceMesh}
+        \label{fig:fps_mediapipe_detection}
+    \end{subfigure}
+    \caption{FPS und Stabilität der Gesichtserkennung mit YOLOv8-face und MediaPipe FaceMesh.}
+    \label{fig:fps_comparison}
+\end{figure}
+
+
+
 \subsubsection{Projektdokumentation}
 
 Im Rahmen des studentischen Projekts „Kennzeichen- und Gesichtserkennung mit YOLO" wurde ein technischer Demonstrator entwickelt, der als Lehrmaterial für zukünftige Studierende der THU Summer School konzipiert ist. Dieser Demonstrator ermöglicht mittels verschiedener Python-Bibliotheken wie ultralytics YOLO, mediapipe und tesseract die Erkennung sowohl von Fahrzeugkennzeichen als auch von menschlichen Gesichtern. Das sechsköpfige Team bestehend aus Chantal Deusch, Jeremy Diem, Jan Gaschler, Serhat Gürel, Paulina Pyczot und Valentin Talmon-L'Armée setzte das Projekt in einem Zeitraum von knapp zwei Monaten um, vom 12. März 2025 bis zum 4. Mai 2025.
