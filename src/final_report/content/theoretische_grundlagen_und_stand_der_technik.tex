@@ -74,16 +74,61 @@ Seit der ersten Veröffentlichung wurden zahlreiche Weiterentwicklungen (YOLOv3,
 
 Die Stärke von YOLO liegt in seiner Geschwindigkeit. Daher eignet es sich besonders für die initiale Detektion von Objekten wie Gesichtern oder Kennzeichen in Videoströmen, wie auch in diesem Projekt genutzt.
 
-\subsubsection{MediaPipe für detaillierte Wahrnehmung auf Endgeräten}
+\subsubsection{MediaPipe Framework für Wahrnehmungsaufgaben}
 
-Parallel zur Entwicklung von Detektionsarchitekturen wie YOLO gewinnen Frameworks wie Google's MediaPipe an Bedeutung. MediaPipe bietet optimierte, vortrainierte Modelle und komplette, plattformübergreifende Pipelines für spezifische Wahrnehmungsaufgaben direkt auf Endgeräten (Mobilgeräte, Web). 
+MediaPipe ist ein Open-Source-Framework von Google, das die Entwicklung plattformübergreifender Computer-Vision-Anwendungen erleichtert. Es ermöglicht effiziente Machine-Learning-Pipelines für Video-, Bild- und Audiodaten in Echtzeit. Dank modularer Architektur und vorgefertigter Komponenten (\textit{Calculators}) können Entwickler schnell Prototypen erstellen und zu ausgereiften Anwendungen weiterentwickeln.
 
-Es spezialisiert sich auf die effiziente Extraktion detaillierter Informationen, wie:
+\paragraph{Graphbasierte Architektur}
+Ein zentrales Merkmal von MediaPipe ist seine graphbasierte Architektur. Datenflüsse werden in \textit{Graphs} definiert, wobei jeder Knotenpunkt spezifische Aufgaben übernimmt (z.B. Bilddekodierung, ML-Inferenz, Landmarken-Rendering). Diese Struktur ermöglicht eine flexible und effiziente Verarbeitung von Datenströmen, besonders für Echtzeitanwendungen.
+
+\paragraph{MediaPipe Face Mesh: Technische Funktionsweise}
+Die Gesichtserkennung und -analyse in MediaPipe erfolgt in mehreren, aufeinander aufbauenden Schritten:
+
+\begin{enumerate}
+    \item \textbf{Gesichtsdetektion}: Zunächst kommt ein schneller Gesichtsdetektor (basierend auf BlazeFace) zum Einsatz, der ein einzelnes CNN verwendet, um Gesichter im Bild zu lokalisieren. Dieser Detektor ist für Mobilgeräte optimiert und identifiziert die grundlegende Position und Größe des Gesichts durch Bounding Boxes und sechs Schlüsselpunkte (Augen, Nasenspitze, Mundmitte).
+    
+    \item \textbf{Ausrichtung und Normalisierung}: Das detektierte Gesicht wird anhand der Schlüsselpunkte normalisiert und ausgerichtet, um eine konsistente Eingabe für den nachfolgenden Landmarken-Detektor zu schaffen.
+    
+    \item \textbf{Landmarken-Prediktion}: Ein spezialisiertes neuronales Netzwerk, basierend auf einer angepassten CNN-Architektur, verarbeitet das ausgerichtete Gesichtsbild und sagt die genauen Positionen von 468 3D-Landmarken voraus. Jede Landmarke wird als 3D-Punkt (x, y, z) kodiert, wobei x und y die Bildkoordinaten sind und z die relative Tiefe darstellt. Diese hohe Dichte an Landmarken ermöglicht eine äußerst detaillierte Abbildung der Gesichtsgeometrie.
+    
+    \item \textbf{Refinement und Stabilisierung}: Um zeitliche Konsistenz bei Videoanalysen zu gewährleisten, verwendet MediaPipe Tracking-Algorithmen, die die Landmarken über aufeinanderfolgende Frames stabilisieren. Dies reduziert Flackern und erhöht die Genauigkeit der Bewegungserfassung.
+\end{enumerate}
+
+Die 468 Landmarken des Face Mesh erfassen präzise die Geometrie des gesamten Gesichts, einschließlich feiner Details wie:
 \begin{itemize}
-    \item hochauflösende Gesichtsgitter (\textit{Face Mesh}),
-    \item Hand- oder Körper-Landmarken,
+    \item Augenkontur und Iris-Position für Eye-Tracking
+    \item Lippen und Mundform für Lippenbewegungsanalyse
+    \item Augenbrauen für Ausdruckserkennung
+    \item Wangenknochen und Kinnlinie für Gesichtsstrukturanalyse
+    \item Nasenkontur für die zentrale Ausrichtung
 \end{itemize}
-und ermöglicht damit Anwendungen wie Gestensteuerung, AR-Effekte oder die Analyse biometrischer Merkmale in Echtzeit.
+
+\begin{figure}[htbp]
+    \centering
+    % Hier wird später ein Bild eingefügt
+    \caption{MediaPipe Face Mesh mit 468 Landmarken, die verschiedene Gesichtsbereiche präzise erfassen}
+    \label{fig:mediapipe_face_mesh}
+\end{figure}
+
+Die Landmarken sind in semantisch sinnvolle Gruppen unterteilt, was die Erkennung spezifischer Gesichtsmerkmale und -ausdrücke erleichtert. Zur Laufzeit kann die Mesh-Topologie verwendet werden, um die Landmarken in ein dreidimensionales Polygonnetz zu verbinden, was besonders für Augmented-Reality-Anwendungen oder für die 3D-Gesichtsrekonstruktion nützlich ist.
+
+\paragraph{Vortrainierte Lösungen}
+MediaPipe bietet vortrainierte Lösungen (\textit{Solutions}) für gängige Wahrnehmungsaufgaben, darunter:
+
+\begin{itemize}
+    \item \textbf{Face Detection:} Schnelle Gesichtserkennung.
+    \item \textbf{Face Mesh:} Detaillierte Erkennung von 468 3D-Gesichtslandmarken.
+    \item \textbf{Iris Tracking:} Präzise Lokalisierung der Iris.
+    \item \textbf{Hands:} Erkennung von Handposen und -landmarken.
+    \item \textbf{Pose:} Erkennung von Körperposen und -landmarken.
+    \item \textbf{Object Detection:} Allgemeine Objekterkennung.
+    \item Weitere Lösungen wie Segmentierung und Haar-Segmentierung.
+\end{itemize}
+
+Diese Lösungen sind für verschiedene Plattformen (Android, iOS, Web, Desktop) optimiert und oft in Echtzeit einsetzbar. Sie kapseln die Komplexität der zugrundeliegenden Modelle und bieten einfache APIs.
+
+\paragraph{Einsatz im Projektkontext}
+Im Projekt wird MediaPipe für die detaillierte Analyse von Gesichtsmerkmalen genutzt, z.B. für Landmarkenextraktion zur biometrischen Erkennung oder Eye Tracking. Dies ermöglicht präzise und effiziente Erfassung relevanter Merkmale, z.B. für Zutrittskontrollsysteme oder Müdigkeitserkennung. Die Kombination aus schneller Detektion (durch YOLO) und detaillierter Analyse (durch MediaPipe) ergibt eine leistungsfähige Pipeline für Echtzeitanwendungen im Bereich der Gesichtserkennung und -analyse.
 
 \subsubsection{Kombination von Ansätzen}
 
@@ -178,30 +223,11 @@ Wie in Abschnitt 2.1 und 2.2 beschrieben, können Modelle wie YOLO hierfür eing
 \paragraph{Landmarken-Detektion} 
 Frameworks wie Google's MediaPipe bieten spezialisierte Modelle zur Detektion von hunderten Gesichtslandmarken in Echtzeit (z.B. das Face Mesh mit 468 3D-Landmarken). Diese Landmarken sind nützlich für die Gesichtsausrichtung, Mimik- und Augenbewegungsanalyse (z.B. Eye Tracking) sowie die Extraktion biometrischer Merkmale. Sie können als Merkmalsvektor dienen, wobei für die Identifikation meist Embeddings aus tieferen CNNs verwendet werden.
 
+\paragraph{Biometrische Identifikation und Verifikation}
+In der biometrischen Gesichtserkennung werden individuelle physiologische Gesichtsmerkmale wie Gesichtsform, Abstand der Augen, Ausprägung der Nasen- und Mundpartie sowie weitere geometrische Beziehungen genutzt, um Personen zu identifizieren oder zu verifizieren. Diese Merkmale werden in mathematischen Repräsentationen (Gesichts-Embeddings) kodiert, die für jede Person einzigartig sind. Der Vorteil biometrischer Systeme ist, dass sie auf inhärente Eigenschaften zurückgreifen, die nicht wie Passwörter vergessen oder wie Ausweise verloren werden können. Neurale Netzwerke haben dabei entscheidende Verbesserungen in der Zuverlässigkeit und Robustheit gebracht, insbesondere gegenüber Variationen in Beleuchtung, Gesichtsausdruck und Alterung.
+
 \paragraph{Embedding-Generierung} 
-Bibliotheken wie \texttt{face\_recognition} (basierend auf dlib) vereinfachen die Implementierung von Gesichtserkennungspipelines. Sie kapseln Detektion, Landmarken-Findung und Embedding-Generierung mithilfe vortrainierter Modelle (z.B. ResNet-basiert) und liefern 128-dimensionale Embeddings für den Vergleich.
+Bibliotheken wie \texttt{face\_recognition} (basierend auf dlib) vereinfachen die Implementierung von Gesichtserkennungspipelines. Sie kapseln Detektion, Landmarken-Findung und Embedding-Generierung mithilfe vortrainierter Modelle (z.B. ResNet-basiert) und liefern 128-dimensionale Embeddings für den Vergleich. Diese hochdimensionalen Vektoren kodieren die unverwechselbaren Merkmale eines Gesichts in einem mathematischen Raum, in dem die euklidische Distanz zwischen Embeddings als Ähnlichkeitsmaß verwendet wird. Für die Verifikation wird typischerweise ein Schwellenwert festgelegt – liegt die Distanz unter diesem Wert, gilt das Gesicht als verifiziert.
 
-\subsubsection{MediaPipe Framework für Wahrnehmungsaufgaben}
-
-MediaPipe ist ein Open-Source-Framework von Google, das die Entwicklung plattformübergreifender Computer-Vision-Anwendungen erleichtert. Es ermöglicht effiziente Machine-Learning-Pipelines für Video-, Bild- und Audiodaten in Echtzeit. Dank modularer Architektur und vorgefertigter Komponenten (\textit{Calculators}) können Entwickler schnell Prototypen erstellen und zu ausgereiften Anwendungen weiterentwickeln.
-
-\paragraph{Graphbasierte Architektur}
-Ein zentrales Merkmal von MediaPipe ist seine graphbasierte Architektur. Datenflüsse werden in \textit{Graphs} definiert, wobei jeder Knotenpunkt spezifische Aufgaben übernimmt (z.B. Bilddekodierung, ML-Inferenz, Landmarken-Rendering). Diese Struktur ermöglicht eine flexible und effiziente Verarbeitung von Datenströmen, besonders für Echtzeitanwendungen.
-
-\paragraph{Vortrainierte Lösungen}
-MediaPipe bietet vortrainierte Lösungen (\textit{Solutions}) für gängige Wahrnehmungsaufgaben, darunter:
-
-\begin{itemize}
-    \item \textbf{Face Detection:} Schnelle Gesichtserkennung.
-    \item \textbf{Face Mesh:} Detaillierte Erkennung von 468 3D-Gesichtslandmarken.
-    \item \textbf{Iris Tracking:} Präzise Lokalisierung der Iris.
-    \item \textbf{Hands:} Erkennung von Handposen und -landmarken.
-    \item \textbf{Pose:} Erkennung von Körperposen und -landmarken.
-    \item \textbf{Object Detection:} Allgemeine Objekterkennung.
-    \item Weitere Lösungen wie Segmentierung und Haar-Segmentierung.
-\end{itemize}
-
-Diese Lösungen sind für verschiedene Plattformen (Android, iOS, Web, Desktop) optimiert und oft in Echtzeit einsetzbar. Sie kapseln die Komplexität der zugrundeliegenden Modelle und bieten einfache APIs.
-
-\paragraph{Einsatz im Projektkontext}
-Im Projekt wird MediaPipe für die detaillierte Analyse von Gesichtsmerkmalen genutzt, z.B. für Landmarkenextraktion zur biometrischen Erkennung oder Eye Tracking. Dies ermöglicht präzise und effiziente Erfassung relevanter Merkmale, z.B. für Zutrittskontrollsysteme oder Müdigkeitserkennung.
+\paragraph{Gesichtsliveness-Erkennung}
+Um Sicherheitsrisiken durch Präsentationsangriffe (z.B. Verwendung von Fotos oder Videos) zu minimieren, implementieren moderne biometrische Systeme Liveness-Erkennungstechniken. Diese können aktive Methoden (Aufforderung zu Bewegungen wie Blinzeln oder Kopfdrehen) oder passive Methoden (Analyse von Mikrotexturen der Haut, Erfassung unwillkürlicher Bewegungen oder Erkennung von Reflexionseigenschaften) umfassen. Moderne KI-Systeme kombinieren diese Ansätze mit tiefen neuronalen Netzen, die Echtzeitanalysen der Bilddaten ermöglichen und die Sicherheit biometrischer Anwendungen erhöhen.
