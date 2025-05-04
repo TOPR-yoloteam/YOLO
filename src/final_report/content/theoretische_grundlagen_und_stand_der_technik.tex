@@ -2,7 +2,7 @@
 
 \subsection{Stand der Technik in der Objekterkennung}
 
-Die moderne Objekterkennung wird heute maßgeblich von Deep-Learning-Ansätzen, insbesondere \textit{Convolutional Neural Networks} (CNNs), dominiert. Diese haben traditionelle Methoden, die auf handgefertigten Merkmalen wie HOG (\textit{Histogram of Oriented Gradients}) basierten, hinsichtlich Genauigkeit und Flexibilität weitgehend abgelöst. CNNs lernen Merkmale direkt aus den Daten und ermöglichen dadurch robustere und besser generalisierbare Modelle.
+Die moderne Objekterkennung wird heute maßgeblich von Deep-Learning-Ansätzen, insbesondere \textit{Convolutional Neural Networks} (CNNs), dominiert. Diese haben traditionelle Methoden, die auf handgefertigten Merkmalen wie HOG (\textit{Histogram of Oriented Gradients}) basierten, hinsichtlich Genauigkeit und Flexibilität weitgehend abgelöst. CNNs lernen Merkmale direkt aus den Daten und ermöglichen dadurch robustere und besser generalisierbare Modelle \cite{ultralytics_cv_2025}.
 
 Innerhalb der Deep-Learning-basierten Objekterkennung existieren zwei Hauptstrategien:
 
@@ -11,10 +11,10 @@ Innerhalb der Deep-Learning-basierten Objekterkennung existieren zwei Hauptstrat
     \item \textbf{One-Stage Detectors:} Hierbei wird die Objekterkennung als direktes Regressionsproblem formuliert. Bounding-Box-Koordinaten und Klassenwahrscheinlichkeiten werden in einem einzigen Durchlauf vorhergesagt. Bekannte Vertreter sind SSD (\textit{Single Shot MultiBox Detector}) und insbesondere YOLO (\textit{You Only Look Once}), die sich durch hohe Verarbeitungsgeschwindigkeit für Echtzeitanwendungen auszeichnen.
 \end{enumerate}
 
-\subsubsection{Bildverarbeitung und Computer Vision mit OpenCV}
+\subsubsection{Bildverarbeitung und Computer Vision mit OpenCV} 
 OpenCV ist eine frei verfügbare Softwarebibliothek, die viele Verfahren zur Bildverarbeitung und für Aufgaben der Computer Vision enthält. Sie ist Open Source und wird unter der Apache-2.0-Lizenz bereitgestellt. OpenCV kann mit verschiedenen Programmiersprachen wie C, C++, Python und Java verwendet werden. Die Bibliothek unterstützt eine Vielzahl plattformübergreifender Betriebssysteme und nutzt sowohl die CPU als auch die GPU, um eine besonders schnelle Bildverarbeitung zu ermöglichen. Entwickelt wurde OpenCV ursprünglich von Intel, das auch heute noch an der Weiterentwicklung beteiligt ist.
 
-OpenCV spielt in vielen Bereichen eine zentrale Rolle – von der Steuerung autonomer Fahrzeuge bis hin zur Gesichtserkennung in mobilen Anwendungen. Besonders durch seine Fähigkeit, komplexe visuelle Daten in Echtzeit zu verarbeiten, ist die Bibliothek ein unverzichtbares Werkzeug in der Forschung und Entwicklung künstlicher Intelligenz, insbesondere im Bereich des maschinellen Lernens und Deep Learnings. Die von OpenCV bereitgestellten Werkzeuge ermöglichen die Entwicklung fortschrittlicher Vision-Anwendungen, die früher als schwer umsetzbar oder nur mit großem Aufwand realisierbar galten.
+OpenCV spielt in vielen Bereichen eine zentrale Rolle – von der Steuerung autonomer Fahrzeuge bis hin zur Gesichtserkennung in mobilen Anwendungen. Besonders durch seine Fähigkeit, komplexe visuelle Daten in Echtzeit zu verarbeiten, ist die Bibliothek ein unverzichtbares Werkzeug in der Forschung und Entwicklung künstlicher Intelligenz, insbesondere im Bereich des maschinellen Lernens und Deep Learnings. Die von OpenCV bereitgestellten Werkzeuge ermöglichen die Entwicklung fortschrittlicher Vision-Anwendungen, die früher als schwer umsetzbar oder nur mit großem Aufwand realisierbar galten \cite{ultralytics_cv_2025}.
 
 \paragraph{Grundlagen}
 Die Bildverarbeitung bildet einen zentralen Bestandteil der Computer Vision. Sie befasst sich mit der gezielten Veränderung und Analyse von Pixelwerten in digitalen Bildern, um diese zu verbessern oder bestimmte Informationen daraus zu gewinnen. Zu den grundlegenden Konzepten der Bildverarbeitung zählen:
@@ -76,7 +76,7 @@ Die Stärke von YOLO liegt in seiner Geschwindigkeit. Daher eignet es sich beson
 
 \subsubsection{MediaPipe Framework für Wahrnehmungsaufgaben}
 
-MediaPipe ist ein Open-Source-Framework von Google, das die Entwicklung plattformübergreifender Computer-Vision-Anwendungen erleichtert. Es ermöglicht effiziente Machine-Learning-Pipelines für Video-, Bild- und Audiodaten in Echtzeit. Dank modularer Architektur und vorgefertigter Komponenten (\textit{Calculators}) können Entwickler schnell Prototypen erstellen und zu ausgereiften Anwendungen weiterentwickeln.
+MediaPipe ist ein Open-Source-Framework von Google, das die Entwicklung plattformübergreifender Computer-Vision-Anwendungen erleichtert. Es ermöglicht effiziente Machine-Learning-Pipelines für Video-, Bild- und Audiodaten in Echtzeit. Dank modularer Architektur und vorgefertigter Komponenten (\textit{Calculators}) können Entwickler schnell Prototypen erstellen und zu ausgereiften Anwendungen weiterentwickeln \cite{mediapipe_solutions_guide}.
 
 \paragraph{Graphbasierte Architektur}
 Ein zentrales Merkmal von MediaPipe ist seine graphbasierte Architektur. Datenflüsse werden in \textit{Graphs} definiert, wobei jeder Knotenpunkt spezifische Aufgaben übernimmt (z.B. Bilddekodierung, ML-Inferenz, Landmarken-Rendering). Diese Struktur ermöglicht eine flexible und effiziente Verarbeitung von Datenströmen, besonders für Echtzeitanwendungen.
@@ -123,13 +123,13 @@ MediaPipe bietet vortrainierte Lösungen für gängige Wahrnehmungsaufgaben, dar
     \item \textbf{Pose:} Erkennung von Körperposen und -landmarken.
 \end{itemize}
 
-Diese Lösungen sind für verschiedene Plattformen (Android, iOS, Web, Desktop) optimiert und oft in Echtzeit einsetzbar. Sie kapseln die Komplexität der zugrundeliegenden Modelle und bieten einfache APIs.
+Diese Lösungen sind für verschiedene Plattformen (Android, iOS, Web, Desktop) optimiert und oft in Echtzeit einsetzbar. Sie kapseln die Komplexität der zugrundeliegenden Modelle und bieten einfache APIs \cite{mediapipe_solutions_guide}.
 
 \paragraph{Einsatz im Projektkontext}
 Im Projekt wird MediaPipe für die detaillierte Analyse von Gesichtsmerkmalen genutzt, z.B. für Landmarkenextraktion zur biometrischen Erkennung oder Eye Tracking. Dies ermöglicht präzise und effiziente Erfassung relevanter Merkmale, z.B. für Zutrittskontrollsysteme oder Müdigkeitserkennung. Die Kombination aus schneller Detektion (durch YOLO) und detaillierter Analyse (durch MediaPipe) ergibt eine leistungsfähige Pipeline für Echtzeitanwendungen im Bereich der Gesichtserkennung und -analyse.
 
 \subsubsection{MediaPipe-Architektur und Face Mesh}
-MediaPipe ist eine Open-Source-Plattform von Google zur Erstellung plattformübergreifender Pipelines für multimodale Daten. Die Architektur basiert auf modularen Graphen, in denen einzelne Calculatoren Datenvorverarbeitung, ML-Modelle und Nachverarbeitungsschritte verknüpfen.
+MediaPipe ist eine Open-Source-Plattform von Google zur Erstellung plattformübergreifender Pipelines für multimodale Daten. Die Architektur basiert auf modularen Graphen, in denen einzelne Calculatoren Datenvorverarbeitung, ML-Modelle und Nachverarbeitungsschritte verknüpfen \cite{mediapipe_solutions_guide}.
 
 Das Face Mesh-Modul kombiniert zunächst einen schnellen BlazeFace-Detektor mit einem darauf aufsetzenden Landmarken-Vorhersagemodell und liefert in Echtzeit bis zu 468 3D-Landmarken pro Gesicht. Die Topologie der Landmarken (siehe Abbildung~\ref{fig:mesh_topology}) beschreibt die Kantenverbindungen zwischen den Punkten und ermöglicht eine präzise meshing-Repräsentation.
 
