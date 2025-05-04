@@ -20,11 +20,11 @@ Für die Erkennung der Kennzeichenbereiche wurde bewusst das Modell YOLOv5 einge
 
 Zur Detektion von KFZ-Kennzeichen im Bildmaterial kommt in unserem Projekt ein speziell trainiertes YOLOv5-Modell zum Einsatz. YOLO  ist eine auf Echtzeit ausgelegte Objekterkennungsarchitektur, die es ermöglicht, Objekte wie Nummernschilder direkt in Bildern zu lokalisieren und zu klassifizieren. Wir haben uns dabei für die besonders kompakte Variante YOLOv5n (nano) entschieden, da diese für ressourcenschwache Systeme wie den Raspberry Pi 4 optimiert ist und eine hohe Inferenzgeschwindigkeit bei geringer Modellgröße bietet.
 
-\paragraph{Datengrundlage\cite{roboflowdataset}}
+\paragraph{Datengrundlage}
 
 Als Trainingsgrundlage diente ein öffentlich zugänglicher Datensatz aus Roboflow Universe mit rund 3.000 annotierten Bilder von KFZ-Kennzeichen. Der Datensatz enthält bereits diverse Perspektiven, Lichtverhältnisse und Rotationen, was zur Robustheit des Modells beiträgt.\\
 
-Zusätzlich wurden während des Trainings verschiedene Datenaugmentierungen vorgenommen, um die Generalisierungsfähigkeit weiter zu verbessern. Hierzu zählten unter anderem:
+Zusätzlich wurden während des Trainings verschiedene Datenaugmentierungen vorgenommen, um die Generalisierungsfähigkeit weiter zu verbessern. \cite{roboflowdataset} Hierzu zählten unter anderem:
 
 \begin{itemize}
     \item Auto-Orientierung zur Korrektur der Bildausrichtung
@@ -82,7 +82,7 @@ Die vorbereiteten Bilder werden im Anschluss zur Konturerkennung verwendet, wobe
 Durch diese Kette an Vorverarbeitungsschritten wird sichergestellt, dass relevante Bildinformationen betont und störende Einflüsse reduziert werden, um die Qualität der anschließenden Bildanalyse zu maximieren.
 
 
-\subsubsection{Optical Character Recognition\cite{geeksforgeeks2021tesseract}}
+\subsubsection{Optical Character Recognition}
 
 Nach Abschluss der Bildvorverarbeitung, bei der die Kennzeichenbilder in eine geeignete Form gebracht wurden, erfolgt die Erkennung der enthaltenen alphanumerischen Zeichen mittels Optical Character Recognition (OCR). Zu Beginn des Projekts wurden dazu verschiedene OCR-Engines untersucht, darunter auch EasyOCR. Diese Deep-Learning-basierte Bibliothek liefert in vielen Anwendungsfällen gute Ergebnisse, zeigte jedoch im praktischen Einsatz auf ressourcenschwacher Hardware wie dem Raspberry Pi 4 deutliche Einschränkungen. Der hohe Speicherbedarf und die langen Inferenzzeiten verhinderten eine Echtzeitverarbeitung.\singlespacing
 
@@ -92,7 +92,7 @@ Im nächsten Schritt der Pipeline erfolgt eine Konturanalyse auf dem vorbereitet
 
 Die Texterkennung wird über die Funktion \texttt{image\_to\_data} durchgeführt. Dabei wird der zu analysierende Zeichensatz auf Großbuchstaben und Ziffern eingeschränkt (\texttt{tessedit\_char\_whitelist}) und mit dem Seitenlayout-Modus \texttt{--psm 8} gearbeitet, der für einzelne Zeichen geeignet ist. Das Ergebnis umfasst neben dem erkannten Text auch Positionsdaten und Konfidenzwerte.\singlespacing
 
-Abschließend werden die erkannten Zeichenbereiche im Graustufenbild visuell hervorgehoben und als Bilddateien gespeichert, um die Ergebnisse nachvollziehbar und prüfbar zu machen.
+Abschließend werden die erkannten Zeichenbereiche im Graustufenbild visuell hervorgehoben und als Bilddateien gespeichert, um die Ergebnisse nachvollziehbar und prüfbar zu machen. \cite{geeksforgeeks2021tesseract}
 
 \subsubsection{Herausforderungen bei realen Bedingungen}
 Im Rahmen der Entwicklung unseres Kennzeichenerkennungssystems, das auf eine Mautstationssituation ausgelegt ist, traten verschiedene Herausforderungen auf, die unter realen Bedingungen von besonderer Bedeutung sind. \singlespacing
@@ -112,13 +112,13 @@ Die Herausforderung lag hier insbesondere darin, eine akzeptable Balance zwische
 
 Vor diesem Hintergrund entschieden wir uns bewusst für die Verwendung der YOLOv5-Architektur, da diese im Vergleich zu neueren Modellen wie YOLOv8 eine deutlich geringere Rechenlast aufweist und damit besser auf ressourcenbeschränkter Hardware wie dem Raspberry Pi lauffähig ist.
 Die Wahl eines leichteren Modells ermöglichte es, die grundlegenden Funktionen der Gesichts- und Schrifterkennung trotz der beschränkten Systemressourcen zuverlässig zu demonstrieren. 
-\subsubsection{Optimierung für wechselnde Lichtverhältnisse und Kameraperspektiven\cite{marvik2024wild}}
+\subsubsection{Optimierung für wechselnde Lichtverhältnisse und Kameraperspektiven}
 
 Zur Verbesserung der Erkennungsstabilität unter realen Bedingungen wird besonderes Augenmerk auf die Bildverarbeitung gelegt. Ein vielversprechender Ansatz besteht in der Nutzung mehrstufiger Preprocessing-Pipelines. Hierbei wird dasselbe Eingangsbild mehreren parallel ausgeführten Vorverarbeitungsschritten unterzogen, die jeweils auf typische Problemquellen wie Überbelichtung, Schatten oder Kontrastarmut optimiert sind. Die resultierenden Varianten werden anschließend bewertet, um die am besten geeignete für die Texterkennung auszuwählen.\singlespacing
 
 Darüber hinaus kann perspektivische Verzerrung durch geometrische Transformationen, etwa mithilfe von Homographie-Matrizen, reduziert werden. Diese Maßnahme ist besonders bei schräg aufgenommenen Kennzeichenbildern sinnvoll, wie sie bei ungünstiger Kameraposition oder ungleichmäßiger Fahrzeugausrichtung entstehen.\singlespacing
 
-Als mögliche Erweiterung wäre ein Postprocessing-Konzept denkbar, bei dem erkannte Zeichenfolgen hinsichtlich ihrer strukturellen Korrektheit überprüft werden. In professionellen Systemen wird dies häufig durch Plausibilitätsprüfungen oder den Vergleich mehrerer Verarbeitungsergebnisse realisiert. Dabei kommen Algorithmen zum Einsatz, die verschiedene OCR-Ergebnisse anhand formaler Merkmale, Zeichensatzvalidität und Konfidenzwerten bewerten, um das wahrscheinlich korrekteste Resultat zu ermitteln. Denkbar wäre zudem der Einsatz eines speziell trainierten KI-Modells, das ausschließlich auf die Erkennung von Schriftarten in KFZ-Kennzeichen ausgelegt ist. Ein solches Modell könnte Unsicherheiten der allgemeinen OCR durch domänenspezifisches Wissen kompensieren und die Gesamterkennungsrate unter realen Bedingungen deutlich verbessern.
+Als mögliche Erweiterung wäre ein Postprocessing-Konzept denkbar, bei dem erkannte Zeichenfolgen hinsichtlich ihrer strukturellen Korrektheit überprüft werden. In professionellen Systemen wird dies häufig durch Plausibilitätsprüfungen oder den Vergleich mehrerer Verarbeitungsergebnisse realisiert. Dabei kommen Algorithmen zum Einsatz, die verschiedene OCR-Ergebnisse anhand formaler Merkmale, Zeichensatzvalidität und Konfidenzwerten bewerten, um das wahrscheinlich korrekteste Resultat zu ermitteln. Denkbar wäre zudem der Einsatz eines speziell trainierten KI-Modells, das ausschließlich auf die Erkennung von Schriftarten in KFZ-Kennzeichen ausgelegt ist. Ein solches Modell könnte Unsicherheiten der allgemeinen OCR durch domänenspezifisches Wissen kompensieren und die Gesamterkennungsrate unter realen Bedingungen deutlich verbessern. \cite{marvik2024wild}
 
 \subsubsection{Evaluation und Genauigkeitsanalyse}
 
@@ -128,6 +128,201 @@ Als mögliche Erweiterung wäre ein Postprocessing-Konzept denkbar, bei dem erka
 Das implementierte System realisiert eine Echtzeit-Gesichtserkennung mittels einer handelsüblichen Webcam (640$\times$480 Pixel) und verwendet das Modell \texttt{YOLOv8n-face} zur Detektion von Gesichtern. Die Identifikation erfolgt durch Kombination der YOLO-basierten Gesichtserkennung mit dem \texttt{face\_recognition}-Framework, das HOG-basierte Merkmalsextraktion nutzt. Bekannte Gesichter werden im lokalen Verzeichnis gespeichert und können über eine grafische Benutzeroberfläche dynamisch erweitert werden. Das System ist für Zutrittskontrollszenarien konzipiert und erlaubt das Anlernen neuer Gesichter im laufenden Betrieb.
 
 \subsubsection{YOLO}
+\paragraph{Gesichtserkennung mit YOLO: Code}
+
+Das System zur Gesichtserkennung mittels YOLO kombiniert die Objektdetektion durch das YOLOv8n-face Modell mit den spezifischeren Funktionen der \texttt{face\_recognition} Bibliothek zur Merkmalsextraktion und zum Abgleich. Der Fokus liegt hierbei auf der schnellen Detektion von Gesichtern im Videostrom, gefolgt von einer genaueren Analyse zur Identifikation.
+
+Der vollständige Code ist in der Datei \texttt{face\_recognition\_yolo.py} zu finden und auf GitHub\cite{github_yolo} verfügbar. Zuerst werden die notwendigen Bibliotheken importiert, darunter \texttt{os}, \texttt{cv2}, \texttt{numpy}, \texttt{time}, \texttt{ultralytics} (für YOLO), \texttt{face\_recognition} und \texttt{datetime}.
+
+Die Initialisierung des Systems erfolgt in der \texttt{\_\_init\_\_} Methode der Klasse \texttt{FaceRecognitionSystem}. Hier werden Pfade definiert, das YOLO-Modell geladen und die Kamera initialisiert.
+
+\begin{lstlisting}[language=Python, caption={Initialisierung des YOLO-Modells und der Kamera}, label={lst:yolo_init}, inputencoding=utf8]
+        # Paths and directories
+        self.faces_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "img")
+        self.model_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "models", "yolov8n-face.pt")
+
+        # Create faces directory if it doesn't exist
+        if not os.path.exists(self.faces_dir):
+            os.makedirs(self.faces_dir)
+
+        # Load YOLO model
+        self.model = YOLO(self.model_path)
+
+        # Initialize camera
+        self.cap = cv2.VideoCapture(0)
+        if not self.cap.isOpened():
+            raise Exception("Could not open video device")
+
+        # Set camera resolution
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
+        # Known faces and names
+        self.known_face_encodings = []
+        self.known_face_names = []
+        self.load_known_faces()
+\end{lstlisting}
+
+Die eigentliche Detektion findet in der Methode \texttt{detect\_and\_recognize\_faces} statt. Das YOLO-Modell wird auf den aktuellen Frame angewendet, um Personen (Klasse 0) zu finden. Die Bounding Boxes dieser Detektionen werden optional gezeichnet. Anschließend wird die \texttt{face\_recognition} Bibliothek genutzt, um präzisere Gesichtslokalisierungen innerhalb des Frames zu finden.
+
+\begin{lstlisting}[language=Python, caption={Gesichtsdetektion mit YOLO und face\_recognition}, label={lst:yolo_detect}, inputencoding=utf8]
+    def detect_and_recognize_faces(self, frame):
+        """
+        Detects people using YOLO and recognizes known faces.
+
+        Args:
+            frame (np.array): Current video frame.
+
+        Returns:
+            np.array: Frame with bounding boxes and labels drawn.
+            list: List of detected face locations.
+        """
+        display_frame = frame.copy()
+        self.current_frame = frame.copy()
+
+        height, width = frame.shape[:2]
+        self.recognition_size = (width, height)
+
+        # YOLO detection
+        results = self.model(frame, classes=[0]) # Detects persons (class 0)
+
+        if results and len(results) > 0:
+            for r in results:
+                boxes = r.boxes
+                for box in boxes:
+                    x1, y1, x2, y2 = map(int, box.xyxy[0])
+                    # Draw YOLO box (optional, green)
+                    # cv2.rectangle(display_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+        # Face detection using face_recognition library
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # Convert to RGB
+        face_locations = face_recognition.face_locations(rgb_frame) # Find faces
+        face_encodings = face_recognition.face_encodings(rgb_frame, face_locations) # Encode faces
+
+        self.button_area = [] # Reset button areas for UI
+        return display_frame, face_locations
+\end{lstlisting}
+
+Hierbei ist wichtig zu verstehen, dass YOLO primär zur groben Lokalisierung dient (im Code aktuell nur zur Detektion, nicht zur Vorfilterung genutzt), während \texttt{face\_recognition.face\_locations} (oft HOG-basiert) die genaueren Bounding Boxes für die Gesichter liefert, die dann für die Wiedererkennung verwendet werden.
+
+\paragraph{Gesichtswiedererkennung mit YOLO: Code}
+
+Nachdem die Gesichter im Frame durch \texttt{face\_recognition.face\_locations} lokalisiert und mittels \texttt{face\_recognition.face\_encodings} in Embeddings umgewandelt wurden, erfolgt der Abgleich mit bekannten Gesichtern.
+
+Bekannte Gesichter werden beim Start des Systems aus einem Verzeichnis geladen. Die Methode \texttt{load\_known\_faces} liest Bilddateien ein, erkennt Gesichter darin und speichert deren Encodings zusammen mit den Dateinamen (als Namen der Personen).
+
+\begin{lstlisting}[language=Python, caption={Laden bekannter Gesichter}, label={lst:yolo_load}, inputencoding=utf8]
+    def load_known_faces(self):
+        """
+        Loads all known faces from the 'faces_dir' into memory.
+        Encodes faces for future recognition.
+        """
+        self.known_face_encodings = []
+        self.known_face_names = []
+
+        for filename in os.listdir(self.faces_dir):
+            if filename.endswith(('.jpg', '.jpeg', '.png')):
+                name = os.path.splitext(filename)[0] # Extract name from filename
+                image_path = os.path.join(self.faces_dir, filename)
+                face_image = face_recognition.load_image_file(image_path)
+                face_locations = face_recognition.face_locations(face_image) # Find faces in the loaded image
+
+                if face_locations: # If at least one face is found
+                    # Encode the first face found in the image
+                    face_encoding = face_recognition.face_encodings(face_image, face_locations)[0]
+                    self.known_face_encodings.append(face_encoding)
+                    self.known_face_names.append(name)
+
+        print(f"Loaded {len(self.known_face_names)} known faces")
+\end{lstlisting}
+
+In der \texttt{detect\_and\_recognize\_faces} Methode wird für jedes im aktuellen Frame erkannte Gesicht das zugehörige Encoding mit allen bekannten Encodings verglichen.
+
+\begin{lstlisting}[language=Python, caption={Vergleich von Gesichts-Encodings}, label={lst:yolo_compare}, inputencoding=utf8]
+        # Inside the loop iterating through face_locations and face_encodings:
+        for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+            name = "Unknown"
+            is_known_face = False
+
+            if self.known_face_encodings:
+                # Compare the current face encoding with all known face encodings
+                matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
+                # Calculate the distance (dissimilarity) to all known faces
+                face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
+
+                if len(face_distances) > 0:
+                    # Find the index of the known face with the smallest distance
+                    best_match_index = np.argmin(face_distances)
+                    # Check if the smallest distance is below the tolerance threshold
+                    if matches[best_match_index]:
+                        name = self.known_face_names[best_match_index]
+                        is_known_face = True
+
+            # Draw face box and label
+            cv2.rectangle(display_frame, (left, top), (right, bottom), (0, 0, 255), 2) # Red box for unknown/known
+            label_top = bottom + 10
+            label_bottom = bottom + 45
+            cv2.rectangle(display_frame, (left, label_top), (right, label_bottom), (0, 0, 255), cv2.FILLED)
+            cv2.putText(display_frame, name, (left + 6, label_top + 20), cv2.FONT_HERSHEY_DUPLEX, 0.7, (255, 255, 255), 1)
+
+            # If face is unknown, offer 'Learn Face' button
+            if self.state == "normal" and not is_known_face:
+                button_left = left
+                button_top = top - 30
+                button_right = right
+                button_bottom = top
+
+                if button_top > 0:
+                    cv2.rectangle(display_frame, (button_left, button_top), (button_right, button_bottom), (255, 0, 0), cv2.FILLED)
+                    cv2.putText(display_frame, "Learn Face", (button_left + 5, button_top + 20), cv2.FONT_HERSHEY_DUPLEX, 0.5, (255, 255, 255), 1)
+                    self.button_area.append(((button_left, button_top, button_right, button_bottom), (top, right, bottom, left)))
+\end{lstlisting}
+Die Funktion \texttt{face\_recognition.compare\_faces} gibt eine Liste von Booleans zurück, die angeben, ob die Distanz zwischen dem aktuellen Encoding und den bekannten Encodings unter einem Standard-Schwellenwert (typischerweise 0.6) liegt. \texttt{face\_recognition.face\_distance} gibt die tatsächlichen euklidischen Distanzen zurück. Es wird der Eintrag mit der geringsten Distanz als bester Treffer gewählt, sofern dieser auch als `True` in `matches` markiert ist.
+
+Das Anlernen neuer Gesichter wird durch einen Mausklick auf den "Learn Face"-Button ausgelöst (\texttt{mouse\_callback}). Dies ändert den Zustand des Systems zu \texttt{"entering\_name"}. Der Benutzer kann dann einen Namen eingeben. Nach Bestätigung mit Enter wird die Methode \texttt{save\_face} aufgerufen.
+
+\begin{lstlisting}[language=Python, caption={Speichern eines neuen Gesichts}, label={lst:yolo_save}, inputencoding=utf8]
+    def save_face(self, name, face_location):
+        """
+        Saves a cropped and expanded face image with a given name to disk.
+
+        Args:
+            name (str): Name to associate with the saved face.
+            face_location (tuple): Coordinates (top, right, bottom, left) of the face.
+        """
+        if not name:
+            return
+
+        top, right, bottom, left = face_location
+
+        # Expand region slightly to ensure the whole face is captured
+        height = bottom - top
+        width = right - left
+        expanded_top = max(0, top - int(height * 0.3))
+        expanded_bottom = min(self.current_frame.shape[0], bottom + int(height * 0.3))
+        expanded_left = max(0, left - int(width * 0.3))
+        expanded_right = min(self.current_frame.shape[1], right + int(width * 0.3))
+
+        # Crop the face from the current frame
+        face_image = self.current_frame[expanded_top:expanded_bottom, expanded_left:expanded_right]
+
+        # Save with timestamp if filename already exists
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{name}.jpg"
+        filepath = os.path.join(self.faces_dir, filename)
+        if os.path.exists(filepath):
+            filepath = os.path.join(self.faces_dir, f"{name}_{timestamp}.jpg")
+
+        cv2.imwrite(filepath, face_image)
+        print(f"Saved face as {filepath}")
+
+        # Reload known faces to include the newly saved face immediately
+        self.load_known_faces()
+\end{lstlisting}
+Diese Methode extrahiert den Bildbereich des zu lernenden Gesichts, speichert ihn als JPEG-Datei im `img`-Verzeichnis und lädt anschließend die Liste der bekannten Gesichter neu, sodass das neu hinzugefügte Gesicht sofort für die Wiedererkennung verfügbar ist. Die Hauptschleife (\texttt{run}) steuert den Ablauf, verarbeitet Kamerabilder und Benutzereingaben (Tastatur für Namenseingabe, Maus für Button-Klicks).
+
+
+
 \paragraph{Vergleich der YOLO-Modelle}
 \begin{table}[h]
     \centering
