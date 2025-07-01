@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/TOPR-yoloteam/YOLO/main-1/src/utils/THU_Logo.png" alt="THU Logo" width="100"/>
+  <img src="https://raw.githubusercontent.com/TOPR-yoloteam/YOLO-Hands-On-Tutorial/blob/main/src/utils/THU_Logo.png" alt="THU Logo" width="100"/>
 </p>
 
 
@@ -73,7 +73,7 @@ For a detailed step-by-step guide including exercises, code walkthroughs, and tr
 ## 🎴 Promo poster
 
 You can view the promotional poster here:
-![Promo Poster](https://github.com/TOPR-yoloteam/YOLO-Hands-On-Tutorial/blob/main/src/utils/Promo_Poster_en.pdf)
+![Promo Poster](https://raw.githubusercontent.com/TOPR-yoloteam/YOLO-Hands-On-Tutorial/blob/main/src/utils/Promo_Poster_en.pdf)
 
 
 
