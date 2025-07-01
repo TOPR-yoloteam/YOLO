@@ -215,3 +215,6 @@ src\final_report\main.bbl
 main.blg
 .gitignore
 main.bbl
+src/project_files/face_recognition/data/img/Chantal.jpg
+.gitignore
+src/project_files/face_recognition/data/img/Jan.jpg
