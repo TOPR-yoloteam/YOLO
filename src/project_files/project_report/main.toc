@@ -1,0 +1,96 @@
+\contentsline {section}{\numberline {1}Einleitung}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Motivation}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Zielsetzung des Projekts}{1}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}Primäres Ziel}{1}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}Sekundäres Ziel}{2}{subsubsection.1.2.2}%
+\contentsline {section}{\numberline {2}Theoretische Grundlagen und Stand der Technik}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Stand der Technik in der Objekterkennung}{3}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Bildverarbeitung und Computer Vision mit OpenCV}{3}{subsubsection.2.1.1}%
+\contentsline {paragraph}{\numberline {2.1.1.1}Grundlagen}{4}{paragraph.2.1.1.1}%
+\contentsline {paragraph}{\numberline {2.1.1.2}Bildverarbeitungsfunktionen}{4}{paragraph.2.1.1.2}%
+\contentsline {paragraph}{\numberline {2.1.1.3}Installation und Einrichtung der Umgebung}{4}{paragraph.2.1.1.3}%
+\contentsline {paragraph}{\numberline {2.1.1.4}Grundlegende OpenCV-Funktionen und Methoden}{5}{paragraph.2.1.1.4}%
+\contentsline {paragraph}{\numberline {2.1.1.5}Kernfunktionen}{5}{paragraph.2.1.1.5}%
+\contentsline {paragraph}{\numberline {2.1.1.6}Zusammenfassung}{5}{paragraph.2.1.1.6}%
+\contentsline {subsubsection}{\numberline {2.1.2}YOLO als Basis für schnelle Detektion}{5}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}MediaPipe Framework für Wahrnehmungsaufgaben}{6}{subsubsection.2.1.3}%
+\contentsline {paragraph}{\numberline {2.1.3.1}Graphbasierte Architektur}{6}{paragraph.2.1.3.1}%
+\contentsline {paragraph}{\numberline {2.1.3.2}MediaPipe Face Mesh: Technische Funktionsweise}{6}{paragraph.2.1.3.2}%
+\contentsline {subsubsection}{\numberline {2.1.4}MediaPipe-Architektur und Face Mesh}{7}{subsubsection.2.1.4}%
+\contentsline {subsection}{\numberline {2.2}Funktionsweise von YOLO}{8}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}OCR für Texterkennung}{10}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Typische OCR-Pipeline}{10}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Methoden und Werkzeuge}{10}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.3}Anwendung bei der Kennzeichenerkennung (ANPR/LPR)}{11}{subsubsection.2.3.3}%
+\contentsline {subsubsection}{\numberline {2.3.4}Herausforderungen}{11}{subsubsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.4}Gesichtserkennung mit neuronalen Netzen}{11}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Technologien im Detail}{12}{subsubsection.2.4.1}%
+\contentsline {paragraph}{\numberline {2.4.1.1}Gesichtsdetektion}{12}{paragraph.2.4.1.1}%
+\contentsline {paragraph}{\numberline {2.4.1.2}Landmarken-Detektion}{12}{paragraph.2.4.1.2}%
+\contentsline {paragraph}{\numberline {2.4.1.3}Biometrische Identifikation und Verifikation}{12}{paragraph.2.4.1.3}%
+\contentsline {paragraph}{\numberline {2.4.1.4}Embedding-Generierung}{12}{paragraph.2.4.1.4}%
+\contentsline {paragraph}{\numberline {2.4.1.5}Gesichtsliveness-Erkennung}{12}{paragraph.2.4.1.5}%
+\contentsline {section}{\numberline {3}Anforderungen}{13}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Funktionale Anforderungen}{13}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Nicht-funktionale Anforderungen}{13}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}User Stories}{14}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Methodik}{15}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Kennzeichenerkennung}{15}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Systemarchitektur und Funktionsweise}{15}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}Training und Optimierung des Modells}{16}{subsubsection.4.1.2}%
+\contentsline {paragraph}{\numberline {4.1.2.1}Datengrundlage}{16}{paragraph.4.1.2.1}%
+\contentsline {paragraph}{\numberline {4.1.2.2}Trainingsergebnisse und Validierung}{16}{paragraph.4.1.2.2}%
+\contentsline {paragraph}{\numberline {4.1.2.3}Konfidenz und Modellanwendung}{17}{paragraph.4.1.2.3}%
+\contentsline {paragraph}{\numberline {4.1.2.4}Einfluss der Trainingsdaten und Verbesserungsmöglichkeiten}{17}{paragraph.4.1.2.4}%
+\contentsline {subsubsection}{\numberline {4.1.3}Image Preprocessing}{18}{subsubsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.4}Optical Character Recognition}{18}{subsubsection.4.1.4}%
+\contentsline {subsubsection}{\numberline {4.1.5}Herausforderungen bei realen Bedingungen}{19}{subsubsection.4.1.5}%
+\contentsline {subsubsection}{\numberline {4.1.6}Optimierung für wechselnde Lichtverhältnisse und Kameraperspektiven}{19}{subsubsection.4.1.6}%
+\contentsline {subsubsection}{\numberline {4.1.7}Evaluation und Genauigkeitsanalyse}{20}{subsubsection.4.1.7}%
+\contentsline {subsection}{\numberline {4.2}Gesichtserkennung}{20}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Testaufbau}{20}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}YOLO}{20}{subsubsection.4.2.2}%
+\contentsline {paragraph}{\numberline {4.2.2.1}Gesichtserkennung mit YOLO: Code}{20}{paragraph.4.2.2.1}%
+\contentsline {paragraph}{\numberline {4.2.2.2}Gesichtswiedererkennung mit YOLO: Code}{22}{paragraph.4.2.2.2}%
+\contentsline {paragraph}{\numberline {4.2.2.3}Vergleich der YOLO-Modelle}{25}{table.caption.6}%
+\contentsline {paragraph}{\numberline {4.2.2.4}Metriken}{26}{paragraph.4.2.2.4}%
+\contentsline {paragraph}{\numberline {4.2.2.5}Anwendungsbeispiel: Zutrittskontrollen}{26}{paragraph.4.2.2.5}%
+\contentsline {subsubsection}{\numberline {4.2.3}MediaPipe}{26}{subsubsection.4.2.3}%
+\contentsline {paragraph}{\numberline {4.2.3.1}Gesichtspunkterkennung: Code}{26}{paragraph.4.2.3.1}%
+\contentsline {paragraph}{\numberline {4.2.3.2}Gesichtswiedererkennung mit Gesichtspunkten: Code}{28}{paragraph.4.2.3.2}%
+\contentsline {paragraph}{\numberline {4.2.3.3}Metriken}{29}{paragraph.4.2.3.3}%
+\contentsline {subparagraph}{\numberline {4.2.3.3.1}Confidence Score}{29}{subparagraph.4.2.3.3.1}%
+\contentsline {subparagraph}{\numberline {4.2.3.3.2}FPS / Inferenzzeit}{30}{subparagraph.4.2.3.3.2}%
+\contentsline {paragraph}{\numberline {4.2.3.4}Anwendungsbeispiel: Zutrittskontrollen}{32}{paragraph.4.2.3.4}%
+\contentsline {subsubsection}{\numberline {4.2.4}Vergleich von YOLO und MediaPipe}{32}{subsubsection.4.2.4}%
+\contentsline {paragraph}{\numberline {4.2.4.1}Confidence Score}{32}{paragraph.4.2.4.1}%
+\contentsline {paragraph}{\numberline {4.2.4.2}FPS / Inference Time}{32}{paragraph.4.2.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.5}Projektdokumentation}{33}{subsubsection.4.2.5}%
+\contentsline {paragraph}{\numberline {4.2.5.1}Vorgehensmodell und Teamstruktur}{34}{paragraph.4.2.5.1}%
+\contentsline {paragraph}{\numberline {4.2.5.2}Dokumentation des Projektmanagements}{35}{paragraph.4.2.5.2}%
+\contentsline {section}{\numberline {5}Ergebnis}{40}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Zusammenfassung der Ergebnisse aus Nutzersicht}{40}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Fehlerquellen und potentielle Optimierungen}{41}{subsection.5.2}%
+\contentsline {section}{\numberline {6}Diskussion}{42}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Welche Ziele wurden erreicht?}{42}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Retrospektive}{42}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {6.2.1}Was lief gut?}{42}{subsubsection.6.2.1}%
+\contentsline {subsubsection}{\numberline {6.2.2}Was lief nicht so gut?}{43}{subsubsection.6.2.2}%
+\contentsline {subsubsection}{\numberline {6.2.3}Lessons Learned}{44}{subsubsection.6.2.3}%
+\contentsline {paragraph}{\numberline {6.2.3.1}Valentin Talmon-l'Armée}{44}{paragraph.6.2.3.1}%
+\contentsline {paragraph}{\numberline {6.2.3.2}Jan Gaschler}{44}{paragraph.6.2.3.2}%
+\contentsline {paragraph}{\numberline {6.2.3.3}Chantal Deusch}{44}{paragraph.6.2.3.3}%
+\contentsline {paragraph}{\numberline {6.2.3.4}Serhat Gürel}{44}{paragraph.6.2.3.4}%
+\contentsline {section}{\numberline {7}Ausblick und zukünftige Entwicklungen}{45}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Ausblick YOLO}{45}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}YOLOv12}{45}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Wesentliche Merkmale}{45}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}Unterstütze Aufgaben und Modi}{45}{subsubsection.7.2.2}%
+\contentsline {subsubsection}{\numberline {7.2.3}Leistungsmetriken}{45}{subsubsection.7.2.3}%
+\contentsline {subsubsection}{\numberline {7.2.4}Wichtige Verbesserungen}{46}{subsubsection.7.2.4}%
+\contentsline {subsubsection}{\numberline {7.2.5}Zusammenfassung und Wichtige Erkenntnisse}{46}{subsubsection.7.2.5}%
+\contentsline {subsection}{\numberline {7.3}Mikrocomputer gewinnen an Bedeutung}{46}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Langlebigkeit des Tutorials}{46}{subsection.7.4}%
+\contentsline {section}{\numberline {8}Quellenverzeichnis}{48}{section.8}%
+\contentsline {section}{\numberline {9}Anhang}{49}{section.9}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
