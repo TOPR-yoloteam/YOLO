@@ -13,5 +13,5 @@ sudo apt install -y build-essential cmake libopenblas-dev liblapack-dev \
 pip install dlib   
 pip install face_recognition
 
-sudo apt install tesseract-ocr
+sudo apt install -y tesseract-ocr
 pip install pytesseract
