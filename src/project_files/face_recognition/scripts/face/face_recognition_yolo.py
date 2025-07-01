@@ -15,7 +15,7 @@ class FaceRecognitionSystem:
         - Loads known faces into memory.
         """
         # Paths and directories
-        self.faces_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "img")
+        self.faces_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "..", "img")
         self.model_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "models", "yolov8n-face.pt")
 
         # Create faces directory if it doesn't exist
