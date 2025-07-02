@@ -4,7 +4,7 @@ import pytesseract
 
 
 class LicensePlateOCR:
-    def __init__(self, tesseract_path=r"C:\Users\Valentin.Talmon\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"):
+    def __init__(self, tesseract_path=r"/usr/bin/tesseract"):
         """
         Initializes the OCR pipeline and configures the path to Tesseract executable.
 
