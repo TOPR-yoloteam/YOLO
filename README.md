@@ -60,7 +60,7 @@ This project simulates such scenarios on a **Raspberry Pi**, a compact and affor
 You’ll also need to clone the repo:
 
 ```bash
-git clone https://github.com/TOPR-yoloteam/YOLO.git
+git clone https://github.com/TOPR-yoloteam/YOLO-Hands-On-Tutorial.git
 cd YOLO
 ```
 
