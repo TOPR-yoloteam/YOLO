@@ -66,7 +66,7 @@ class FaceRecognitionSystemTask1: # Renamed class slightly for clarity
         # Process the 'image_rgb' using the initialized 'self.face_mesh' object.
         # The result will contain information about detected faces and their landmarks.
         # Example: results = self.face_mesh.process(image_rgb)
-        results = None # Placeholder - Must be replaced!
+        results = self.face_mesh.process(image_rgb)
         # --- End TODO Task 1.2 ---
 
         # Mark image as writeable again
@@ -124,7 +124,6 @@ class FaceRecognitionSystemTask1: # Renamed class slightly for clarity
             # Use the coordinates 'top', 'right', 'bottom', 'left'.
             # Use the OpenCV function 'cv2.rectangle'.
             # Choose a fixed color (e.g., green) and line thickness for Task 1.
-            # Example:
             color = (0, 255, 0) # Green color for Task 1
             cv2.rectangle(display_frame, (left, top), (right, bottom), color, 2)
             # --- End TODO Task 1.3 ---

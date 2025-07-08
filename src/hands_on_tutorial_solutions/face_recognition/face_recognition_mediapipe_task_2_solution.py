@@ -167,7 +167,6 @@ class FaceRecognitionSystem:
                 # The resulting array should have 100 elements (50 landmarks * 2 coordinates).
                 # Iterate through 'key_landmarks_indices', access the corresponding
                 # landmark in 'face_landmarks.landmark', and add its x and y to the array.
-                # Example:
                 landmarks_vector = []
                 for idx in key_landmarks_indices:
                     # Ensure index is valid
@@ -318,13 +317,13 @@ class FaceRecognitionSystem:
                     continue # Skip this comparison
 
                 # --- TODO 2: Calculate Distance ---
-                # Option 1: Mit Fallback für unterschiedliche Größen
+                # Option 1: With fallback for different sizes
                 if len(self.feature_weights) == len(landmarks):
-                    # Gewichtete Version, wenn Größen übereinstimmen
+                    # Weighted version if sizes match
                     diff = (landmarks - known_landmarks) * self.feature_weights
                     distance = np.linalg.norm(diff)
                 else:
-                    # Standard-Euklidischer Abstand, wenn Größen nicht übereinstimmen
+                    # Default to standard Euclidean distance if weights are not the same size
                     distance = np.linalg.norm(landmarks - known_landmarks)
                 # --- End TODO 2 ---
 
